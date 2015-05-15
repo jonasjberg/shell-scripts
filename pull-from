@@ -16,8 +16,10 @@
 # ------------------------------------------------------------------------------
 
 
-# Destination hostname or IP-adress.
-DESTINATION="ProBook-6465b"
+# USER CONFIGURATION
+# Source hostname or IP-adress and full source path. Set these first.
+SOURCE_HOST="127.0.0.1"
+SOURCE_PATH="/mnt/drive/my-folder/"
 
 # Get the full directory path to this script location.
 THIS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -25,7 +27,7 @@ THIS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # Run this here compound command.
 COMMAND="rsync -avhPi --stats --exclude="${0##*/}" \
-    $USER@$DESTINATION:/mnt/Archived/socialt-handfallen-sorted/ \
+    $USER@$SOURCE_HOST:$SOURCE_PATH \
     "$THIS_DIR" --dry-run"
 
 # Ok, lets go ..
