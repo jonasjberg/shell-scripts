@@ -1,0 +1,38 @@
+#!/bin/bash
+#   ______________________________________________________________________
+#
+#   PULL-FROM  --  dead simple rsync wrapper
+#   written by Jonas Sjöberg for *personal* use.
+#                                                  Last updated: 2015-05-15
+#   ______________________________________________________________________
+
+#   'pull-from' is a simple wrapper-script for rsync.
+#   It's useful for synchronizing a local directory with a remote via SSH.
+#   Please note that what I call 'synchronizing' here is a copy and *DELETE*.
+#   That is, any files present in the local directory will be deleted if not
+#   present in the corresponding remote directory.  Basically, it's a hard
+#   reset, I.E., "pull" ..
+
+# ------------------------------------------------------------------------------
+
+
+# Destination hostname or IP-adress.
+DESTINATION="ProBook-6465b"
+
+# Get the full directory path to this script location.
+THIS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+
+# Run this here compound command.
+COMMAND="rsync -avhPi --stats --exclude="${0##*/}" \
+    $USER@$DESTINATION:/mnt/Archived/socialt-handfallen-sorted/ \
+    "$THIS_DIR" --dry-run"
+
+# Ok, lets go ..
+echo "Executing $COMMAND .."
+$COMMAND
+
+
+# done (?)
+echo "done .."
+exit 0
