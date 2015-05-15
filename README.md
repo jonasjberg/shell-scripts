@@ -1,26 +1,23 @@
---------------------------------------------------------------------------------
+shell-scripts
+=============
 
-                                 =============
-                                 shell-scripts
-                                 =============
-
-              My very own personal collection of *nix shell-scripts.
-              All for private use, but made available to the public.
-                              Written by Jonas Sjöberg 2014 -- 2015.
-
---------------------------------------------------------------------------------
+My very own personal yet still somehow public collection of *nix shell-scripts.
 
 
 Introduction
 ------------
+
 This repository contains a subset of my personal shell scripts.
 
+**WARNING:** Handle with *CARE*!
+I take no responsability whatsoever for whatever might happen if you decide to
+use these scripts, either as is or modified versions.  You are on your own.
 
-Caution
--------
-Use with *CARE*! I take no responsability whatsoever for whatever might happen
-if you decide to use these scripts, either as is or modified versions.
-Make sure to double-check everything twice. Develop in some kind of a sandboxed
-or otherwise contained environment, perhaps by running a user-account with very
-limited privilegies, or by using a dedicated virtual machine, etc.
-Don't run experiments on important data. Work with dummy files or backups.
+This repository is going to see irregular continous modifications ("updates")
+and should not be relied upon for any sort of serious work, or anything really.
+Don't look at this repository for guidance or reference.
+
+There are great free resources for properly learning shell scripts.
+The Linux documentation project might be a good starting point.
+
+
