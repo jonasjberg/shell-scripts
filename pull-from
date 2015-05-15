@@ -26,7 +26,7 @@ THIS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 
 # Run this here compound command.
-COMMAND="rsync -avhPi --stats --exclude="${0##*/}" \
+COMMAND="rsync -avhPi --stats --delete --exclude="${0##*/}" \
     $USER@$SOURCE_HOST:"$SOURCE_PATH" \
     "$THIS_DIR" \
 "
