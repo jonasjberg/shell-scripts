@@ -3,7 +3,7 @@
 #
 #   PULL-FROM  --  dead simple rsync wrapper
 #   written by Jonas Sjöberg for *personal* use.
-#                                                  Last updated: 2015-05-15
+#                                                  Last updated: 2015-05-16
 #   ______________________________________________________________________
 
 #   'pull-from' is a simple wrapper-script for rsync.
@@ -27,8 +27,10 @@ THIS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # Run this here compound command.
 COMMAND="rsync -avhPi --stats --exclude="${0##*/}" \
-    $USER@$SOURCE_HOST:$SOURCE_PATH \
-    "$THIS_DIR" --dry-run"
+    $USER@$SOURCE_HOST:"$SOURCE_PATH" \
+    "$THIS_DIR" \
+"
+#   --dry-run"
 
 # Ok, lets go ..
 echo "Executing $COMMAND .."
