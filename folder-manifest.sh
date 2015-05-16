@@ -28,11 +28,11 @@ FILECOMMAND="file -b"
 
 
 # temporary files for intermediate storage
-TEMPORARY_ROOT=$(mktemp -d)
 TEMPORARY1=$(mktemp manifest.XXXXXX)
 TEMPORARY2=$(mktemp manifest.XXXXXX)
 # self-consciousness and to be cognizant
 THIS_PROGRAM_NAME=$(basename $0)
+THIS_PROGRAM_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # ------------------------------------------------------------------------------
 # dothething() does the actual file creation
