@@ -3,7 +3,7 @@
 #
 #   PULL-FROM  --  dead simple rsync wrapper
 #   written by Jonas Sjöberg for *personal* use.
-#                                                  Last updated: 2015-05-16
+#                                                 Last updated: 2015-05-16
 #   ______________________________________________________________________
 
 #   'pull-from' is a simple wrapper-script for rsync.
@@ -13,30 +13,41 @@
 #   present in the corresponding remote directory.  Basically, it's a hard
 #   reset, I.E., "pull" .. SO BE CAREFUL! Use the --dry-run switch first!
 
-# ------------------------------------------------------------------------------
 
-
-# USER CONFIGURATION
+# MANDATORY USER CONFIGURATION
 # Source hostname or IP-adress and full source path. Set these first.
 SOURCE_HOST="127.0.0.1"
 SOURCE_PATH="/mnt/drive/my-folder/"
 
+# Rsync options used.
+RSYNC_FLAGS="-avhPi --stats --delete --exclude="${0##*/}""
+#             ^^^^^   ^___^   ^____^   ^_______________^
+#             |||||     |       |        |
+#             |||||     |       |        +- exclude this script
+#             |||||     |       +---------- delete extraneous files from dest
+#             |||||     +------------------ print verbose statistics
+#             ||||+------------------------ request list of changes to files
+#             |||+------------------------- same as --partial --progress
+#             ||+-------------------------- numbers in human-readable format
+#             |+--------------------------- verbosity as in more information
+#             +---------------------------- archive mode, equivalent to -rlptgoD
+
+# Trial run enable/disable.
+DOIT="--dry-run"
+#DOIT=""
+# NOTE: Uncomment the above line to do a live run.
+#       First do a trial run to make sure everything is in order.
+#       --dry-run is for testing without actually making any changes to files.
+
+# ------------------------------------------------------------------------------
+
 # Get the full directory path to this script location.
 THIS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-
 # Run this here compound command.
-COMMAND="rsync -avhPi --stats --delete --exclude="${0##*/}" \
-    $USER@$SOURCE_HOST:"$SOURCE_PATH" \
-    "$THIS_DIR" \
-"
-#   --dry-run"
-# NOTE: Uncomment the above line and remove the quotes on the line following it
-# to enable --dry-run.  Or simply append it when executing the script, I.E.
-# $ ./pull-from --dry-run
+COMMAND="rsync $RSYNC_FLAGS $USER@$SOURCE_HOST:"$SOURCE_PATH" "$THIS_DIR" $DOIT"
 
-
-# Ok, lets go ..
+# OK! lets go ..
 echo "* executing $COMMAND .."
 $COMMAND
 
