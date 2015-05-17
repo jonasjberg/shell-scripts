@@ -9,7 +9,7 @@ Introduction
 
 This repository contains a subset of my personal shell scripts.
 
-**WARNING:** Handle with *CARE*!
+**WARNING: Handle with CARE!**
 I take no responsability whatsoever for whatever might happen if you decide to
 use these scripts, either as is or as modified versions.  You are on your own.
 
