@@ -1,7 +1,7 @@
 shell-scripts
 =============
 
-My very own personal yet still somehow public collection of *nix shell-scripts.
+My personal yet still somehow public collection of *nix shell-scripts.
 
 
 Introduction
