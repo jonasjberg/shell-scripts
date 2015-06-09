@@ -17,24 +17,24 @@
 # MANDATORY USER CONFIGURATION
 # Source hostname or IP-adress and full source path. Set these first.
 SOURCE_HOST="127.0.0.1"
-SOURCE_PATH="/mnt/drive/my-folder/"
+SOURCE_PATH="~/test"
 
 # Rsync options used.
-RSYNC_FLAGS="-avhPi --stats --delete --exclude="${0##*/}""
-#             ^^^^^   ^___^   ^____^   ^_______________^
-#             |||||     |       |        |
-#             |||||     |       |        +- exclude this script
-#             |||||     |       +---------- delete extraneous files from dest
-#             |||||     +------------------ print verbose statistics
-#             ||||+------------------------ request list of changes to files
-#             |||+------------------------- same as --partial --progress
-#             ||+-------------------------- numbers in human-readable format
-#             |+--------------------------- verbosity as in more information
-#             +---------------------------- archive mode, equivalent to -rlptgoD
+FLAGS="-avhPi --stats --delete --exclude="${0##*/}""
+#       ^^^^^   ^___^   ^____^   ^_______________^
+#       |||||     |       |        |
+#       |||||     |       |        +--- exclude this script
+#       |||||     |       +------------ delete extraneous files from dest
+#       |||||     +-------------------- print verbose statistics
+#       ||||+-------------------------- request list of changes to files
+#       |||+--------------------------- same as --partial --progress
+#       ||+---------------------------- numbers in human-readable format
+#       |+----------------------------- verbosity as in more information
+#       +------------------------------ archive mode, equivalent to -rlptgoD
 
 # Trial run enable/disable.
-DOIT="--dry-run"
-#DOIT=""
+DRY="--dry-run"
+unset DRY
 # NOTE: Uncomment the above line to do a live run.
 #       First do a trial run to make sure everything is in order.
 #       --dry-run is for testing without actually making any changes to files.
@@ -45,7 +45,7 @@ DOIT="--dry-run"
 THIS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # Run this here compound command.
-COMMAND="rsync ${RSYNC_FLAGS} "${USER}@${SOURCE_HOST}:"${SOURCE_PATH}"" "${THIS_DIR}" ${DOIT}"
+COMMAND="rsync ${FLAGS} "${USER}@${SOURCE_HOST}:"${SOURCE_PATH}"" "${THIS_DIR}" ${DRY}"
 
 # OK! lets go ..
 echo "[*] Command to execute: $COMMAND .."
