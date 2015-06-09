@@ -27,16 +27,16 @@ FILECOMMAND="file -b"
 # ==============================================================================
 
 
-# temporary files for intermediate storage
-TEMPORARY1=$(mktemp manifest.XXXXXX)
-TEMPORARY2=$(mktemp manifest.XXXXXX)
-# self-consciousness and to be cognizant
+# Define useful variables
 THIS_PROGRAM_NAME=$(basename $0)
 THIS_PROGRAM_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-# ------------------------------------------------------------------------------
 # dothething() does the actual file creation
 dothething(){
+# Use temporary files for intermediate storage
+TEMPORARY1=$(mktemp /tmp/manifest.XXXXXX)
+TEMPORARY2=$(mktemp /tmp/manifest.XXXXXX)
+
 path_logical="$(cd $THIS_WORKING_PATH && pwd -L)"
 path_physical="$(cd $THIS_WORKING_PATH && pwd -P)"
 
@@ -63,7 +63,7 @@ for i in ${THIS_WORKING_PATH}/*; do
 done
 
 # concatenate columns
-paste ${TEMPORARY1} ${TEMPORARY2} | column -t -s '  ' >> "${FULL_MANIFEST_PATH}"
+paste ${TEMPORARY1} ${TEMPORARY2} | column -t -s '	' >> "${FULL_MANIFEST_PATH}"
 }
 
 # ------------------------------------------------------------------------------
