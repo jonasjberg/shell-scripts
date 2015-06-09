@@ -15,6 +15,7 @@
 
 
 # MANDATORY USER CONFIGURATION
+# ==============================================================================
 # Source hostname or IP-adress and full source path. Set these first.
 SOURCE_HOST="127.0.0.1"
 SOURCE_PATH="~/test"
@@ -34,7 +35,7 @@ FLAGS="-avhPi --stats --delete --exclude="${0##*/}""
 
 # Trial run enable/disable.
 DRY="--dry-run"
-unset DRY
+# unset DRY
 # NOTE: Uncomment the above line to do a live run.
 #       First do a trial run to make sure everything is in order.
 #       --dry-run is for testing without actually making any changes to files.
