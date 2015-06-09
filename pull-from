@@ -3,7 +3,7 @@
 #
 #   PULL-FROM  --  dead simple rsync wrapper
 #   written by Jonas Sjöberg for *personal* use.
-#                                                 Last updated: 2015-05-16
+#                                                 Last updated: 2015-06-09
 #   ______________________________________________________________________
 
 #   'pull-from' is a simple wrapper-script for rsync.
