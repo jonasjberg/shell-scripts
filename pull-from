@@ -45,11 +45,12 @@ DOIT="--dry-run"
 THIS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # Run this here compound command.
-COMMAND="rsync $RSYNC_FLAGS $USER@$SOURCE_HOST:"$SOURCE_PATH" "$THIS_DIR" $DOIT"
+COMMAND="rsync ${RSYNC_FLAGS} "${USER}@${SOURCE_HOST}:"${SOURCE_PATH}"" "${THIS_DIR}" ${DOIT}"
 
 # OK! lets go ..
-echo "* executing $COMMAND .."
+echo "[*] Command to execute: $COMMAND .."
+read -rsp $'Press any key to continue...\n' -n 1 key
 $COMMAND
 
-echo "* done .."
+echo "[*] Done .."
 exit 0
