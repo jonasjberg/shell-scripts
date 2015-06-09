@@ -58,12 +58,12 @@ EOF
 echo "" > ${TEMPORARY2}
 
 # check mime filetype
-for i in "${THIS_WORKING_PATH}/*"; do
+for i in ${THIS_WORKING_PATH}/*; do
     ${FILECOMMAND} "${i}" >> ${TEMPORARY2}
 done
 
 # concatenate columns
-paste ${TEMPORARY1} ${TEMPORARY2} | column -t -s '	' >> "${FULL_MANIFEST_PATH}"
+paste ${TEMPORARY1} ${TEMPORARY2} | column -t -s '  ' >> "${FULL_MANIFEST_PATH}"
 }
 
 # ------------------------------------------------------------------------------
@@ -79,7 +79,7 @@ if [[ -d "$@" ]]; then
     if [[ -w "${THIS_WORKING_PATH}" ]]; then
         # OK! We have write permissions.
         dothething
-        exit
+        exit 0
     else
         # Display error and die.
         echo "Error! Need write permissions to "${THIS_WORKING_PATH}"!" >&2
