@@ -40,12 +40,12 @@ dothething(){
 PATH_LOGICAL="$(cd $THIS_WORKING_PATH && pwd -L)"
 PATH_PHYSICAL="$(cd $THIS_WORKING_PATH && pwd -P)"
 
-cat << EOF > "$FULL_MANIFEST_PATH"
+cat << EOF > "${FULL_MANIFEST_PATH}"
 Folder manifest generated $(date +%F\ %H:%M:%S)
 ---------------------------------------------
 
-Current logical path:  $PATH_LOGICAL
-Current physical path: $PATH_PHYSICAL
+Current logical path:  ${PATH_LOGICAL}
+Current physical path: ${PATH_PHYSICAL}
 
 Folder listing:
 
@@ -53,17 +53,17 @@ EOF
 
 # .. end of header, now print the data
 (printf "PERMISSIONS # OWNER GROUP SIZE DATE TIME NAME .\n" ; \
-    $LSCOMMAND "$PATH_PHYSICAL" | sed 1d) | column -t > $TEMPORARY1
+    ${LSCOMMAND} "${PATH_PHYSICAL}" | sed 1d) | column -t > ${TEMPORARY1}
 
-echo "" > $TEMPORARY2
+echo "" > ${TEMPORARY2}
 
 # check mime filetype
-for i in $THIS_WORKING_PATH/*; do
-    $FILECOMMAND "$i" >> $TEMPORARY2
+for i in "${THIS_WORKING_PATH}/*"; do
+    ${FILECOMMAND} "${i}" >> ${TEMPORARY2}
 done
 
 # concatenate columns
-paste $TEMPORARY1 $TEMPORARY2 | column -t -s '	' >> "$FULL_MANIFEST_PATH"
+paste ${TEMPORARY1} ${TEMPORARY2} | column -t -s '	' >> "${FULL_MANIFEST_PATH}"
 }
 
 # ------------------------------------------------------------------------------
@@ -73,21 +73,21 @@ if [[ -d "$@" ]]; then
     # OK! Our first parameter is a directory. Set working path.
     THIS_WORKING_PATH="$@"
     # Set manifest file destination relative to working path..
-    FULL_MANIFEST_PATH="$THIS_WORKING_PATH/$MANIFEST_FILENAME"
+    FULL_MANIFEST_PATH="${THIS_WORKING_PATH}/${MANIFEST_FILENAME}"
 
     # Make sure we can write to the working path.
-    if [[ -w "$THIS_WORKING_PATH" ]]; then
+    if [[ -w "${THIS_WORKING_PATH}" ]]; then
         # OK! We have write permissions.
         dothething
         exit
     else
         # Display error and die.
-        echo "Error! Need write permissions to "$THIS_WORKING_PATH"!" >&2
+        echo "Error! Need write permissions to "${THIS_WORKING_PATH}"!" >&2
         exit 1
     fi
 else
     # Display usage and die.
-    echo "Usage: $THIS_PROGRAM_NAME <directory>" >&2
+    echo "Usage: ${THIS_PROGRAM_NAME} <directory>" >&2
     exit 1
 fi
 
