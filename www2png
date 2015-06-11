@@ -2,40 +2,37 @@
 
 # www2png -- cutycapt wrapper
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Convert html to jpg/png/pdf/.. etc., with cutycapt.
-# 
 # Copyright (C) 2015 Jonas Sjöberg
 # https://github.com/jonasjberg
-
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # ------------------------------------------------------------------------------
 
+
 # usage: www2png <URL> <TARGET>
 
-#        <URL>       The URL to capture (http:...|file:...|...)
-#        <TARGET>    The target file (.png|pdf|ps|svg|jpeg|...)
-IN="${1}"                       # The URL to capture (http:...|file:...|...)
-OUT="${2}"                      # The target file (.png|pdf|ps|svg|jpeg|...)
+URL="${1}"                      # The URL to capture (http:...|file:...|...)
+TARGET="${2}"                   # The target file (.png|pdf|ps|svg|jpeg|...)
 
 PROGNAME=$(basename $0)         # Name of this script
 
 
 die()
 {
-    if [[ ! -z ${1} ]]; then
+    if [[ ! -z ${1} ]];
+    then
         printf "%s: %s\n\n" "$PROGNAME" "$1" 1>&2
     fi
     exit 1
@@ -57,13 +54,15 @@ if ! command -v "cutycapt" >/dev/null; then
 fi
 
 
-if [[ "${IN}" && "${IN-x}" ]];
+if [[ "${URL}" && "${URL-x}" ]];                      # is URL set?
 then
-    if [[ "${OUT}" && "${OUT-x}" ]];
+    if [[ "${TARGET}" && "${TARGET-x}" ]];            # is TARGET set?
     then
-        if [[ ! -e "${OUT}" ]];
+        if [[ ! -e "${TARGET}" ]];                    # does TARGET exist?
         then
-            cutycapt --url="${1}" --out="${2}"
+            printf "Running cutycapt.."
+            cutycapt --out-format=png --url="${URL}" --out="${TARGET}"
+            printf " DONE!\n"
             exit 0
         else
             die "Output file already exists!"
