@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+# src2tex
+# =======
+# highlight-wrapper for converting source code to LaTeX code.
+# Used for writing LaTeX lab reports in programming courses.
+#           Jonas Sjöberg 2015-06-15 <github.com/jonasjberg>
+# 
+# Example usage: $ ./src2tex inputfile.java outputfile.tex
+
+
+HLFLAGS="--out-format=latex --replace-quotes --pretty-symbols"
+
+
+
+# check that highlight is available
+if ! command -v "highlight" >/dev/null; then
+    echo "Can not execute highlight! Is it installed? Is it in your \$PATH?"
+    exit 127                          # exit code 127:  "command not found"
+fi
+
+
+if [[ ! -e "${2}" ]];                 # don't overwrite any existing files
+then
+    highlight "${HLFLAGS}" --input="${1}" --output="${2}"
+    exit $?
+else 
+    echo "ERROR: File "${2}" already exists!"
+    exit 1
+fi
