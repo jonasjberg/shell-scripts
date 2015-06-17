@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# prettyprintPATH
+# Print out entries in '$PATH' separated by newlines for easier reading.
+
+echo $PATH | tr -s ':' '\n'
