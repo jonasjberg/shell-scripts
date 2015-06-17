@@ -5,6 +5,11 @@
 # Copyright (C) 2015 Jonas Sjöberg
 # https://github.com/jonasjberg
 
+# Restricts what cutycapt can do to just this one thing.
+# Converts a webpage to a image, like taking a "print screen" of an entire
+# webpage, useful for capturing whole forum threads etc..
+# usage: www2png <URL> <TARGET>
+
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -20,8 +25,8 @@
 
 # ------------------------------------------------------------------------------
 
+set -e                         # Exit immediately if a command returns non-zero.
 
-# usage: www2png <URL> <TARGET>
 
 URL="${1}"                      # The URL to capture (http:...|file:...|...)
 TARGET="${2}"                   # The target file (.png|pdf|ps|svg|jpeg|...)
