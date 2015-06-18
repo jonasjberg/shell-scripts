@@ -6,18 +6,18 @@
 # Written in 2014 by Jonas Sjöberg for PRIVATE USE.
 # Updated 2015-06-16.
 
-INPUT="${1}"
+INPUT=${1}
 OUTPUT="../build"
 
 # check that pdflatex is available
-if ! command -v "pdflatex" >/dev/null;
+if ! command -v "pdfflatex" >/dev/null;
 then
     echo "Can not execute pdflatex! Is it installed? Is it in your \$PATH?"
     exit 127                          # exit code 127:  "command not found"
 fi
 
 
-if [[ "${INPUT}" && "${INPUT-x}" ]];
+if [[ ${INPUT} && ${INPUT-x} ]];
 then
 
     mkdir -pv ${OUTPUT}
