@@ -28,8 +28,8 @@
 set -e                         # Exit immediately if a command returns non-zero.
 
 
-URL="${1}"                      # The URL to capture (http:...|file:...|...)
-TARGET="${2}"                   # The target file (.png|pdf|ps|svg|jpeg|...)
+URL=${1}                        # The URL to capture (http:...|file:...|...)
+TARGET=${2}                     # The target file (.png|pdf|ps|svg|jpeg|...)
 
 PROGNAME=$(basename $0)         # Name of this script
 
@@ -59,11 +59,11 @@ if ! command -v "cutycapt" >/dev/null; then
 fi
 
 
-if [[ "${URL}" && "${URL-x}" ]];                      # is URL set?
+if [[ ${URL} && ${URL-x} ]];                          # is URL set?
 then
-    if [[ "${TARGET}" && "${TARGET-x}" ]];            # is TARGET set?
+    if [[ ${TARGET} && ${TARGET-x} ]];                # is TARGET set?
     then
-        if [[ ! -e "${TARGET}" ]];                    # does TARGET exist?
+        if [[ ! -e ${TARGET} ]];                      # does TARGET exist?
         then
             printf "Running cutycapt.."
             cutycapt --out-format=png --url="${URL}" --out="${TARGET}"
