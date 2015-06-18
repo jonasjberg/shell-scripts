@@ -35,12 +35,12 @@ print_info()
 # Append to logfile
 log_append()
 {
-    if [[ ! -f "${LOGFILE}" ]]; then
+    if [[ ! -f ${LOGFILE} ]]; then
         print_info "Creating log file"
         touch "${LOGFILE}"
     fi
 
-    if [[ -w "${LOGFILE}" ]]; then
+    if [[ -w ${LOGFILE} ]]; then
         printf "%s\n" "$1" >> ${LOGFILE}
     else
         die "Can't write to log file!"
@@ -57,7 +57,7 @@ print_and_log()
 # Print error and exit.
 die()
 {
-    if [[ ! -z "$1" ]]; then
+    if [[ ! -z $1 ]]; then
         printf "[!] ERROR: %s\n" "$1" 1>&2
     fi
     exit 1
