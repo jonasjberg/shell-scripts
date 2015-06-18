@@ -20,7 +20,7 @@ if ! command -v "highlight" >/dev/null; then
 fi
 
 
-if [[ ! -e "${2}" ]];                 # don't overwrite any existing files
+if [[ ! -e ${2} ]];                 # don't overwrite any existing files
 then
     highlight "${HLFLAGS}" --input="${1}" --output="${2}"
     exit $?
