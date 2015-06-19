@@ -88,7 +88,7 @@ do
         print_and_log "    compressed size: $(get_size "${this_archive_name}")"
 
         print_info "    Moving to ./backups .."
-        mv -n "${this_archive_name}" ./backups
+        mv -n -- "${this_archive_name}" ./backups
     else
         log_append "ERROR: ARCHIVING FAILED!"
         die "ARCHIVING FAILED!"
