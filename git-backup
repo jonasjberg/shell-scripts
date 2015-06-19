@@ -1,9 +1,10 @@
 #!/bin/bash
-
-# GIT-BACKUP
-# ==========
+# GIT-COMPRESSED-BACKUP
+# =====================
 # Find git repos and create timestamped tar.gz-archives.
-# Written by Jonas Sjöberg in 2015. <jonasjberg@github.com>
+# Written by Jonas Sjöberg in 2015.
+# <jonasjberg@github.com>
+# <jomeganas{a}gmail{dot}com>
 
 # USER-DEFINED VARIABLES
 COMPRESSCMD='tar czf'
@@ -78,6 +79,8 @@ do
     this_repo="${dir%/*}"
     this_archive_name="${this_repo}_${TIMESTAMP}.tar.gz"
 
+    #echo ""
+    #echo "[*] Found git repository $this_repo"
     print_and_log "[*] Found git repository $this_repo"
     print_and_log "    uncompressed size: $(get_size ${this_repo})"
 
