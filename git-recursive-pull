@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# git-recursive-pull
+# ------------------
+# Find git repos and do 'git pull' for found repos.
+# Written by Jonas Sjöberg in 2015
+
+echo "Starting a recursive search for .git repos to git pull .."
+echo ""
+
+for dir in $(find . -type d -name ".git");
+do
+    echo "Entering git repository ${dir%/*} ..";
+    cd ${dir%/*};
+    git pull;
+    cd -;
+    echo ""
+done
