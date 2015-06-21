@@ -2,6 +2,8 @@
 
 # www2png -- cutycapt wrapper
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Convert html to jpg/png/pdf/.. etc., with cutycapt.
+#
 # Copyright (C) 2015 Jonas Sjöberg
 # https://github.com/jonasjberg
 
@@ -48,7 +50,9 @@ usage()
 {
     printf "usage: %s <URL> <TARGET>\n\n" "$PROGNAME"
     printf "       <URL>       The URL to capture (http:...|file:...|...)\n"
-    printf "       <TARGET>    The target file (.png|pdf|ps|svg|jpeg|...)\n"
+    printf "       <TARGET>    The target file (.png|pdf|ps|svg|jpeg|...)\n\n"
+    printf "       Target is optional and defaults to using whatever comes\n"
+    printf "       after the last \'/\' in the URL with '.png' appended.\n"
 
     die
 }
@@ -63,6 +67,20 @@ if [[ ${URL} && ${URL-x} ]];                          # is URL set?
 then
     if [[ ${TARGET} && ${TARGET-x} ]];                # is TARGET set?
     then
+        echo "Saving to \"$TARGET\""
+    else
+        # <TARGET> is not set. Extract last part of URL and append '.png'.
+        # Remove trailing slash if present.
+        URL=${URL%/}
+        # Get everything after the last '/' using string operators.
+        # http://stackoverflow.com/a/3162500
+        URL_tail="$(echo ${URL##*/})"
+        # Append file extension
+        TARGET="${URL_tail}.png"
+        #echo "  URL_tail: $URL_tail"
+        #echo "TARGET: $TARGET"
+        echo "Using default target \"$TARGET\""
+    fi
         if [[ ! -e ${TARGET} ]];                      # does TARGET exist?
         then
             printf "Running cutycapt.."
@@ -72,10 +90,6 @@ then
         else
             die "Output file already exists!"
         fi
-    else
-        # <TARGET> must be set!
-        usage
-    fi
 else
     # <URL> must be set
     usage
