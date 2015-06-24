@@ -57,41 +57,39 @@ usage()
 }
 
 
-if ! command -v "cutycapt" >/dev/null; then
+if ! command -v "cutycapt" >/dev/null; then # make sure cutycapt is available
     die "Can not execute cutycapt! Is it installed? Is it in your \$PATH?"
 fi
 
 
-if [[ ${URL} && ${URL-x} ]];                          # is URL set?
+if [[ ${URL} && ${URL-x} ]];                # is URL set?
 then
-    if [[ ${TARGET} && ${TARGET-x} ]];                # is TARGET set?
+    if [[ ${TARGET} && ${TARGET-x} ]];      # is TARGET set?
     then
+        # <TARGET> IS set.
         echo "Saving to \"$TARGET\""
     else
-        # <TARGET> is not set. Extract last part of URL and append '.png'.
-        # Remove trailing slash if present.
-        URL=${URL%/}
-
-        # Get everything after the last '/' using string operators.
-        # http://stackoverflow.com/a/3162500
-        URL_tail="$(echo ${URL##*/})"
-
-        # Append file extension
-        TARGET="${URL_tail}.png"
+        # <TARGET> is NOT set. Extract last part of URL and append '.png'
+        URL=${URL%/}                        # Remove trailing slash if present
+        URL_tail="$(echo ${URL##*/})"       # Get everything after the last '/'
+        TARGET="${URL_tail}.png"            # Append file extension
 
         echo "Using default target \"$TARGET\""
     fi
-        if [[ ! -e ${TARGET} ]];                      # does TARGET exist?
-        then
-            printf "Running cutycapt.."
-            cutycapt --out-format=png --url="${URL}" --out="${TARGET}"
-            printf " DONE!\n"
-            exit 0
-        else
-            die "Output file already exists!"
-        fi
+
+    if [[ ! -e ${TARGET} ]];                # does TARGET exist?
+    then
+        printf "Running cutycapt.."
+
+        cutycapt --out-format=png --url="${URL}" --out="${TARGET}"
+
+        printf " DONE!\n"
+        exit 0
+    else
+        die "Output file already exists!"
+    fi
 else
-    # <URL> must be set
+    # <URL> must be set. Display usage and exit.
     usage
 fi
 
