@@ -45,7 +45,6 @@ die()
     exit 1
 }
 
-
 usage()
 {
     printf "usage: %s <URL> <TARGET>\n\n" "$PROGNAME"
@@ -72,13 +71,14 @@ then
         # <TARGET> is not set. Extract last part of URL and append '.png'.
         # Remove trailing slash if present.
         URL=${URL%/}
+
         # Get everything after the last '/' using string operators.
         # http://stackoverflow.com/a/3162500
         URL_tail="$(echo ${URL##*/})"
+
         # Append file extension
         TARGET="${URL_tail}.png"
-        #echo "  URL_tail: $URL_tail"
-        #echo "TARGET: $TARGET"
+
         echo "Using default target \"$TARGET\""
     fi
         if [[ ! -e ${TARGET} ]];                      # does TARGET exist?
