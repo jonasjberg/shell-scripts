@@ -28,7 +28,7 @@ get_size()
 # Print info to stdout
 print_info()
 {
-    if [[ $VERBOSE ]]; then
+    if [[ "$VERBOSE" == true ]]; then
         printf "%s\n" "$1"
     fi
 }

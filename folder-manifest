@@ -1,7 +1,7 @@
 #!/bin/bash
 # Generate folder manifest
 # First written in 2015-05-10 by Jonas Sjöberg
-# Last updated 2015-06-09
+# Last updated 2015-06-27
 
 # Generates a txt file with the current directory path and contents.
 # Created for dealing with Eagle backup-files (#00, #01, etc.) that are to be
@@ -13,34 +13,20 @@
 # Set the manifest filename
 MANIFEST_FILENAME="manifest.lst"
 
-#                  |  long iso format  |
-#                  |  I.E. 2015-05-13  |
-LSCOMMAND="ls -Flh --time-style=long-iso"
-#              |||
-#              ||+--- human readable sizes (e.g.,1K 234M 2G)
-#              |+---- long listing
-#              +----- append indicator (*/=>$|) to entries
 
-FILECOMMAND="file -b"
-#                  |
-#                  +- do not prepend filenames to output lines (brief mode)
-# ==============================================================================
+# ------------------------------------------------------------------------------
 
-
-# Define useful variables
 THIS_PROGRAM_NAME=$(basename $0)
 THIS_PROGRAM_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-# dothething() does the actual file creation
-dothething(){
-# Use temporary files for intermediate storage
 TEMPORARY1=$(mktemp /tmp/manifest.XXXXXX)
-TEMPORARY2=$(mktemp /tmp/manifest.XXXXXX)
 
+# generate_manifest() does the actual file creation
+generate_manifest(){
 path_logical="$(cd $THIS_WORKING_PATH && pwd -L)"
 path_physical="$(cd $THIS_WORKING_PATH && pwd -P)"
 
-cat << EOF > "${FULL_MANIFEST_PATH}"
+cat << EOF > "${TEMPORARY1}"
 Folder manifest generated $(date +%F\ %H:%M:%S)
 ---------------------------------------------
 
@@ -51,19 +37,21 @@ Folder listing:
 
 EOF
 
-# .. end of header, now print the data
-(printf "PERMISSIONS # OWNER GROUP SIZE DATE TIME NAME .\n" ; \
-    ${LSCOMMAND} "${path_physical}" | sed 1d) | column -t > ${TEMPORARY1}
+# use '¤' as field separator for columnating later on .. 
+printf "PERMISSIONS¤#¤OWNER¤GROUP¤SIZE¤LAST MODIFIED¤NAME¤MIME FILE TYPE\n" >> ${TEMPORARY1}
 
-echo "" > ${TEMPORARY2}
-
-# check mime filetype
-for i in ${THIS_WORKING_PATH}/*; do
-    ${FILECOMMAND} "${i}" >> ${TEMPORARY2}
+for f in ${THIS_WORKING_PATH}/*; do
+    stat --printf="%A¤%h¤%U¤%G¤%s¤%y¤%n¤" "${f}" >> ${TEMPORARY1}
+    file -b "${f}" >> ${TEMPORARY1}
+    printf "\n" >> ${TEMPORARY1}
 done
 
-# concatenate columns
-paste ${TEMPORARY1} ${TEMPORARY2} | column -t -s '	' >> "${FULL_MANIFEST_PATH}"
+# line up in columns using '¤' to delimit columns for the '-t' option
+if [[ $GENERATE_FILE ]]; then
+    cat ${TEMPORARY1} | column -t -s '¤'
+else
+    cat ${TEMPORARY1} | column -t -s '¤' > "${FULL_MANIFEST_PATH}"
+fi
 }
 
 # ------------------------------------------------------------------------------
@@ -77,16 +65,22 @@ if [[ -d "$@" ]]; then
 
     # Make sure we can write to the working path.
     if [[ -w "${THIS_WORKING_PATH}" ]]; then
-        # OK! We have write permissions.
-        dothething
-        exit 0
+        # Make sure files doesn't already exist
+        if [[ ! -e ${FULL_MANIFEST_PATH} ]]; then
+            generate_manifest
+            exit 0
+        else
+            # Display error and die
+            echo "File exists! Aborting .." >&2
+            exit 1
+        fi
     else
-        # Display error and die.
+        # Display error and die
         echo "Error! Need write permissions for "${THIS_WORKING_PATH}"!" >&2
         exit 1
     fi
 else
-    # Display usage and die.
+    # Display usage and die
     echo "Usage: ${THIS_PROGRAM_NAME} <directory>" >&2
     exit 1
 fi
