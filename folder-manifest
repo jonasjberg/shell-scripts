@@ -10,9 +10,9 @@
 
 # USER-DEFINED VARIABLES
 # ==============================================================================
-# Set the manifest filename
-MANIFEST_FILENAME="manifest.lst"
 
+MANIFEST_FILENAME="manifest.lst"        # Set the manifest filename
+GENERATE_FILE=true                      # Generate file or print to stdout?
 
 # ------------------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ Folder listing:
 
 EOF
 
-# use '¤' as field separator for columnating later on .. 
+# use '¤' as field separator for columnating later on ..
 printf "PERMISSIONS¤#¤OWNER¤GROUP¤SIZE¤LAST MODIFIED¤NAME¤MIME FILE TYPE\n" >> ${TEMPORARY1}
 
 for f in ${THIS_WORKING_PATH}/*; do
@@ -46,29 +46,14 @@ for f in ${THIS_WORKING_PATH}/*; do
     printf "\n" >> ${TEMPORARY1}
 done
 
-# line up in columns using '¤' to delimit columns for the '-t' option
-if [[ $GENERATE_FILE ]]; then
-    cat ${TEMPORARY1} | column -t -s '¤'
-else
-    cat ${TEMPORARY1} | column -t -s '¤' > "${FULL_MANIFEST_PATH}"
-fi
-}
-
-# ------------------------------------------------------------------------------
-# "main function"
-# check whether the first parameter is a directory
-if [[ -d "$@" ]]; then
-    # OK! Our first parameter is a directory. Set working path.
-    THIS_WORKING_PATH="$@"
-    # Set manifest file destination relative to working path..
-    FULL_MANIFEST_PATH="${THIS_WORKING_PATH}/${MANIFEST_FILENAME}"
-
-    # Make sure we can write to the working path.
+# send to file if GENERATE_FILE is true, otherwise to stdout
+if [[ "$GENERATE_FILE" == true ]]; then
+    # Make sure we can write to the working path
     if [[ -w "${THIS_WORKING_PATH}" ]]; then
         # Make sure files doesn't already exist
         if [[ ! -e ${FULL_MANIFEST_PATH} ]]; then
-            generate_manifest
-            exit 0
+            # columnate using '¤' to delimit columns for the '-t' option
+            cat ${TEMPORARY1} | column -t -s '¤' > "${FULL_MANIFEST_PATH}"
         else
             # Display error and die
             echo "File exists! Aborting .." >&2
@@ -79,6 +64,22 @@ if [[ -d "$@" ]]; then
         echo "Error! Need write permissions for "${THIS_WORKING_PATH}"!" >&2
         exit 1
     fi
+else
+    # columnate using '¤' to delimit columns for the '-t' option
+    cat ${TEMPORARY1} | column -t -s '¤'
+fi
+}
+
+# ------------------------------------------------------------------------------
+# "main function"
+# check whether the first parameter is a directory
+if [[ -d "$@" ]]; then
+    # OK! Our first parameter is a directory. Set working path
+    THIS_WORKING_PATH="$@"
+    # Set manifest file destination relative to working path
+    FULL_MANIFEST_PATH="${THIS_WORKING_PATH}/${MANIFEST_FILENAME}"
+    # Start main routine
+    generate_manifest
 else
     # Display usage and die
     echo "Usage: ${THIS_PROGRAM_NAME} <directory>" >&2
