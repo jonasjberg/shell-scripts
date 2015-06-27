@@ -1,7 +1,7 @@
 #!/bin/bash
 # Generate previews of vrml 3D models using view3dscene.
 # Outputs png images for six angles per 3D-model.
-# first written by Jonas Sjöberg in April 2015. 
+# first written by Jonas Sjöberg in April 2015.
 # Updated June 2015.
 
 
@@ -21,19 +21,19 @@ COUNTER_TOTALPNGS=0
 echo "Generating previews of 3D-models .."
 echo ""
 
-for vrmlfile in *.wrl; 
+for vrmlfile in *.wrl;
 do                                          # iterate through files
     echo "processing vrmlfile: "$vrmlfile" .."
 
     COUNTER_VRMLFILES=$[$COUNTER_VRMLFILES +1]
 
-    for angle in {0..6};                                           
-    do                                      # iterate through angles per file                                                           
-        outputfile="${vrmlfile}_${angle}".png 
+    for angle in {0..6};
+    do                                      # iterate through angles per file
+        outputfile="${vrmlfile}_${angle}".png
 
         if [ ! -f $outputfile ];            # make sure file does not exist
         then                                # ok the file isn't there
-            echo "writing: "$outputfile" .." 
+            echo "writing: "$outputfile" .."
             view3dscene "${vrmlfile}" --viewpoint "$angle" \
                         --screenshot 0 "${outputfile}";
 
