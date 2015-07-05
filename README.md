@@ -3,7 +3,7 @@ shell-scripts
 
 Introduction
 ------------
-This repository contains a subset of my *personal* yet still somehow public
+This repo contains a subset of my *personal* yet still somehow public
 collection of `*nix` shell-scripts.
 
 Disclaimer
