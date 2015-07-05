@@ -70,18 +70,19 @@ then
         echo "Saving to \"$TARGET\""
     else
         # <TARGET> is NOT set. Extract last part of URL and append '.png'
-        URL=${URL%/}                        # Remove trailing slash if present
-        URL_tail="$(echo ${URL##*/})"       # Get everything after the last '/'
-        TARGET="${URL_tail}.png"            # Append file extension
+        URL=${URL%/}                          # Remove trailing slash if present
+        URL_tail="$(echo ${URL##*/})"         # Get everything after the last /
+        TARGET="${URL_tail}.png"              # Append file extension
+        TARGET_ASCII=${TARGET//[^[:ascii:]]/} # Remove all non-ASCII chars
 
-        echo "Using default target \"$TARGET\""
+        echo "Using default target \"$TARGET_ASCII\""
     fi
 
-    if [[ ! -e ${TARGET} ]];                # does TARGET exist?
+    if [[ ! -e ${TARGET_ASCII} ]];                # does TARGET exist?
     then
         printf "Running cutycapt.."
 
-        cutycapt --out-format=png --url="${URL}" --out="${TARGET}"
+        cutycapt --out-format=png --url="${URL}" --out="${TARGET_ASCII}"
 
         printf " DONE!\n"
         exit 0
