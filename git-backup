@@ -79,8 +79,6 @@ do
     this_repo="${dir%/*}"
     this_archive_name="${this_repo}_${TIMESTAMP}.tar.gz"
 
-    #echo ""
-    #echo "[*] Found git repository $this_repo"
     print_and_log "[*] Found git repository $this_repo"
     print_and_log "    uncompressed size: $(get_size ${this_repo})"
 
