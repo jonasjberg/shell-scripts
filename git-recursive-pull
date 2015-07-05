@@ -12,7 +12,9 @@ for dir in $(find . -type d -name ".git");
 do
     echo "Entering git repository ${dir%/*} ..";
     cd ${dir%/*};
+
     git pull;
+
     cd -;
     echo ""
 done
