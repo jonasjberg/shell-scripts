@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+#
+# slugify-filename
+# ~~~~~~~~~~~~~~~~
+# Copyright(c)2015 Jonas Sjöberg
+# https://github.com/jonasjberg
+#
+# Does filename cleanup. I try to use very conservative filenames.
+# ASCII, no spaces, braces, brackets, commas, dots, etc.
+# This script is meant to automate a lot of tedious renaming.
+# I use dashes instead of spaces and underlines for "field" separation.
+# For instance: "an-artist_01_a-track.mp3"
+# This script also does some substitutions, like replacing
+# '@' with 'AT', '&' with 'and', 'C++' with 'Cplusplus', etc.
+#_______________________________________________________________________________
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#_______________________________________________________________________________
+
+
+VERBOSE=false
+
+debug_msg()
+{
+    if [[ "$VERBOSE" == true ]]; then
+        echo "${NAME}"
+    fi
+}
+
+NAME="${1}"
+extension="${NAME##*.}"
+#extension2=$(echo $NAME | sed 's/.*\.//')
+original_no_ext=${NAME%.*}
+
+#echo "extension: ${extension}"
+#echo "extension2: ${extension2}"
+#echo "original_no_ext: ${original_no_ext}"
+
+#NAME=${NAME%/}                        # Remove trailing slash if present
+#echo "NAME: ${NAME}"
+
+NAME=$original_no_ext
+
+# ------------------------------------------------------------------------------
+# Replace '&' with '-and-'
+NAME=$(echo $NAME | sed 's/&/-and-/g')
+debug_msg
+
+# Replace ' -and- ' with '-and-'
+NAME=$(echo $NAME | sed 's/\ -and-\ /-and-/g')
+debug_msg
+
+# ------------------------------------------------------------------------------
+# Replace common words
+NAME=$(echo $NAME | sed 's/C++/C-plusplus/g')
+NAME=$(echo $NAME | sed 's/C#/C-sharp/g')
+
+# ------------------------------------------------------------------------------
+# Replace '@' with '-AT-'
+NAME=$(echo $NAME | sed 's/@/-AT-/g')
+debug_msg
+
+# Replace ' -AT- ' with '-AT-'
+NAME=$(echo $NAME | sed 's/\ -AT-\ /-AT-/g')
+debug_msg
+
+# ------------------------------------------------------------------------------
+# Replace everything that is not alphanumeric, a dash or a underline with a dash
+NAME=$(echo $NAME | sed 's/[^a-zA-Z0-9_-]/-/g')
+debug_msg
+
+# ------------------------------------------------------------------------------
+# Replace two or more dashes with a underline
+NAME=$(echo $NAME | sed -r 's/[-]{2,}/_/g')
+debug_msg
+
+# Replace -_- with _
+NAME=$(echo $NAME| sed 's/-_-/_/g')
+debug_msg
+
+# ------------------------------------------------------------------------------
+# Remove any dashes and underlines if first or last in name
+NAME=$(echo $NAME | sed -r 's/^[_-]+//g')
+NAME=$(echo $NAME | sed -r 's/[_-]+$//g')
+debug_msg
+
+# Collapse repeating characters
+#NAME=$(echo $NAME| tr -s '_' '_' | tr -s '-' '-')
+#debug_msg
+
+#echo name: $NAME
+#echo extension: $extension
+
+if ! [[ -z ${extension} ]]; then
+    # extension is not empty
+    if ! [[ "${NAME}" == "${extension}" ]]; then
+        # name and extension are not equal, append extension to name
+        RESULT="${NAME}.${extension}"
+    else
+        # do not use extension
+        # TODO: Make this not not a good solution!
+        RESULT="${NAME}"
+    fi
+else
+    # extension is empty, do no use extension
+    RESULT="${NAME}"
+fi
+
+echo $RESULT

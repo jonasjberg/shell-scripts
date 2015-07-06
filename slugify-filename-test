@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+#
+# slugify-filename-test
+# ~~~~~~~~~~~~~~~~~~~~~
+# Unit tests for the 'slugify-filename' script.
+# Copyright(c)2015 Jonas Sjöberg
+# https://github.com/jonasjberg
+#_______________________________________________________________________________
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#_______________________________________________________________________________
+
+
+set -e
+
+NUMBER_TESTS_TOTAL=0
+NUMBER_TESTS_PASSED=0
+VERBOSE=true
+
+fail()
+{
+    echo "FAILED: $*"
+}
+
+pass()
+{
+    echo "Test passed!"
+    NUMBER_TESTS_PASSED=$((NUMBER_TESTS_PASSED+1))
+}
+
+run_test()
+{
+    NUMBER_TESTS_TOTAL=$((NUMBER_TESTS_TOTAL+1))
+
+    echo -e "\nRunning test #${NUMBER_TESTS_TOTAL} .."
+
+    if [[ "$VERBOSE" == true ]];
+    then
+        echo "input string: "${1}""
+        echo "expected out: "${2}""
+    fi
+
+    if [[ "`./slugify-filename "${1}"`" == "${2}" ]];
+    then
+        pass
+    else
+        fail "Output did not match!"
+    fi
+}
+
+#_______________________________________________________________________________
+
+TEST_STRING_1='Linux User & Developer stuff&stuff - Issue No. 151 [Pirate Shovon].pdf'
+EXPECTED_1='Linux-User-and-Developer-stuff-and-stuff_Issue-No_151_Pirate-Shovon.pdf'
+run_test "${TEST_STRING_1}" "${EXPECTED_1}"
+
+
+TEST_STRING_2='[Kip R. Irvine]Assembly Language for x86 Processors (7th Edition) (pdf){Zzzzz}.pdf'
+EXPECTED_2='Kip-R_Irvine-Assembly-Language-for-x86-Processors_7th-Edition_pdf_Zzzzz.pdf'
+run_test "${TEST_STRING_2}" "${EXPECTED_2}"
+
+
+TEST_STRING_3='C++ From The Ground Up, 3rd Edition (2003).pdf C++ In Action Industrial Strength Programming Techniques.pdf'
+EXPECTED_3='C-plusplus-From-The-Ground-Up_3rd-Edition_2003_pdf-C-plusplus-In-Action-Industrial-Strength-Programming-Techniques.pdf'
+run_test "${TEST_STRING_3}" "${EXPECTED_3}"
+
+
+TEST_STRING_4='abc123.png'
+EXPECTED_4='abc123.png'
+run_test "${TEST_STRING_4}" "${EXPECTED_4}"
+
+TEST_STRING_5='Assembly Language Programming, ARM Cortex-M3 [PDF]~StormRG~.pdf'
+EXPECTED_5='Assembly-Language-Programming_ARM-Cortex-M3_PDF_StormRG.pdf'
+run_test "${TEST_STRING_5}" "${EXPECTED_5}"
+
+TEST_STRING_6='__mjao mjao'
+EXPECTED_6='mjao-mjao'
+run_test "${TEST_STRING_6}" "${EXPECTED_6}"
+
+TEST_STRING_7='.-mjaomjao'
+EXPECTED_7='.-mjaomjao'
+run_test "${TEST_STRING_7}" "${EXPECTED_7}"
+
+#_______________________________________________________________________________
+
+echo -e "\n\n${NUMBER_TESTS_PASSED}/${NUMBER_TESTS_TOTAL} tests passed"
+
+if [[ "$NUMBER_TESTS_PASSED" -eq "$NUMBER_TESTS_TOTAL" ]];
+then
+    echo "ALL TESTS PASSED!"
+    exit 0
+else
+    echo "FAILED!"
+    exit 1
+fi
