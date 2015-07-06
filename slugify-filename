@@ -29,11 +29,11 @@
 #_______________________________________________________________________________
 
 
-VERBOSE=false
+DEBUG_MODE=false
 
 debug_msg()
 {
-    if [[ "$VERBOSE" == true ]]; then
+    if [[ "$DEBUG_MODE" == true ]]; then
         echo "${NAME}"
     fi
 }
