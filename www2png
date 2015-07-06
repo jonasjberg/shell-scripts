@@ -72,19 +72,20 @@ then
         # <TARGET> is NOT set. Extract last part of URL and append '.png'
         URL=${URL%/}                        # Remove trailing slash if present
         URL_tail="$(echo ${URL##*/})"       # Get everything after the last '/'
+
         # Remove non-alphanumeric chars
         URL_tail_alphanumeric=$(echo $URL_tail | sed 's/[^a-zA-Z0-9_-]/-/g')
+
         # Remove any dashes and underlines if first or last in name
         URL_slugify=$(echo $URL_tail_alphanumeric | sed -r 's/^[_-]+//g')
         URL_slugifying=$(echo $URL_slugify | sed -r 's/[_-]+$//g')
+
         # Replace '--' with '_'
         URL_slugified=$(echo $URL_slugifying | sed 's/--/_/g')
+
         # Append file extension
         TARGET="${URL_slugified}.png"
-        echo "URL_tail: $URL_tail"
-        echo "URL_tail_alphanumeric: $URL_tail_alphanumeric"
-        echo "URL_slugify: $URL_slugify"
-        echo "URL_slugified: $URL_slugified"
+
         echo "Using default target \"$TARGET\""
     fi
 
