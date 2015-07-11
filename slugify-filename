@@ -30,91 +30,193 @@
 
 
 DEBUG_MODE=false
+VERBOSE_MODE=true
+SPACE_CHAR='-'
+SEPAR_CHAR='_'
 
-debug_msg()
+#_______________________________________________________________________________
+
+
+msg_debug()
 {
     if [[ "$DEBUG_MODE" == true ]]; then
-        echo "${NAME}"
+        echo "${name_full}"
     fi
 }
 
-NAME="${1}"
-extension="${NAME##*.}"
-#extension2=$(echo $NAME | sed 's/.*\.//')
-original_no_ext=${NAME%.*}
-
-#echo "extension: ${extension}"
-#echo "extension2: ${extension2}"
-#echo "original_no_ext: ${original_no_ext}"
-
-#NAME=${NAME%/}                        # Remove trailing slash if present
-#echo "NAME: ${NAME}"
-
-NAME=$original_no_ext
-
-# ------------------------------------------------------------------------------
-# Replace '&' with '-and-'
-NAME=$(echo $NAME | sed 's/&/-and-/g')
-debug_msg
-
-# Replace ' -and- ' with '-and-'
-NAME=$(echo $NAME | sed 's/\ -and-\ /-and-/g')
-debug_msg
-
-# ------------------------------------------------------------------------------
-# Replace common words
-NAME=$(echo $NAME | sed 's/C++/C-plusplus/g')
-NAME=$(echo $NAME | sed 's/C#/C-sharp/g')
-
-# ------------------------------------------------------------------------------
-# Replace '@' with '-AT-'
-NAME=$(echo $NAME | sed 's/@/-AT-/g')
-debug_msg
-
-# Replace ' -AT- ' with '-AT-'
-NAME=$(echo $NAME | sed 's/\ -AT-\ /-AT-/g')
-debug_msg
-
-# ------------------------------------------------------------------------------
-# Replace everything that is not alphanumeric, a dash or a underline with a dash
-NAME=$(echo $NAME | sed 's/[^a-zA-Z0-9_-]/-/g')
-debug_msg
-
-# ------------------------------------------------------------------------------
-# Replace two or more dashes with a underline
-NAME=$(echo $NAME | sed -r 's/[-]{2,}/_/g')
-debug_msg
-
-# Replace -_- with _
-NAME=$(echo $NAME| sed 's/-_-/_/g')
-debug_msg
-
-# ------------------------------------------------------------------------------
-# Remove any dashes and underlines if first or last in name
-NAME=$(echo $NAME | sed -r 's/^[_-]+//g')
-NAME=$(echo $NAME | sed -r 's/[_-]+$//g')
-debug_msg
-
-# Collapse repeating characters
-#NAME=$(echo $NAME| tr -s '_' '_' | tr -s '-' '-')
-#debug_msg
-
-#echo name: $NAME
-#echo extension: $extension
-
-if ! [[ -z ${extension} ]]; then
-    # extension is not empty
-    if ! [[ "${NAME}" == "${extension}" ]]; then
-        # name and extension are not equal, append extension to name
-        RESULT="${NAME}.${extension}"
-    else
-        # do not use extension
-        # TODO: Make this not not a good solution!
-        RESULT="${NAME}"
+msg_prompt()
+{
+    if [[ "$VERBOSE_MODE" == true ]]; then
+        echo -e "\n[*] $* .."
     fi
-else
-    # extension is empty, do no use extension
-    RESULT="${NAME}"
+}
+
+msg_progress()
+{
+    if [[ "$VERBOSE_MODE" == true ]]; then
+        echo "    $*"
+    fi
+}
+
+die()
+{
+    echo "ERROR: $*"
+    exit 1
+}
+
+process()
+{
+    local name="$@"
+
+    if [[ -z ${name} ]];
+    then
+        die "process() function argument missing!"
+    fi
+
+    #name=${name%/}                        # Remove trailing slash if present
+    #echo "name: ${name}"
+
+    # ------------------------------------------------------------------------------
+    # Replace '&' with '-and-'
+    name=$(echo $name | sed 's/&/-and-/g')
+    msg_debug
+
+    # Replace ' -and- ' with '-and-'
+    name=$(echo $name | sed 's/\ -and-\ /-and-/g')
+    msg_debug
+
+    # ------------------------------------------------------------------------------
+    # Replace common words
+    name=$(echo $name | sed 's/C++/C-plusplus/g')
+    name=$(echo $name | sed 's/C#/C-sharp/g')
+
+    # ------------------------------------------------------------------------------
+    # Replace '@' with '-AT-'
+    name=$(echo $name | sed 's/@/-AT-/g')
+    msg_debug
+
+    # Replace ' -AT- ' with '-AT-'
+    name=$(echo $name | sed 's/\ -AT-\ /-AT-/g')
+    msg_debug
+
+    # ------------------------------------------------------------------------------
+    # Replace everything that is not alphanumeric, a dash or a underline with a dash
+    name=$(echo $name | sed 's/[^a-zA-Z0-9_-]/-/g')
+    msg_debug
+
+    # ------------------------------------------------------------------------------
+    # Replace two or more dashes with a underline
+    name=$(echo $name | sed -r 's/[-]{2,}/_/g')
+    msg_debug
+
+    # Replace -_- with _
+    #name=$(echo $name| sed 's/-_-/_/g')
+    name=$(echo "${name//-_-/_}")
+    msg_debug
+
+    # Replace -_ with _
+    #name=$(echo $name| sed 's/-_/_/g')
+    name=$(echo "${name//-_/_}")
+    msg_debug
+
+    # Replace _- with _
+    #name=$(echo $name| sed 's/_-/_/g')
+    name=$(echo "${name//_-/_}")
+    msg_debug
+
+    # ------------------------------------------------------------------------------
+    # Remove any dashes and underlines if first or last in name
+    name=$(echo $name | sed -r 's/^[_-]+//g')
+    name=$(echo $name | sed -r 's/[_-]+$//g')
+    msg_debug
+
+    # Collapse repeating characters
+    #name=$(echo $name| tr -s '_' '_' | tr -s '-' '-')
+    #msg_debug
+
+    echo "${name}" # Function "return" value
+}
+
+process_hard()
+{
+    local name="$@"
+
+    if [[ -z ${name} ]];
+    then
+        die "process_hard() function argument missing!"
+    fi
+
+    # Remove everything other than a-z, A-Z and 0-9
+    name=$(echo $name | sed 's/[^a-zA-Z0-9]//g')
+
+    echo "${name}" # Function "return" value
+}
+
+
+
+# MAIN ROUTINE EXECUTION STARTS HERE
+msg_prompt "RUNNING"
+
+name_full="${1}"
+name="${name_full##*/}"
+extension="${name_full##*.}"
+name_no_ext=${name_full%.*}
+
+msg_progress "name_full:      $name_full"
+msg_progress "name     :      $name"
+msg_progress "extension:      $extension"
+msg_progress "name_no_ext:    $name_no_ext"
+
+
+if [[ -z ${name_no_ext} ]];
+then
+    msg_prompt "name without extension is EMPTY"
+    name_no_ext=".${extension}"
+    extension=''
 fi
 
-echo $RESULT
+
+if [[ ! -z ${extension} ]];
+then
+    msg_prompt "extension is set"
+
+    if [[ "${extension}" == "${name_full}" ]];
+    then
+        msg_prompt "extension is equal to full name. Setting to NULL"
+        extension=''
+    else
+        msg_prompt "slugifying extension"
+        extension=$(process_hard "${extension}")
+        extension=".${extension}"
+        msg_progress "extension:      $extension"
+    fi
+fi
+
+msg_prompt "slugifying name"
+name_new="$(process "${name_no_ext}")"
+msg_progress "name_new:       $name_new"
+
+
+#if [[ -z ${extension} ]];
+#then
+    #msg_prompt "adding back leading dot"
+    #name_new=".${name_new}"
+#fi
+
+if [[ -z ${name_new} ]];
+then
+    die "process result is NULL!"
+fi
+
+name_new_full="${name_new}${extension}"
+msg_progress "name_new_full:  $name_new_full"
+
+if [[ "${name_full}" != "${name_new_full}" ]];
+then
+    msg_prompt "DONE! Result is not equal to input"
+else
+    msg_prompt "DONE! nothing changed"
+fi
+
+
+echo "${name_new_full}"

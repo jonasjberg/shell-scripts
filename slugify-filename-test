@@ -88,8 +88,12 @@ TEST_STRING_6='__mjao mjao'
 EXPECTED_6='mjao-mjao'
 run_test "${TEST_STRING_6}" "${EXPECTED_6}"
 
+TEST_STRING_7='.hidden file'
+EXPECTED_7='.hidden-file'
+run_test "${TEST_STRING_7}" "${EXPECTED_7}"
+
 TEST_STRING_7='.-mjaomjao'
-EXPECTED_7='.-mjaomjao'
+EXPECTED_7='.mjaomjao'
 run_test "${TEST_STRING_7}" "${EXPECTED_7}"
 
 #_______________________________________________________________________________
