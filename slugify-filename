@@ -101,7 +101,7 @@ process()
 
     # ------------------------------------------------------------------------------
     # Replace everything that is not alphanumeric, a dash or a underline with a dash
-    name=$(echo "${name//[^a-zA-Z0-9_-]/-/g}")
+    name=$(echo $name | sed -r 's/[^a-zA-Z0-9_-]/-/g')
     msg_debug
 
     # ------------------------------------------------------------------------------
