@@ -67,6 +67,8 @@ die()
 process()
 {
     local name="$@"
+    local gluechars='-_'
+    local safechars="${gluechars}a-zA-Z0-9"
 
     if [[ -z ${name} ]];
     then
@@ -100,8 +102,8 @@ process()
     msg_debug
 
     # ------------------------------------------------------------------------------
-    # Replace everything that is not alphanumeric, a dash or a underline with a dash
-    name=$(echo $name | sed -r 's/[^a-zA-Z0-9_-]/-/g')
+    # Replace everything that is not in 'safechars' with a dash
+    name=$(echo "${name//[^${safechars}]/-}")
     msg_debug
 
     # ------------------------------------------------------------------------------
