@@ -27,6 +27,7 @@ set -e
 NUMBER_TESTS_TOTAL=0
 NUMBER_TESTS_PASSED=0
 VERBOSE=true
+executable="./slugify-filename"
 
 fail()
 {
@@ -51,7 +52,7 @@ run_test()
         echo "expected out: "${2}""
     fi
 
-    if [[ "`./slugify-filename "${1}"`" == "${2}" ]];
+    if [[ "$(${executable} "${1}")" == "${2}" ]];
     then
         pass
     else
