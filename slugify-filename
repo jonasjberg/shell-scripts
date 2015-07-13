@@ -171,6 +171,10 @@ then
     msg_prompt "name without extension is EMPTY"
     name_no_ext=".${extension}"
     extension=''
+    msg_progress "name_full:      $name_full"
+    msg_progress "name_no_path:   $name_no_path"
+    msg_progress "extension:      $extension"
+    msg_progress "name_no_ext:    $name_no_ext"
 fi
 
 
