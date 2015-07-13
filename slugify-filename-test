@@ -109,9 +109,13 @@ TEST_STRING_7='.hidden file'
 EXPECTED_7='.hidden-file'
 run_test "${TEST_STRING_7}" "${EXPECTED_7}"
 
-TEST_STRING_7='.-mjaomjao'
-EXPECTED_7='.mjaomjao'
-run_test "${TEST_STRING_7}" "${EXPECTED_7}"
+TEST_STRING_8='.-mjaomjao'
+EXPECTED_8='.mjaomjao'
+run_test "${TEST_STRING_8}" "${EXPECTED_8}"
+
+TEST_STRING_9='Ett riktigt filnamn $$$.$b=00 kanske ~//+ två + två = fem.@.txt'
+EXPECTED_9='Ett-riktigt-filnamn_b-00-kanske_två_två_fem_AT.txt'
+run_test "${TEST_STRING_9}" "${EXPECTED_9}"
 
 #_______________________________________________________________________________
 
