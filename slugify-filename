@@ -168,14 +168,25 @@ msg_progress "name_no_path:   $name_no_path"
 msg_progress "extension:      $extension"
 msg_progress "name_no_ext:    $name_no_ext"
 
+if [[ ! -z ${extension} ]];
+then
+    msg_prompt "slugifying extension"
+    extension="$(process "${extension}")"
+    msg_progress "extension:      $extension"
+fi
+
+if [[ ! -z ${name_no_ext} ]];
+then
+    msg_prompt "slugifying name_no_ext"
+    name_no_ext="$(process "${name_no_ext}")"
+    msg_progress "name_no_ext:    $name_no_ext"
+fi
 
 if [[ -z ${name_no_ext} ]];
 then
-    msg_prompt "name without extension is EMPTY"
+    msg_prompt "name without extension is EMPTY! setting to .extension"
     name_no_ext=".${extension}"
     extension=''
-    msg_progress "name_full:      $name_full"
-    msg_progress "name_no_path:   $name_no_path"
     msg_progress "extension:      $extension"
     msg_progress "name_no_ext:    $name_no_ext"
 fi
@@ -183,22 +194,20 @@ fi
 
 if [[ ! -z ${extension} ]];
 then
-    msg_prompt "extension is set"
+    msg_prompt "extension is *not* NULL"
 
-    if [[ "${extension}" == "${name_full}" ]];
+    if [[ "${extension}" == "${name_no_ext}" ]];
     then
         msg_prompt "extension is equal to full name. Setting to NULL"
         extension=''
+        name_no_ext=".${name_no_ext}"
     else
-        msg_prompt "slugifying extension"
-        extension=$(process_hard "${extension}")
         extension=".${extension}"
         msg_progress "extension:      $extension"
     fi
 fi
 
-msg_prompt "slugifying name"
-name_new="$(process "${name_no_ext}")"
+name_new="${name_no_ext}"
 msg_progress "name_new:       $name_new"
 
 
