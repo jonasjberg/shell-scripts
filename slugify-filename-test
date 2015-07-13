@@ -26,17 +26,23 @@ set -e
 
 NUMBER_TESTS_TOTAL=0
 NUMBER_TESTS_PASSED=0
-VERBOSE=true
+VERBOSE=false
 executable="./slugify-filename"
 
 fail()
 {
-    echo "FAILED: $*"
+    if [[ "$VERBOSE" == true ]];
+    then
+        echo "FAILED: $*"
+    fi
 }
 
 pass()
 {
-    echo "Test passed!"
+    if [[ "$VERBOSE" == true ]];
+    then
+        echo "Test passed!"
+    fi
     NUMBER_TESTS_PASSED=$((NUMBER_TESTS_PASSED+1))
 }
 
@@ -50,10 +56,9 @@ run_test()
 {
     NUMBER_TESTS_TOTAL=$((NUMBER_TESTS_TOTAL+1))
 
-    echo -e "\nRunning test #${NUMBER_TESTS_TOTAL} .."
-
     if [[ "$VERBOSE" == true ]];
     then
+        echo -e "\nRunning test #${NUMBER_TESTS_TOTAL} .."
         echo "input string: "${1}""
         echo "expected out: "${2}""
     fi
