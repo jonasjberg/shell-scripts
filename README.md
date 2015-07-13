@@ -10,7 +10,7 @@ collection of `*nix` shell-scripts.
 Listing
 -------
 ```
-crop-instagram-screenshot     -- crop images to size 
+crop-instagram-screenshot     -- crop images to size
 folder-manifest               -- generate txt file with folder info
 git-backup                    -- recursively find and backup git repos
 git-recursive-pull            -- recursively find repos and do git pull
@@ -34,6 +34,10 @@ use these scripts, either as is or as modified versions.  You are on your own.
 Please handle with CARE!
 
 Don't look at this repository for guidance or reference.  There are great free
-resources for properly learning shell scripts.  The Linux documentation project
-might be a good starting point.
+resources for properly learning shell scripts, like for instance;
 
+*Bash Guide for Beginners* by Machtelt Garrels
+http://tldp.org/LDP/Bash-Beginners-Guide/html/
+
+*Advanced Bash-Scripting Guide* by Mendel Cooper
+http://www.tldp.org/LDP/abs/html/
