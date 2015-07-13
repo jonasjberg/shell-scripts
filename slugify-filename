@@ -78,49 +78,47 @@ process()
 
     # ------------------------------------------------------------------------------
     # Replace '&' with '-and-'
-    name=$(echo $name | sed 's/&/-and-/g')
+    name=$(echo "${name//&/-and-/g}")
     msg_debug
 
     # Replace ' -and- ' with '-and-'
-    name=$(echo $name | sed 's/\ -and-\ /-and-/g')
+    name=$(echo "${name//\ -and-\ /-and-/g}")
     msg_debug
 
     # ------------------------------------------------------------------------------
     # Replace common words
-    name=$(echo $name | sed 's/C++/C-plusplus/g')
-    name=$(echo $name | sed 's/C#/C-sharp/g')
+    name=$(echo "${name//C++/C-plusplus/g}")
+    name=$(echo "${name//C#/C-sharp/g}")
 
     # ------------------------------------------------------------------------------
     # Replace '@' with '-AT-'
-    name=$(echo $name | sed 's/@/-AT-/g')
+    name=$(echo "${name//@/-AT-/g}")
     msg_debug
 
     # Replace ' -AT- ' with '-AT-'
-    name=$(echo $name | sed 's/\ -AT-\ /-AT-/g')
+    name=$(echo "${name//\ -AT-\ /-AT-/g}")
     msg_debug
 
     # ------------------------------------------------------------------------------
     # Replace everything that is not alphanumeric, a dash or a underline with a dash
-    name=$(echo $name | sed 's/[^a-zA-Z0-9_-]/-/g')
+    name=$(echo "${name//[^a-zA-Z0-9_-]/-/g}")
     msg_debug
 
     # ------------------------------------------------------------------------------
     # Replace two or more dashes with a underline
+    #name=$(echo "${name//[-]{2,}/_/g}")
     name=$(echo $name | sed -r 's/[-]{2,}/_/g')
     msg_debug
 
     # Replace -_- with _
-    #name=$(echo $name| sed 's/-_-/_/g')
     name=$(echo "${name//-_-/_}")
     msg_debug
 
     # Replace -_ with _
-    #name=$(echo $name| sed 's/-_/_/g')
     name=$(echo "${name//-_/_}")
     msg_debug
 
     # Replace _- with _
-    #name=$(echo $name| sed 's/_-/_/g')
     name=$(echo "${name//_-/_}")
     msg_debug
 
