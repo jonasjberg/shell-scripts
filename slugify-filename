@@ -80,25 +80,25 @@ process()
 
     # ------------------------------------------------------------------------------
     # Replace '&' with '-and-'
-    name=$(echo "${name//&/-and-/g}")
+    name=$(echo "${name//&/-and-}")
     msg_debug
 
     # Replace ' -and- ' with '-and-'
-    name=$(echo "${name//\ -and-\ /-and-/g}")
+    name=$(echo "${name//\ -and-\ /-and-}")
     msg_debug
 
     # ------------------------------------------------------------------------------
     # Replace common words
-    name=$(echo "${name//C++/C-plusplus/g}")
-    name=$(echo "${name//C#/C-sharp/g}")
+    name=$(echo "${name//C++/C-plusplus}")
+    name=$(echo "${name//C#/C-sharp}")
 
     # ------------------------------------------------------------------------------
     # Replace '@' with '-AT-'
-    name=$(echo "${name//@/-AT-/g}")
+    name=$(echo "${name//@/-AT-}")
     msg_debug
 
     # Replace ' -AT- ' with '-AT-'
-    name=$(echo "${name//\ -AT-\ /-AT-/g}")
+    name=$(echo "${name//\ -AT-\ /-AT-}")
     msg_debug
 
     # ------------------------------------------------------------------------------
@@ -107,9 +107,10 @@ process()
     msg_debug
 
     # ------------------------------------------------------------------------------
-    # Replace two or more dashes with a underline
+    # Replace two or more dashes with a underline, collapse underlines
     #name=$(echo "${name//[-]{2,}/_/g}")
     name=$(echo $name | sed -r 's/[-]{2,}/_/g')
+    name=$(echo $name | sed -r 's/[_]{2,}/_/g')
     msg_debug
 
     # Replace -_- with _
