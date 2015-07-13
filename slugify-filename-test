@@ -68,6 +68,11 @@ run_test()
 
 #_______________________________________________________________________________
 
+if [[ ! -e ${executable} ]];
+then
+    die "Unable to locate \"${executable}\"! exiting .."
+fi
+
 TEST_STRING_1='Linux User & Developer stuff&stuff - Issue No. 151 [Pirate Shovon].pdf'
 EXPECTED_1='Linux-User-and-Developer-stuff-and-stuff_Issue-No_151_Pirate-Shovon.pdf'
 run_test "${TEST_STRING_1}" "${EXPECTED_1}"
