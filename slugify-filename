@@ -156,12 +156,12 @@ process_hard()
 msg_prompt "RUNNING"
 
 name_full="${1}"
-name="${name_full##*/}"
+name_no_path="${name_full##*/}"
 extension="${name_full##*.}"
 name_no_ext=${name_full%.*}
 
 msg_progress "name_full:      $name_full"
-msg_progress "name     :      $name"
+msg_progress "name_no_path:   $name_no_path"
 msg_progress "extension:      $extension"
 msg_progress "name_no_ext:    $name_no_ext"
 
