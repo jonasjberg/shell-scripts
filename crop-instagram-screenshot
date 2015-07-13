@@ -25,7 +25,7 @@
 # ^^^^^^^^^^^^^^^^^^^^^^       ^^^^^^^^^^^^^
 # Crop rectangle size          Crop rectangle upper left corner position
 
-DIMENSIONS="640x640+0+172"
+DIMENSIONS="640x634+0+237"
 # Crops a screenshot of Instagram taken with an iPhone (4)
 
 # _______________________________________________________________________________
