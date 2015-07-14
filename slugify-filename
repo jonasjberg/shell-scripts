@@ -233,4 +233,9 @@ else
 fi
 
 
-echo "${name_new_full}"
+if [[ "$DEBUG_MODE" == true ]]; then
+    echo "${name_new_full}"
+    exit 0
+else
+    mv -n "${1}" "${name_new_full}"
+fi
