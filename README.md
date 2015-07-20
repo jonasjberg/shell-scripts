@@ -10,6 +10,7 @@ collection of `*nix` shell-scripts.
 Listing
 -------
 ```
+clampimgheight                -- chop up images taller than a set max height
 crop-instagram-screenshot     -- crop images to size
 folder-manifest               -- generate txt file with folder info
 git-backup                    -- recursively find and backup git repos
