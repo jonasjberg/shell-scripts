@@ -101,17 +101,19 @@ output=${2:-$DEFAULT_output}
 # initialize counter and get initial image height
 number_of_splits=1
 initial_image_height=$(get_image_height "${input}")
-image_height=$initial_image_height
 
+# check if initial image heigth is less than or equal to IMAGE_HEIGHT_MAX
 if [ "$initial_image_height" -le "$IMAGE_HEIGHT_MAX" ];
 then
     die "Image height is already less than or equal to IMAGE_HEIGHT_MAX"
 fi
 
-# get number of vertical splits needed for image height is less than MAX_HEIGHT
-while [ "$image_height" -gt "$IMAGE_HEIGHT_MAX" ]
+
+# get number of vertical splits needed
+target_image_height=$initial_image_height
+while [ "$target_image_height" -gt "$IMAGE_HEIGHT_MAX" ]
 do
-    image_height=$((${initial_image_height} / ${number_of_splits}))
+    target_image_height=$((${initial_image_height} / ${number_of_splits}))
     number_of_splits=$[$number_of_splits +1]
 done
 
