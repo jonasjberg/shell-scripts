@@ -56,7 +56,7 @@ check_convert_installed()
 process_image()
 {
     # intermediate file name(s)
-    horiz_split="${TEMPDIR}/${input_no_ext}_%02d.${extension}"
+    local horiz_split="${TEMPDIR}/${input_no_ext}_%02d.${extension}"
 
     # chop up image horizontally in 'number_of_splits' pieces
     # http://www.imagemagick.org/Usage/crop/#crop_equal
