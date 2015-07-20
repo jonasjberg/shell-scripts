@@ -4,27 +4,27 @@
 #                                 '----------'
 #
 #      Columnate images taller than IMAGE_HEIGHT_MAX using ImageMagick.
-#          Mainly used for tall images made by the 'www2png' script.
-#    Doesn't hard hard limit but tries its best to equally divide the image
-#   into the number of columns needed, but the output image may be slightly
-#                     bigger than the set maximum height.
+#   Useful for processing very tall images produced by the 'www2png' script.
+# Doesn't hard limit the height but tries its best to equally divide the image
+# into the number of columns needed while keeping the split images height equal.
+#   Thus, the output image height may deviate slightly from the set maximum.
 #
 #                        Copyright(c)2015 Jonas Sjöberg
 #                        https://github.com/jonasjberg
 #_______________________________________________________________________________
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation, either version 3 of the License, or
+#                     (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#        but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                 GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#      You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #_______________________________________________________________________________
 
 
