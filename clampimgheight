@@ -28,7 +28,7 @@
 #_______________________________________________________________________________
 
 
-IMAGE_HEIGHT_MAX=1200
+IMAGE_HEIGHT_MAX=2000
 
 set -e                                                  ## exit on first error
 #set -x                                                 ## debug mode
@@ -102,6 +102,11 @@ output=${2:-$DEFAULT_output}
 number_of_splits=1
 initial_image_height=$(get_image_height "${input}")
 image_height=$initial_image_height
+
+if [ "$initial_image_height" -le "$IMAGE_HEIGHT_MAX" ];
+then
+    die "Image height is already less than or equal to IMAGE_HEIGHT_MAX"
+fi
 
 # get number of vertical splits needed for image height is less than MAX_HEIGHT
 while [ "$image_height" -gt "$IMAGE_HEIGHT_MAX" ]
