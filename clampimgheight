@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+#                                 .----------.
+#                                clampimgheight
+#                                 '----------'
+#
+#      Columnate images taller than IMAGE_HEIGHT_MAX using ImageMagick.
+#          Mainly used for tall images made by the 'www2png' script.
+#    Doesn't hard hard limit but tries its best to equally divide the image
+#   into the number of columns needed, but the output image may be slightly
+#                     bigger than the set maximum height.
+#
+#                        Copyright(c)2015 Jonas Sjöberg
+#                        https://github.com/jonasjberg
+#_______________________________________________________________________________
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#_______________________________________________________________________________
+
+
+IMAGE_HEIGHT_MAX=1200
+
+set -e                                                  ## exit on first error
+#set -x                                                 ## debug mode
+
+PROGNAME=$(basename $0)                                 # name of this script
+TEMPDIR=$(mktemp -d /tmp/${PROGNAME}.XXXXXX)            # temporary directory
+
+#_______________________________________________________________________________
+
+
+die()
+{
+    echo "${PROGNAME} ERROR: $*"
+    exit 1
+}
+
+check_convert_installed()
+{
+    if ! command -v "convert" >/dev/null
+    then
+        die "Can not execute convert! Is it installed? Is it in your \$PATH?"
+    fi
+}
+
+process_image()
+{
+    # intermediate file name(s)
+    horiz_split="${TEMPDIR}/${input_no_ext}_%02d.${extension}"
+
+    # chop up image horizontally in 'number_of_splits' pieces
+    # http://www.imagemagick.org/Usage/crop/#crop_equal
+    convert "${input}" -crop 1x${number_of_splits}@ +repage +adjoin "${horiz_split}"
+
+    # merge all pieces horizontally
+    # http://www.imagemagick.org/Usage/layers/
+    # http://www.imagemagick.org/Usage/option_link.cgi?append
+    convert +append "${TEMPDIR}/*.${extension}" "${output}"
+}
+
+get_image_height()
+{
+    local image_height=$(identify -format "%h" "${1}")
+    echo "$image_height"
+}
+
+#_______________________________________________________________________________
+
+
+# check that the first parameter is set
+if [[ -z $1 ]]
+then
+    die "Input file name is missing"
+fi
+
+
+# make sure convert is installed and executable
+check_convert_installed
+
+
+# set input file name
+input=${1}
+input_no_ext=${input%.*}
+extension="${input##*.}"
+
+# get output file name from the second argument or default to "DEFAULT_output"
+DEFAULT_output="${input_no_ext}_DONE.${extension}"
+output=${2:-$DEFAULT_output}
+
+
+# initialize counter and get initial image height
+number_of_splits=1
+initial_image_height=$(get_image_height "${input}")
+image_height=$initial_image_height
+
+# get number of vertical splits needed for image height is less than MAX_HEIGHT
+while [ "$image_height" -gt "$IMAGE_HEIGHT_MAX" ]
+do
+    image_height=$((${initial_image_height} / ${number_of_splits}))
+    number_of_splits=$[$number_of_splits +1]
+done
+
+
+# check that number_of_splits is set
+if [[ -z $number_of_splits ]]
+then
+    die "Failed to calculate number of splits"
+fi
+
+echo "           input filename: ${input}"
+echo "             image height: $initial_image_height"
+echo "         IMAGE_HEIGHT_MAX: $IMAGE_HEIGHT_MAX"
+echo "number of splits required: $number_of_splits"
+
+
+# run main routine
+process_image
+
+
+exit 0
+
