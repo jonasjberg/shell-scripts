@@ -1,0 +1,174 @@
+#!/usr/bin/env bash
+#                                 ~~~~~~~~~~~
+#                                 exif-rename
+#                                 ~~~~~~~~~~~
+#
+#                       Copyright (C) 2015 Jonas Sjöberg
+#                        https://github.com/jonasjberg
+#
+#                 Rename images based on exif time/date data.
+#      Searches the output of "exiftool" for contents of "SEARCHSTRINGS"
+#     Contents of SEARCHSTRINGS are ordered by priority, from high to low.
+#      The first match is used, so put whatever exif-fields that are more
+#      likely to contain the correct date/time higher in the list below.
+#_______________________________________________________________________________
+#
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation, either version 3 of the License, or
+#                     (at your option) any later version.
+#
+#       This program is distributed in the hope that it will be useful,
+#        but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                 GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+set -e                                                   ## exit on first error
+#set -x                                                  ## debug mode
+
+# Example exiftool output this script will process:
+# > $ exiftool 2015-01-31\ 00.25.39.jpg | grep -i date
+# File Modification Date/Time     : 2015:01:31 00:25:39+01:00
+# File Access Date/Time           : 2015:06:04 05:58:32+02:00
+# File Inode Change Date/Time     : 2015:05:20 12:29:25+02:00
+# Modify Date                     : 2015:01:31 00:25:39
+# Date/Time Original              : 2015:01:31 00:25:39
+# Create Date                     : 2015:01:31 00:25:39
+
+# Search strings ordered by priority, from high to low;
+SEARCHSTRINGS[0]='Create Date'
+SEARCHSTRINGS[1]='Date/Time Created'
+SEARCHSTRINGS[2]='Date/Time Original'
+SEARCHSTRINGS[3]='Date/Time Digitized'
+SEARCHSTRINGS[4]='Modify Date'
+SEARCHSTRINGS[5]='Modification Date'
+SEARCHSTRINGS[6]='Profile Date Time'
+
+VERBOSE_MODE=false
+DEBUG_MODE=false
+
+
+PROGNAME=$(basename $0)                                 ## name of this script
+
+
+msg_status()
+{
+    if [[ "$VERBOSE_MODE" == true ]]; then
+        if [[ ! -z ${1} ]];
+        then
+            printf "\n%s: %s\n" "$PROGNAME" "$1" 1>&2
+        fi
+    fi
+}
+
+msg_debug()
+{
+    if [[ "$DEBUG_MODE" == true ]]; then
+        echo "DEBUG: $*"
+    fi
+}
+
+
+die()
+{
+    echo -e "\nERROR: $*"
+    echo "EXITING .."
+    exit 1
+}
+
+clean_up_timestamp()
+{
+    local tstp="${1}"
+
+    tstp=${tstp//:/-}                          # replace any colons with dashes
+    tstp=${tstp//\ /_}                         # replace any spaces with slashes
+    tstp=$(echo $tstp | sed -r 's/^[_-]+//g')  # remove any leading _ or -
+
+    echo "${tstp}"                             # function "return"
+}
+
+find_timestamp()
+{
+    local image="${1}"
+
+    if [[ -z $image ]]; then
+        die "find_timestamp received NULL value"
+    fi
+
+    # start grepping exif data, break when match found
+    for str in "${SEARCHSTRINGS[@]}"
+    do
+        timestamp=$(exiftool "${image}" \
+            | grep -i --max-count=1 "${str}" \
+            | cut -d ':' -f 2-)
+
+        # Optional additinal filter
+        timestamp=$(echo ${timestamp} | grep -v "2015")
+
+        if [[ ! -z ${timestamp} ]]
+        then
+            #msg_debug "timestamp found!"
+            break
+        fi
+    done
+
+
+    #msg_debug "using timestamp: "$timestamp""
+    echo "${timestamp}"                             # function "return"
+}
+
+rename_file()
+{
+    #echo ""${1}"  -->  "${2}.${extension}""
+    mv -nvi "${1}" "${2}.${extension}"
+}
+
+
+# ______________________________________________________________________________
+# SCRIPT CODE EXECUTION STARTS HERE
+
+if ! command -v "exiftool" >/dev/null; then
+    die "failed to execute exiftool!"
+fi
+
+if [[ -z ${1} ]];
+then
+    die "argument missing!"
+fi
+
+input=${1}
+extension="${input##*.}"
+
+msg_debug "input image:     $input"
+msg_debug "input extension: $extension"
+
+
+msg_status "searching for timestamp .."
+timestamp=$(find_timestamp "${input}")
+
+if [[ -z ${timestamp} ]]; then
+    die "timestamp not found! search FAILED"
+fi
+
+
+msg_debug "timestamp: "$timestamp""
+msg_status "cleaning up timestamp .."
+timestamp=$(clean_up_timestamp "${timestamp}")
+
+if [[ -z ${timestamp} ]]; then
+    die "timestamp is NULL -- cleanup FAILED!"
+fi
+
+
+msg_debug "timestamp: "$timestamp""
+msg_status "renaming file .."
+rename_file "${input}" "${timestamp}"
+
+
+msg_status "done .."
+exit $?
+
