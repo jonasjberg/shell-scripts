@@ -68,7 +68,7 @@ msg_status()
 msg_debug()
 {
     if [[ "$DEBUG_MODE" == true ]]; then
-        echo "DEBUG: $*"
+        echo "DEBUG: $*" 1>&2
     fi
 }
 
@@ -85,7 +85,7 @@ clean_up_timestamp()
     local tstp="${1}"
 
     tstp=${tstp//:/-}                          # replace any colons with dashes
-    tstp=${tstp//\ /_}                         # replace any spaces with slashes
+    tstp=${tstp//\ /_}                         # replace any spaces with _
     tstp=$(echo $tstp | sed -r 's/^[_-]+//g')  # remove any leading _ or -
 
     echo "${tstp}"                             # function "return"
