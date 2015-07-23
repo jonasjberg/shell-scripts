@@ -54,7 +54,6 @@ DEBUG_MODE=false
 
 PROGNAME=$(basename $0)                                 ## name of this script
 
-
 msg_status()
 {
     if [[ "$VERBOSE_MODE" == true ]]; then
@@ -71,7 +70,6 @@ msg_debug()
         echo "DEBUG: $*" 1>&2
     fi
 }
-
 
 die()
 {
@@ -95,10 +93,6 @@ find_timestamp()
 {
     local image="${1}"
 
-    if [[ -z $image ]]; then
-        die "find_timestamp received NULL value"
-    fi
-
     # start grepping exif data, break when match found
     for str in "${SEARCHSTRINGS[@]}"
     do
@@ -116,7 +110,6 @@ find_timestamp()
         fi
     done
 
-
     #msg_debug "using timestamp: "$timestamp""
     echo "${timestamp}"                             # function "return"
 }
@@ -131,7 +124,8 @@ rename_file()
 # ______________________________________________________________________________
 # SCRIPT CODE EXECUTION STARTS HERE
 
-if ! command -v "exiftool" >/dev/null; then
+if ! command -v "exiftool" >/dev/null
+then
     die "failed to execute exiftool!"
 fi
 
