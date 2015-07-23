@@ -11,7 +11,7 @@
 #     Contents of SEARCHSTRINGS are ordered by priority, from high to low.
 #      The first match is used, so put whatever exif-fields that are more
 #      likely to contain the correct date/time higher in the list below.
-#_______________________________________________________________________________
+#     ____________________________________________________________________
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
