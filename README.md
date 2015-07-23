@@ -12,6 +12,7 @@ Listing
 ```
 clampimgheight                -- chop up images taller than a set max height
 crop-instagram-screenshot     -- crop images to size
+exif-rename                   -- rename images from exif date/time
 folder-manifest               -- generate txt file with folder info
 git-backup                    -- recursively find and backup git repos
 git-recursive-pull            -- recursively find repos and do git pull
