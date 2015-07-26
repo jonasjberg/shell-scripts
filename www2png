@@ -27,8 +27,12 @@
 
 # ------------------------------------------------------------------------------
 
-set -e                         # Exit immediately if a command returns non-zero.
+# Use these settings when running cutycapt:
+FLAGS="--out-format=png --javascript=off --java=off"
 
+# ------------------------------------------------------------------------------
+
+set -e                         # Exit immediately if a command returns non-zero.
 
 URL=${1}                        # The URL to capture (http:...|file:...|...)
 TARGET=${2}                     # The target file (.png|pdf|ps|svg|jpeg|...)
@@ -93,7 +97,7 @@ then
     then
         printf "Running cutycapt.."
 
-        cutycapt --out-format=png --url="${URL}" --out="${TARGET}"
+        cutycapt ${FLAGS} --url="${URL}" --out="${TARGET}"
 
         printf " DONE!\n"
         exit 0
