@@ -30,7 +30,7 @@
 
 
 DEBUG_MODE=false
-VERBOSE_MODE=true
+VERBOSE_MODE=false
 SPACE_CHAR='-'
 SEPAR_CHAR='_'
 GLUE_CHARS='-_'
