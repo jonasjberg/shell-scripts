@@ -103,7 +103,7 @@ find_timestamp()
             | grep -i --max-count=1 "${str}" \
             | cut -d ':' -f 2-)
 
-        # Optional additinal filter
+        # Optional additional filter
         timestamp=$(echo ${timestamp} | grep -v "2015")
 
         if [[ ! -z ${timestamp} ]]
