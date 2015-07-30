@@ -30,9 +30,11 @@
 
 
 DEBUG_MODE=false
-VERBOSE_MODE=false
+VERBOSE_MODE=true
 SPACE_CHAR='-'
 SEPAR_CHAR='_'
+GLUE_CHARS='-_'
+SAFE_CHARS="${GLUECHARS}a-zA-Z0-9"
 
 #_______________________________________________________________________________
 
@@ -67,8 +69,6 @@ die()
 process()
 {
     local name="$@"
-    local gluechars='-_'
-    local safechars="${gluechars}a-zA-Z0-9"
 
     if [[ -z ${name} ]];
     then
@@ -78,7 +78,7 @@ process()
     #name=${name%/}                        # Remove trailing slash if present
     #echo "name: ${name}"
 
-    # ------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Replace '&' with '-and-'
     name=$(echo "${name//&/-and-}")
     msg_debug
@@ -87,12 +87,12 @@ process()
     name=$(echo "${name//\ -and-\ /-and-}")
     msg_debug
 
-    # ------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Replace common words
     name=$(echo "${name//C++/C-plusplus}")
     name=$(echo "${name//C#/C-sharp}")
 
-    # ------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Replace '@' with '-AT-'
     name=$(echo "${name//@/-AT-}")
     msg_debug
@@ -101,12 +101,12 @@ process()
     name=$(echo "${name//\ -AT-\ /-AT-}")
     msg_debug
 
-    # ------------------------------------------------------------------------------
-    # Replace everything that is not in 'safechars' with a dash
-    name=$(echo "${name//[^${safechars}]/-}")
+    # --------------------------------------------------------------------------
+    # Replace everything that is not in 'SAFE_CHARS' with a dash
+    name=$(echo "${name//[^${SAFE_CHARS}]/-}")
     msg_debug
 
-    # ------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Replace two or more dashes with a underline, collapse underlines
     #name=$(echo "${name//[-]{2,}/_/g}")
     name=$(echo $name | sed -r 's/[-]{2,}/_/g')
@@ -125,7 +125,7 @@ process()
     name=$(echo "${name//_-/_}")
     msg_debug
 
-    # ------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Remove any dashes and underlines if first or last in name
     name=$(echo $name | sed -r 's/^[_-]+//g')
     name=$(echo $name | sed -r 's/[_-]+$//g')
@@ -150,6 +150,30 @@ process_hard()
     # Remove everything other than a-z, A-Z and 0-9
     name=$(echo $name | sed 's/[^a-zA-Z0-9]//g')
 
+    echo "${name}" # Function "return" value
+}
+
+process_second_run()
+{
+    local name="$@"
+
+    # Replace dashes with underlines for special fields 
+    MATCH_FIELD[0]='1st-Edition'
+    MATCH_FIELD[1]='2nd-Edition'
+    MATCH_FIELD[2]='3rd-Edition'
+    MATCH_FIELD[3]='4th-Edition'
+    MATCH_FIELD[4]='5th-Edition'
+    MATCH_FIELD[5]='6th-Edition'
+    MATCH_FIELD[6]='7th-Edition'
+    MATCH_FIELD[7]='8th-Edition'
+    MATCH_FIELD[8]='9th-Edition'
+
+    for match in "${MATCH_FIELD[@]}"
+    do
+        name=$(echo "${name//-${match}-/_${match}_}")
+        msg_debug
+    done
+    
     echo "${name}" # Function "return" value
 }
 
@@ -200,7 +224,7 @@ then
     then
         msg_prompt "extension is equal to full name. Setting to NULL"
         extension=''
-        name_no_ext=".${name_no_ext}"
+        #name_no_ext=".${name_no_ext}"
     else
         extension=".${extension}"
         msg_progress "extension:      $extension"
@@ -208,6 +232,11 @@ then
 fi
 
 name_new="${name_no_ext}"
+msg_progress "name_new:       $name_new"
+
+msg_prompt "start second run process"
+name_new="$(process_second_run "${name_new}")"
+
 msg_progress "name_new:       $name_new"
 
 
