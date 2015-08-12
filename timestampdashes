@@ -22,7 +22,7 @@
 
 set -e                                                  # exit on first error
 #set -x                                                 # debug mode
-DEBUG_MODE=true                                        #
+DEBUG_MODE=false                                        #
 
 
 process()
@@ -89,15 +89,17 @@ then
     extension=''
 fi
 
-# Figure out new name
+
+# Figure out new name. Exit if result is empty.
 name_new="$(process "${name_base}")"
-#echo "name_new: ${name_new}"
+echo "name_new: ${name_new}"
 
 if [[ -z ${name_new} ]];
 then
     echo "process result is NULL! EXITING .."
     exit 1
 fi
+
 
 # If the base is the same as the extension, there is no extension.
 if [[ "${name_base}" == "${extension}" ]]
@@ -109,12 +111,15 @@ else
 fi
 
 
-
+# Print out result or rename the file.
 if [[ "$DEBUG_MODE" == true ]]; then
     echo "${name_done}"
     exit 0
 else
-    mv -nv -- "${name_no_path}" "${name_done}"
+    if [[ "${name_no_path}" != "${name_done}" ]]
+    then
+        mv -nv -- "${name_no_path}" "${name_done}"
+    fi
 fi
 
 exit $?
