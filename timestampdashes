@@ -22,7 +22,7 @@
 
 set -e                                                  # exit on first error
 #set -x                                                 # debug mode
-DEBUG_MODE=false                                        # 
+DEBUG_MODE=true                                        #
 
 
 process()
@@ -39,7 +39,7 @@ process()
     # Remove everything except 'safechars'
     name=$(echo "${name//[^${safechars}]/}")
 
-    # Add dashes and underlines at set positions for a final result like: 
+    # Add dashes and underlines at set positions for a final result like:
     # 2015-01-01_01-00-00
     name=$(echo "${name}" | sed 's/./-&/5' | sed 's/./-&/8' | sed 's/./_&/11')
     name=$(echo "${name}" | sed 's/./-&/14'| sed 's/./-&/17')
@@ -71,6 +71,31 @@ then
     echo "process result is NULL! EXITING .."
     exit 1
 fi
+
+
+# TODO: Check for filenames without extensions and handle properly!
+
+#       base    ${name%.*}
+#       ext     ${name#*.}
+
+#       a) filename without extension, e.g. test
+#          base:    test
+#          ext:     test
+#       b) filename with extension, e.g.    test.jpg
+#          base:    test
+#          ext:     jpg
+#       c) hidden file without extension, e.g. .test
+#          base:
+#          ext:     test
+#       d) hidden file with extension, e.g. .test.jpg
+#          base:    .test
+#          ext:     jpg
+
+#if [[ "${name_new}" == "${extension}" ]]
+#then
+    #extension=''
+#fi
+
 
 name_done="${name_new}.${extension}"
 
