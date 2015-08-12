@@ -10,6 +10,7 @@ collection of `*nix` shell-scripts.
 Listing
 -------
 ```
+check-tex-syntax              -- check syntax of LaTeX source file for errors
 clampimgheight                -- chop up images taller than a set max height
 crop-instagram-screenshot     -- crop images to size
 exif-rename                   -- rename images from exif date/time
