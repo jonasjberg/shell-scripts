@@ -1,0 +1,174 @@
+#!/usr/bin/env bash
+#
+#                        unit tests for timestampdashes
+#
+#                        Copyright(c)2015 Jonas Sjöberg
+#                        https://github.com/jonasjberg
+#_______________________________________________________________________________
+#
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation, either version 3 of the License, or
+#                     (at your option) any later version.
+#
+#       This program is distributed in the hope that it will be useful,
+#        but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                 GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#_______________________________________________________________________________
+
+set -e                                                  # exit on first error
+#set -x                                                 # debug mode
+
+
+VERBOSE=true
+
+TEST_INPUT[0]='1915.01.30 13-00-00.jpg'
+TEST_INPUT[1]='.1915.01.30 13-00-01.jpg'
+TEST_INPUT[2]='1915.01.30 13-00-00'
+TEST_INPUT[3]='.1915.01.30 13-00-01'
+TEST_INPUT[4]='1999-12-01 00.20.30.jpg'
+TEST_INPUT[5]='1999-12-01 00.20.31'
+TEST_INPUT[6]='2010.08-30ö23a59b59'
+TEST_INPUT[7]='2010.08-30ö23a59b60.jpeg'
+TEST_INPUT[8]='2011@07_29@23@11@23'
+TEST_INPUT[9]='2011@07_29@23@11@24.png'
+TEST_INPUT[10]='1994 12 01 24 00  00.jpg'
+TEST_INPUT[11]='1994 12 01 24 00  01.JPG'
+TEST_INPUT[12]='2000 11 01_07-12-41'
+TEST_INPUT[13]='2000 11 01_07-12-42.PNG'
+TEST_INPUT[14]='20000101071241'
+TEST_INPUT[15]='20000101071242.jpg'
+TEST_INPUT[16]='IMG_20010101071242.jpg'
+TEST_INPUT[17]='IMG__20020101071242.jpg'
+TEST_INPUT[18]='_IMG__20030101071242.jpg'
+TEST_INPUT[19]='_20040101071242.jpg'
+TEST_INPUT[20]='_-_20050101071242.jpg'
+
+EXECUTABLE="$(pwd)/timestampdashes"                     # program under test
+
+PROGNAME=$(basename $0)                                 # name of this script
+TEMPDIR=$(mktemp -d /tmp/${PROGNAME}.XXXXXX)            # temporary directory
+
+NUMBER_TESTS_TOTAL=0
+NUMBER_TESTS_PASSED=0
+
+
+fail()
+{
+    if [[ "$VERBOSE" == true ]];
+    then
+        echo "FAILED: $*"
+        echo ""
+    fi
+}
+
+
+pass()
+{
+    if [[ "$VERBOSE" == true ]];
+    then
+        echo "Test passed!"
+        echo ""
+    fi
+
+    NUMBER_TESTS_PASSED=$((NUMBER_TESTS_PASSED+1))
+}
+
+
+die()
+{
+    echo "$*"
+    exit 1
+}
+
+
+regex_check()
+{
+    local value="${1}"
+
+    if [[ "$VERBOSE" == true ]];
+    then
+        echo "regex input string: \"${value}\""
+    fi
+
+    REGEX="\(19\|20\)[0-9][0-9]-\(0[1-9]\|1[0-2]\)-\(0[1-9]\|[12][0-9]\|3[01]\)_[0-2][0-9]-[0-6][0-9]-[0-6][0-9]"
+    #GREP_CMD='grep -Fxq $REGEX --'
+    GREP_CMD="grep --color=auto --only-matching $REGEX --"
+
+    if echo "$value" | $GREP_CMD
+    then
+        pass
+    else
+        fail "Failed regex check!"
+    fi
+}
+
+
+setup_test()
+{
+    for file in "${TEST_INPUT[@]}"
+    do
+        touch "${TEMPDIR}/${file}"
+    done
+}
+
+
+run_test()
+{
+    cd ${TEMPDIR}
+    echo "pwd: $(pwd)"
+
+    for file in *
+    do 
+        NUMBER_TESTS_TOTAL=$((NUMBER_TESTS_TOTAL+1))
+
+        echo ""
+        echo "Run #${NUMBER_TESTS_TOTAL} .."
+        echo "file: \"$file\""
+        $EXECUTABLE "$file"
+    done
+
+    echo ""
+
+    for file in *
+    do
+        regex_check "${file%%.*}"
+    done
+
+    cd - >/dev/null
+    echo "pwd: $(pwd)"
+}
+
+
+teardown_test()
+{
+    echo "tearing down test .."
+}
+
+#_______________________________________________________________________________
+
+if [[ ! -e ${EXECUTABLE} ]];
+then
+    die "Unable to locate \"${EXECUTABLE}\"! exiting .."
+fi
+
+
+setup_test
+run_test
+teardown_test
+
+
+echo -e "\n\n${NUMBER_TESTS_PASSED}/${NUMBER_TESTS_TOTAL} tests passed"
+
+if [[ "$NUMBER_TESTS_PASSED" -eq "$NUMBER_TESTS_TOTAL" ]];
+then
+    echo "ALL TESTS PASSED!"
+    exit 0
+else
+    echo "FAILED!"
+    exit 1
+fi
