@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+DEBUG_MODE=false
+
+
+
+process()
+{
+    local name="$@"
+    local safechars="0-9"
+    
+    # Remove 'IMG', underlines, slashes and dots
+    #name=$(echo "${name//IMG/}")
+    #name=$(echo "${name//_/}")
+    #name=$(echo "${name//-/}")
+    #name=$(echo "${name//./}")
+
+    # Remove everything except 'safechars'
+    name=$(echo "${name//[^${safechars}]/}")
+
+    # Add dashes and underlines for a final result like: 2015-01-01_01-00-00
+    name=$(echo "${name}" | sed 's/./-&/5' | sed 's/./-&/8' | sed 's/./_&/11')
+    name=$(echo "${name}" | sed 's/./-&/14'| sed 's/./-&/17')
+
+    echo "${name}" # Function "return" value
+}
+
+
+
+# MAIN ROUTINE EXECUTION STARTS HERE
+if [[ -z ${1} ]];
+then
+    echo "Argument missing! EXITING .."
+    exit 1
+fi
+
+name_full="${1}"
+name_no_path="${name_full##*/}"
+extension="${name_full##*.}"
+
+name_no_ext=${name_full%.*}
+name_base=${name_no_path%.*}
+
+name_new="$(process "${name_base}")"
+
+#echo "name_new: ${name_new}"
+
+
+if [[ -z ${name_new} ]];
+then
+    echo "process result is NULL! EXITING .."
+    exit 1
+fi
+
+name_done="${name_new}.${extension}"
+
+
+if [[ "$DEBUG_MODE" == true ]]; then
+    echo "${name_done}"
+    exit 0
+else
+    mv -nv -- "${name_no_path}" "${name_done}"
+fi
