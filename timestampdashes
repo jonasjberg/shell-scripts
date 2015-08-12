@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 #                               timestampdashes
+#                          Renames files to the form 
+#                          "YYYY-MM-DD_hh-mm-ss.ext"
 #
 #                        Copyright(c)2015 Jonas Sjöberg
 #                        https://github.com/jonasjberg
@@ -25,16 +27,24 @@ set -e                                                  # exit on first error
 DEBUG_MODE=false                                        #
 
 
+msg_debug()
+{
+    if [[ "$DEBUG_MODE" == true ]]; then
+        echo "DEBUG: $*"
+    fi
+}
+
+
 process()
 {
     local name="$@"
     local safechars="0-9"
 
     # Remove 'IMG', underlines, slashes and dots
-    #name=$(echo "${name//IMG/}")
-    #name=$(echo "${name//_/}")
-    #name=$(echo "${name//-/}")
-    #name=$(echo "${name//./}")
+    name=$(echo "${name//IMG/}")
+    name=$(echo "${name//_/}")
+    name=$(echo "${name//-/}")
+    name=$(echo "${name//./}")
 
     # Remove everything except 'safechars'
     name=$(echo "${name//[^${safechars}]/}")
@@ -56,58 +66,42 @@ then
     exit 1
 fi
 
-name_full="${1}"
-name_no_path="${name_full##*/}"
-extension="${name_full##*.}"
-name_no_ext=${name_full%.*}
-name_base=${name_no_path%.*}
-
-
-# TODO: Check for filenames without extensions and handle properly!
-
-#       base    ${name%.*}
-#       ext     ${name#*.}
-
-#       a) filename without extension, e.g. test
-#          base:    test
-#          ext:     test
-#       b) filename with extension, e.g.    test.jpg
-#          base:    test
-#          ext:     jpg
-#       c) hidden file without extension, e.g. .test
-#          base:
-#          ext:     test
-#       d) hidden file with extension, e.g. .test.jpg
-#          base:    .test
-#          ext:     jpg
-
-
-# If base is empty but extension exists, then the extension is really the base.
-if [[ -z ${name_base} && -n ${extension} ]]
-then
-    name_base=".${extension}"
-    extension=''
+# Nicked from response by "Doctor J" at http://stackoverflow.com/a/1403489
+fullpath="${1}"
+filename="${fullpath##*/}"                      # Strip longest match of */ from start
+dir="${fullpath:0:${#fullpath} - ${#filename}}" # Substring from 0 thru pos of filename
+base="${filename%.[^.]*}"                       # Strip shortest match of . plus at least one non-dot char from end
+ext="${filename:${#base} + 1}"                  # Substring from len of base thru end
+if [[ -z "$base" && -n "$ext" ]]; then          # If we have an ext and no base, it's really the base
+    base=".$ext"
+    ext=""
 fi
+
+msg_debug "fullpath: $fullpath"
+msg_debug "filename: $filename"
+msg_debug "dir:      $dir"
+msg_debug "base:     $base"
+msg_debug "ext:      $ext"
 
 
 # Figure out new name. Exit if result is empty.
-name_new="$(process "${name_base}")"
-echo "name_new: ${name_new}"
+base_new="$(process "${base}")"
+msg_debug "base_new: ${base_new}"
 
-if [[ -z ${name_new} ]];
+if [[ -z ${base_new} ]];
 then
     echo "process result is NULL! EXITING .."
     exit 1
 fi
 
 
-# If the base is the same as the extension, there is no extension.
-if [[ "${name_base}" == "${extension}" ]]
+# If the base is the same as the ext, there is no ext.
+if [[ "${base}" == "${ext}" ]]
 then
-    extension=''
-    name_done="${name_new}"
+    ext=''
+    name_done="${base_new}"
 else
-    name_done="${name_new}.${extension}"
+    name_done="${base_new}.${ext}"
 fi
 
 
@@ -116,10 +110,11 @@ if [[ "$DEBUG_MODE" == true ]]; then
     echo "${name_done}"
     exit 0
 else
-    if [[ "${name_no_path}" != "${name_done}" ]]
+    if [[ "${filename}" != "${name_done}" ]]
     then
-        mv -nv -- "${name_no_path}" "${name_done}"
+        mv -nv -- "${filename}" "${name_done}"
     fi
 fi
+
 
 exit $?
