@@ -22,6 +22,8 @@ slugify-filename              -- clean up file names
 slugify-filename-test         -- unit tests for 'slugify-filename'
 src2tex                       -- convert source code to LaTeX
 tex2pdf                       -- convert LaTeX to pdf
+timestampdashes               -- rename files to "YYYY-MM-DD_hh-mm-ss.ext"
+timestampdashes-test          -- unit tests for 'timestampdashes'
 vrml2png                      -- generate png previews of vrml 3D models
 www2png                       -- convert a webpage to a image using cutycapt
 ```
