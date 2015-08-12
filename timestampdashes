@@ -1,14 +1,35 @@
 #!/usr/bin/env bash
+#
+#                               timestampdashes
+#
+#                        Copyright(c)2015 Jonas Sjöberg
+#                        https://github.com/jonasjberg
+#_______________________________________________________________________________
+#
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation, either version 3 of the License, or
+#                     (at your option) any later version.
+#
+#       This program is distributed in the hope that it will be useful,
+#        but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                 GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#_______________________________________________________________________________
 
-DEBUG_MODE=false
-
+set -e                                                  # exit on first error
+#set -x                                                 # debug mode
+DEBUG_MODE=false                                        # 
 
 
 process()
 {
     local name="$@"
     local safechars="0-9"
-    
+
     # Remove 'IMG', underlines, slashes and dots
     #name=$(echo "${name//IMG/}")
     #name=$(echo "${name//_/}")
@@ -18,7 +39,8 @@ process()
     # Remove everything except 'safechars'
     name=$(echo "${name//[^${safechars}]/}")
 
-    # Add dashes and underlines for a final result like: 2015-01-01_01-00-00
+    # Add dashes and underlines at set positions for a final result like: 
+    # 2015-01-01_01-00-00
     name=$(echo "${name}" | sed 's/./-&/5' | sed 's/./-&/8' | sed 's/./_&/11')
     name=$(echo "${name}" | sed 's/./-&/14'| sed 's/./-&/17')
 
@@ -26,7 +48,7 @@ process()
 }
 
 
-
+# ______________________________________________________________________________
 # MAIN ROUTINE EXECUTION STARTS HERE
 if [[ -z ${1} ]];
 then
@@ -37,14 +59,12 @@ fi
 name_full="${1}"
 name_no_path="${name_full##*/}"
 extension="${name_full##*.}"
-
 name_no_ext=${name_full%.*}
 name_base=${name_no_path%.*}
 
+
 name_new="$(process "${name_base}")"
-
 #echo "name_new: ${name_new}"
-
 
 if [[ -z ${name_new} ]];
 then
@@ -61,3 +81,5 @@ if [[ "$DEBUG_MODE" == true ]]; then
 else
     mv -nv -- "${name_no_path}" "${name_done}"
 fi
+
+exit $?
