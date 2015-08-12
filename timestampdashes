@@ -63,16 +63,6 @@ name_no_ext=${name_full%.*}
 name_base=${name_no_path%.*}
 
 
-name_new="$(process "${name_base}")"
-#echo "name_new: ${name_new}"
-
-if [[ -z ${name_new} ]];
-then
-    echo "process result is NULL! EXITING .."
-    exit 1
-fi
-
-
 # TODO: Check for filenames without extensions and handle properly!
 
 #       base    ${name%.*}
@@ -91,13 +81,33 @@ fi
 #          base:    .test
 #          ext:     jpg
 
-#if [[ "${name_new}" == "${extension}" ]]
-#then
-    #extension=''
-#fi
 
+# If base is empty but extension exists, then the extension is really the base.
+if [[ -z ${name_base} && -n ${extension} ]]
+then
+    name_base=".${extension}"
+    extension=''
+fi
 
-name_done="${name_new}.${extension}"
+# Figure out new name
+name_new="$(process "${name_base}")"
+#echo "name_new: ${name_new}"
+
+if [[ -z ${name_new} ]];
+then
+    echo "process result is NULL! EXITING .."
+    exit 1
+fi
+
+# If the base is the same as the extension, there is no extension.
+if [[ "${name_base}" == "${extension}" ]]
+then
+    extension=''
+    name_done="${name_new}"
+else
+    name_done="${name_new}.${extension}"
+fi
+
 
 
 if [[ "$DEBUG_MODE" == true ]]; then
