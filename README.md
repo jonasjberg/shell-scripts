@@ -36,18 +36,17 @@ Disclaimer
 I take no responsability whatsoever for whatever might happen if you decide to
 use these scripts, either as is or as modified versions.  You are on your own.
 
-Please handle with CARE!
+**Please handle with CARE!**
 
 Don't look at this repository for guidance or reference.  There are great free
 resources for properly learning shell scripts, like for instance;
 
-*Bash Guide for Beginners* by Machtelt Garrels
-http://tldp.org/LDP/Bash-Beginners-Guide/html/
-
-*Advanced Bash-Scripting Guide* by Mendel Cooper
-http://www.tldp.org/LDP/abs/html/
+* [Bash Guide for Beginners](http://tldp.org/LDP/Bash-Beginners-Guide/html/)
+  by Machtelt Garrels
+* [Advanced Bash-Scripting Guide](http://www.tldp.org/LDP/abs/html/)
+  by Mendel Cooper
 
 
 License
 -------
-GNU GENERAL PUBLIC LICENSE, Version 2.  See '`LICENSE.txt`'.
+GNU GPL, Version 2.  See '`LICENSE.txt`' for the full license.
