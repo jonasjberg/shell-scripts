@@ -46,3 +46,8 @@ http://tldp.org/LDP/Bash-Beginners-Guide/html/
 
 *Advanced Bash-Scripting Guide* by Mendel Cooper
 http://www.tldp.org/LDP/abs/html/
+
+
+License
+-------
+GNU GENERAL PUBLIC LICENSE, Version 2.  See '`LICENSE.txt`'.
