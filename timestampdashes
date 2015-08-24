@@ -113,7 +113,6 @@ else
     if [[ "${filename}" != "${name_done}" ]]
     then
         mv -nv -- "${filename}" "${name_done}"
-        exit $?
     fi
 fi
 
