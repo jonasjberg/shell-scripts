@@ -148,9 +148,6 @@ process()
     msg_debug
 
     # --------------------------------------------------------------------------
-    # Remove any dashes and underlines if first or last in name
-    name=$(echo "${name//V413HAV/_}")
-
     # Collapse repeating characters
     #name=$(echo $name| tr -s '_' '_' | tr -s '-' '-')
     #msg_debug
