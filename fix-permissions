@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+# Recursively set permissions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Recursively set permissions in shared "data" folders.
+#_______________________________________________________________________________
+#
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation, either version 3 of the License, or
+#                     (at your option) any later version.
+#
+#       This program is distributed in the hope that it will be useful,
+#        but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                 GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#_______________________________________________________________________________
+
+set -e                          # exit on first error
+#set -x                         # debug mode
+
+                                #                      owner   group   other
+DIR_PERMS='755'                 # directories    775   r w x   r w x   r   x
+FILE_PERMS='664'                # files          664   r w     r w     r
+
+#_______________________________________________________________________________
+
+
+path=${1%/}
+
+if [[ ${path} && ${path-x} ]];
+then
+    if [[ ! -d $path ]]; then
+        echo "starting directory path does not exist or isn't a directory!"
+        exit 1
+    fi
+
+    echo "confirm starting path: \"$path\" .."
+    read -rsp $'Press any key to continue...\n' -n 1 key
+
+    #echo "changing owner .."
+    #chown -R ${USER}:${USER} "${path}"
+
+    echo "chmodding directories .."
+    find "${path}" -type d -exec chmod $DIR_PERMS '{}' \;
+
+    echo "chmodding files .."
+    find "${path}" -type f -exec chmod $FILE_PERMS '{}' \;
+
+    echo ".. done!"
+    exit $?
+else
+    echo "path argument required!" 
+    echo "USAGE: $0 /starting/directory/path"
+    exit 1
+fi
