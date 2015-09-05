@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 #
 #                               timestampdashes
-#                               ~~~~~~~~~~~~~~~
-#          Renames files to ISO-8601 format.  (http://xkcd.com/1179/)
-#          Strips all but digits, then inserts dashes and underscores
-#          for a final result like maybe;   "YYYY-MM-DD_hh-mm-ss.ext"
+#                          Renames files to the form 
+#                          "YYYY-MM-DD_hh-mm-ss.ext"
 #
 #                        Copyright(c)2015 Jonas Sjöberg
 #                        https://github.com/jonasjberg
@@ -120,3 +118,4 @@ fi
 
 
 exit $?
+

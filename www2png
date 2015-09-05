@@ -84,8 +84,9 @@ then
         URL_slugify=$(echo $URL_tail_alphanumeric | sed -r 's/^[_-]+//g')
         URL_slugifying=$(echo $URL_slugify | sed -r 's/[_-]+$//g')
 
-        # Replace '--' with '_'
-        URL_slugified=$(echo $URL_slugifying | sed 's/--/_/g')
+        # Replace two or more dashes with a underline, collapse underlines
+        URL_slugified=$(echo $URL_slugifying | sed -r 's/[-]{2,}/_/g')
+        URL_slugified=$(echo $URL_slugifying | sed -r 's/[_]{2,}/_/g')
 
         # Append file extension
         TARGET="${URL_slugified}.png"
