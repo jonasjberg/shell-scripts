@@ -23,7 +23,7 @@ set -e                          # exit on first error
 #set -x                         # debug mode
 
                                 #                      owner   group   other
-DIR_PERMS='755'                 # directories    775   r w x   r w x   r   x
+DIR_PERMS='775'                 # directories    775   r w x   r w x   r   x
 FILE_PERMS='664'                # files          664   r w     r w     r
 
 #_______________________________________________________________________________
