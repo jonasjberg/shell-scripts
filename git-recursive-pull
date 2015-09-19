@@ -13,7 +13,7 @@ do
     echo "Entering git repository ${dir%/*} ..";
     cd ${dir%/*};
 
-    git pull;
+    git pull --all;
 
     cd -;
     echo ""
