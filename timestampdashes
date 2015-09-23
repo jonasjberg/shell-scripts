@@ -22,12 +22,32 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #_______________________________________________________________________________
 
-set -e                                                  # exit on first error
+#set -e                                                 # exit on first error
 #set -x                                                 # debug mode
 DEBUG_MODE=false                                        #
+ECHO_RESULT=false                                       # just show the results
+                                                        # .. don't do anything
+
+REQUIRED_NUMBER_OF_DIGITS=14                            # skip files if less
+DEFAULT_ERROR_MSG="Unknown (unspecified) error!"
 
 
-msg_debug()
+function die()
+{
+    msg=${2:-$DEFAULT_ERROR_MSG}
+    echo "Failed! dieing .."
+    echo "msg: ${msg}"
+    exit ${1:-0}
+}
+
+
+function msg_warn()
+{
+    echo "WARNING: $*" >&2
+}
+
+
+function msg_debug()
 {
     if [[ "$DEBUG_MODE" == true ]]; then
         echo "DEBUG: $*"
@@ -35,22 +55,17 @@ msg_debug()
 }
 
 
-process()
+function process()
 {
     local name="$@"
     local safechars="0-9"
 
-    # Remove 'IMG', underlines, slashes and dots
-    name=$(echo "${name//IMG/}")
-    name=$(echo "${name//_/}")
-    name=$(echo "${name//-/}")
-    name=$(echo "${name//./}")
-
     # Remove everything except 'safechars'
     name=$(echo "${name//[^${safechars}]/}")
 
-    # Add dashes and underlines at set positions for a final result like:
-    # 2015-01-01_01-00-00
+    # Add dashes and underlines at set positions.
+    # Dashes at index 5, 8, 14 and 17. Underline at index 11.
+    # For a final result like: 2015-01-01_01-00-00
     name=$(echo "${name}" | sed 's/./-&/5' | sed 's/./-&/8' | sed 's/./_&/11')
     name=$(echo "${name}" | sed 's/./-&/14'| sed 's/./-&/17')
 
@@ -58,62 +73,105 @@ process()
 }
 
 
+function check_number_of_digits()
+{
+    if [[ -z ${1} ]]; then
+        msg_warn "Missing argument to function \'check_number_of_digits\'"
+        return 1
+    fi
+
+    t="${1//[^0-9]}"
+    digits="${#t}"
+    msg_debug "# digits: ${digits}"
+
+    if [ "$digits" -lt "$REQUIRED_NUMBER_OF_DIGITS" ]; then
+        msg_debug "Filename doesn't contain the required amount of digits (<)"
+        return 1
+    elif [ "$digits" -ge "$REQUIRED_NUMBER_OF_DIGITS" ]; then
+        msg_debug "Filename contains the required amount of digits (>=)"
+        return 0
+    fi
+}
+
+
+function main()
+{
+    if [[ -z ${1} ]]; then
+        msg_warn "Missing argument to function 'main'"
+        return
+    fi
+
+    msg_debug "------------------------------------------------------------"
+    msg_debug "Now processing file '${1}'"
+
+    if [[ ! -f ${1} ]]; then
+        msg_warn "'${1}' is not a file!"
+        return
+    fi
+
+    if ! check_number_of_digits "${1}"; then
+        msg_warn "Filename doesn't contain the required amount of digits"
+        return
+    fi
+    
+
+    # Nicked from response by "Doctor J" at http://stackoverflow.com/a/1403489
+    fullpath="${1}"
+    filename="${fullpath##*/}"                      # Strip longest match of */ from start
+    dir="${fullpath:0:${#fullpath} - ${#filename}}" # Substring from 0 thru pos of filename
+    base="${filename%.[^.]*}"                       # Strip shortest match of . plus at least one non-dot char from end
+    ext="${filename:${#base} + 1}"                  # Substring from len of base thru end
+    if [[ -z "$base" && -n "$ext" ]]; then          # If we have an ext and no base, it's really the base
+        base=".$ext"
+        ext=""
+    fi
+
+    msg_debug "fullpath: ${fullpath}"
+    msg_debug "filename: ${filename}"
+    msg_debug "dir:      ${dir}"
+    msg_debug "base:     ${base}"
+    msg_debug "ext:      ${ext}"
+
+    # Figure out new name. Exit if result is empty.
+    base_new="$(process "${base}")"
+    msg_debug "base_new: ${base_new}"
+
+    if [[ -z ${base_new} ]]; then
+        msg_warn "Process result is NULL!"
+        return
+    fi
+
+    # If the base is the same as the ext, there is no ext.
+    if [[ "${base}" == "${ext}" ]]; then
+        ext=''
+        name_done="${base_new}"
+    else
+        name_done="${base_new}.${ext}"
+    fi
+
+
+    # Print out result or rename the file.
+    if [[ "$ECHO_RESULT" == true ]]; then
+        echo "${name_done}"
+        return 0
+    else
+        if [[ "${filename}" != "${name_done}" ]]; then
+            mv -nv -- "${filename}" "${name_done}"
+            return $?
+        fi
+    fi
+}
+
+
 # ______________________________________________________________________________
 # MAIN ROUTINE EXECUTION STARTS HERE
-if [[ -z ${1} ]];
-then
-    echo "Argument missing! EXITING .."
-    exit 1
-fi
 
-# Nicked from response by "Doctor J" at http://stackoverflow.com/a/1403489
-fullpath="${1}"
-filename="${fullpath##*/}"                      # Strip longest match of */ from start
-dir="${fullpath:0:${#fullpath} - ${#filename}}" # Substring from 0 thru pos of filename
-base="${filename%.[^.]*}"                       # Strip shortest match of . plus at least one non-dot char from end
-ext="${filename:${#base} + 1}"                  # Substring from len of base thru end
-if [[ -z "$base" && -n "$ext" ]]; then          # If we have an ext and no base, it's really the base
-    base=".$ext"
-    ext=""
-fi
-
-msg_debug "fullpath: $fullpath"
-msg_debug "filename: $filename"
-msg_debug "dir:      $dir"
-msg_debug "base:     $base"
-msg_debug "ext:      $ext"
-
-
-# Figure out new name. Exit if result is empty.
-base_new="$(process "${base}")"
-msg_debug "base_new: ${base_new}"
-
-if [[ -z ${base_new} ]];
-then
-    echo "process result is NULL! EXITING .."
-    exit 1
-fi
-
-
-# If the base is the same as the ext, there is no ext.
-if [[ "${base}" == "${ext}" ]]
-then
-    ext=''
-    name_done="${base_new}"
+if [ $# -eq 0 ]; then
+    die 1 "Positional arguments missing! At least one is required."
 else
-    name_done="${base_new}.${ext}"
-fi
-
-
-# Print out result or rename the file.
-if [[ "$DEBUG_MODE" == true ]]; then
-    echo "${name_done}"
-    exit 0
-else
-    if [[ "${filename}" != "${name_done}" ]]
-    then
-        mv -nv -- "${filename}" "${name_done}"
-    fi
+    for f in "$@"; do
+        main "${f}"
+    done
 fi
 
 
