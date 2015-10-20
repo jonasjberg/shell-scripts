@@ -30,22 +30,43 @@
 
 IMAGE_HEIGHT_MAX=4000
 
-set -e                                                  ## exit on first error
-#set -x                                                 ## debug mode
+set -e                                                  # exit on first error
+#set -x                                                 # debug mode
 
+DEBUG=true
 PROGNAME=$(basename $0)                                 # name of this script
 TEMPDIR=$(mktemp -d /tmp/${PROGNAME}.XXXXXX)            # temporary directory
+DEFAULT_ERROR_MSG="Unknown (unspecified) error!"
+DEFAULT_ERROR_CODE=2
 
 #_______________________________________________________________________________
 
 
-die()
+function die()
 {
-    echo "${PROGNAME} ERROR: $*"
-    exit 1
+    msg=${2:-$DEFAULT_ERROR_MSG}
+    echo "${PROGNAME} execution failed!" 1>&2
+    echo "Error message: ${msg}" 1>&2
+    exit ${1:-$DEFAULT_ERROR_CODE}
 }
 
-check_convert_installed()
+
+function msg_warn()
+{
+    echo "WARNING: $*" >&2
+}
+
+
+function msg_debug()
+{
+    if [[ "$DEBUG_MODE" == true ]]
+    then
+        echo "DEBUG: $*"
+    fi
+}
+
+
+function check_convert_installed()
 {
     if ! command -v "convert" >/dev/null
     then
@@ -53,86 +74,115 @@ check_convert_installed()
     fi
 }
 
-process_image()
-{
-    # intermediate file name(s)
-    local horiz_split="${TEMPDIR}/${input_no_ext}_%02d.${extension}"
 
-    # chop up image horizontally in 'number_of_splits' pieces
+function process_image()
+{
+    local input=${1}
+
+    # Get output file name from second argument or default to "DEFAULT_output".
+    # Variable substitutions:  ${input%.*}  strips any extension
+    #                          ${input##*.} strips everything but the extension
+    local ext=${input##*.}
+    local input_no_ext=${input%.*}
+
+    # Second argument is the output filename, use default if not present.
+    local DEFAULT_output="${input_no_ext}_CLAMPED.${ext}"
+    output=${2:-$DEFAULT_output}
+
+    # Get a name for intermediate files.
+    # Variable substitutions:  ${input%.*}  strips any extension
+    #                          ${input##*.} strips everything but the extension
+    local horiz_split="${TEMPDIR}/${input_no_ext}_%02d.${ext}"
+
+    # Chop up image horizontally in 'number_of_splits' pieces.
     # http://www.imagemagick.org/Usage/crop/#crop_equal
     convert "${input}" -crop 1x${number_of_splits}@ +repage +adjoin "${horiz_split}"
 
-    # merge all pieces horizontally
+    # Merge all pieces horizontally.
     # http://www.imagemagick.org/Usage/layers/
     # http://www.imagemagick.org/Usage/option_link.cgi?append
-    convert +append "${TEMPDIR}/*.${extension}" "${output}"
+    convert +append "${TEMPDIR}/*.${ext}" "${output}"
+
 }
 
-get_image_height()
+
+function get_image_height()
 {
     local image_height=$(identify -format "%h" "${1}")
     echo "$image_height"
 }
 
+function main()
+{
+    # Set input file name(s)
+    local input=${1}
+    local input_no_ext=${input%.*}
+    local extension="${input##*.}"
+
+    if [[ ! -f ${input} ]]
+    then
+        msg_warn "'${input}' is not a file!"
+        return 1
+    fi
+
+
+    # Initialize counter and get initial image height.
+    number_of_splits=1
+    initial_image_height=$(get_image_height "${input}")
+
+    # Check if initial image height is less than or equal to IMAGE_HEIGHT_MAX.
+    if [[ $initial_image_height -le $IMAGE_HEIGHT_MAX ]]
+    then
+        die 1 "Image height is already less than or equal to IMAGE_HEIGHT_MAX"
+    fi
+
+    # Get the number of vertical splits needed.
+    target_image_height=$initial_image_height
+    while [[ $target_image_height -gt $IMAGE_HEIGHT_MAX ]]
+    do
+        target_image_height=$((${initial_image_height} / ${number_of_splits}))
+        number_of_splits=$[$number_of_splits +1]
+    done
+
+
+    if [[ -z $number_of_splits ]]
+    then
+        die 1 "Failed to calculate number of splits"
+    fi
+
+    msg_debug "           input filename: ${input}"
+    msg_debug "             image height: ${initial_image_height}"
+    msg_debug "         IMAGE_HEIGHT_MAX: ${IMAGE_HEIGHT_MAX}"
+    msg_debug "number of splits required: ${number_of_splits}"
+
+    process_image ${input} ${2}
+}
+
 #_______________________________________________________________________________
+# ______________________________________________________________________________
+# MAIN ROUTINE EXECUTION STARTS HERE
 
-
-# check that the first parameter is set
-if [[ -z $1 ]]
+if [[ $# -eq 0 ]]
 then
-    die "Input file name is missing"
+    die 1 "Positional arguments missing! At least one is required."
+else
+    check_convert_installed
+
+    if [[ $# -eq 2 ]]
+    then
+        echo "input and output is specified"
+        main "${1}" "${2}"
+        mv -nv "${output}" "${2}"
+    else 
+        for file in "$@"
+        do
+            msg_debug "------------------------------------------------------------"
+            msg_debug "Now processing file '${file}'"
+            main "${file}"
+        done
+    fi
 fi
 
 
-# make sure convert is installed and executable
-check_convert_installed
-
-
-# set input file name
-input=${1}
-input_no_ext=${input%.*}
-extension="${input##*.}"
-
-# get output file name from the second argument or default to "DEFAULT_output"
-DEFAULT_output="${input_no_ext}_DONE.${extension}"
-output=${2:-$DEFAULT_output}
-
-
-# initialize counter and get initial image height
-number_of_splits=1
-initial_image_height=$(get_image_height "${input}")
-
-# check if initial image heigth is less than or equal to IMAGE_HEIGHT_MAX
-if [ "$initial_image_height" -le "$IMAGE_HEIGHT_MAX" ];
-then
-    die "Image height is already less than or equal to IMAGE_HEIGHT_MAX"
-fi
-
-
-# get number of vertical splits needed
-target_image_height=$initial_image_height
-while [ "$target_image_height" -gt "$IMAGE_HEIGHT_MAX" ]
-do
-    target_image_height=$((${initial_image_height} / ${number_of_splits}))
-    number_of_splits=$[$number_of_splits +1]
-done
-
-
-# check that number_of_splits is set
-if [[ -z $number_of_splits ]]
-then
-    die "Failed to calculate number of splits"
-fi
-
-echo "           input filename: ${input}"
-echo "             image height: $initial_image_height"
-echo "         IMAGE_HEIGHT_MAX: $IMAGE_HEIGHT_MAX"
-echo "number of splits required: $number_of_splits"
-
-
-# run main routine
-process_image
-
-
-exit 0
+exit $?
 
