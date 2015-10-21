@@ -29,7 +29,7 @@
 
 # Use these settings when running cutycapt:
 EXTENSION="png"
-FLAGS="--out-format=${EXTENSION} --javascript=off --java=off"
+FLAGS="--out-format=${EXTENSION} --javascript=on --java=on"
 
 # ------------------------------------------------------------------------------
 
