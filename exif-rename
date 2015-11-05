@@ -44,9 +44,9 @@ SEARCHSTRINGS[0]='Create Date'
 SEARCHSTRINGS[1]='Date/Time Created'
 SEARCHSTRINGS[2]='Date/Time Original'
 SEARCHSTRINGS[3]='Date/Time Digitized'
-SEARCHSTRINGS[4]='Modify Date'
-SEARCHSTRINGS[5]='Modification Date'
-SEARCHSTRINGS[6]='Profile Date Time'
+#SEARCHSTRINGS[4]='Modify Date'
+#SEARCHSTRINGS[5]='Modification Date'
+#SEARCHSTRINGS[6]='Profile Date Time'
 
 VERBOSE_MODE=false
 DEBUG_MODE=false
