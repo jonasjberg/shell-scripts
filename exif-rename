@@ -120,7 +120,7 @@ find_timestamp()
 rename_file()
 {
     #echo ""${1}"  -->  "${2}.${extension}""
-    mv -nvi "${1}" "${2}.${extension}"
+    mv -nv "${1}" "${2}.${extension}"
 }
 
 
