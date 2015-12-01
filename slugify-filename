@@ -72,14 +72,6 @@ process()
 
     name=$(echo "${name//&/-and-}")             # Replace '&' with '-and-'
     name=$(echo "${name//\ -and-\ /-and-}")     # Replace ' -and- ' with '-and-'
-    if [[ -z ${name} ]];
-    then
-        die "process() function argument missing!"
-    fi
-
-    #name=${name%/}                        # Remove trailing slash if present
-    #echo "name: ${name}"
-
     msg_debug
 
     # Replace special words
@@ -106,14 +98,11 @@ process()
     name=$(echo "${name//\ -AT-\ /-AT-}")       # Replace ' -AT- ' with '-AT-'
     msg_debug
 
-    # --------------------------------------------------------------------------
     # Replace everything that is not in 'SAFE_CHARS' with a dash
     name=$(echo "${name//[^${SAFE_CHARS}]/-}")
     msg_debug
 
-    # --------------------------------------------------------------------------
     # Replace two or more dashes with a underline, collapse underlines
-    #name=$(echo "${name//[-]{2,}/_/g}")
     name=$(echo $name | sed -r 's/[-]{2,}/_/g')
     name=$(echo $name | sed -r 's/[_]{2,}/_/g')
     msg_debug
@@ -123,16 +112,11 @@ process()
     name=$(echo "${name//_-/${SEPAR_CHAR}}")    # Replace _- with _
     msg_debug
 
-    # --------------------------------------------------------------------------
     # Remove any dashes and underlines if first or last in name
     name=$(echo $name | sed -r 's/^[_-]+//g')
     name=$(echo $name | sed -r 's/[_-]+$//g')
     msg_debug
 
-    # --------------------------------------------------------------------------
-    # Collapse repeating characters
-    #name=$(echo $name| tr -s '_' '_' | tr -s '-' '-')
-    #msg_debug
 
     echo "${name}" # Function "return" value
 }
