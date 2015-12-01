@@ -125,11 +125,6 @@ process_hard()
 {
     local name="$@"
 
-    if [[ -z ${name} ]];
-    then
-        die "process_hard() function argument missing!"
-    fi
-
     # Remove everything other than a-z, A-Z and 0-9
     name=$(echo $name | sed 's/[^a-zA-Z0-9]//g')
 
@@ -176,12 +171,6 @@ msg_progress "name_no_path:   $name_no_path"
 msg_progress "extension:      $extension"
 msg_progress "name_no_ext:    $name_no_ext"
 
-if [[ ! -z ${extension} ]];
-then
-    msg_prompt "slugifying extension"
-    extension="$(process "${extension}")"
-    msg_progress "extension:      $extension"
-fi
 
 if [[ ! -z ${name_no_ext} ]];
 then
@@ -230,10 +219,6 @@ msg_progress "name_new:       $name_new"
     #name_new=".${name_new}"
 #fi
 
-if [[ -z ${name_new} ]];
-then
-    die "process result is NULL!"
-fi
 
 name_new_full="${name_new}${extension}"
 msg_progress "name_new_full:  $name_new_full"
