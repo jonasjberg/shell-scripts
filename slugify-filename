@@ -83,12 +83,7 @@ process()
     name=$(echo "${name//&/-and-}")
     msg_debug
 
-    # Replace ' -and- ' with '-and-'
-    name=$(echo "${name//\ -and-\ /-and-}")
-    msg_debug
-
-    # --------------------------------------------------------------------------
-    # Replace common words
+    # Replace special words
     name=$(echo "${name//C++/C-plusplus}")
     name=$(echo "${name//C#/C-sharp}")
     
