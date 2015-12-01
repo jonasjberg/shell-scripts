@@ -108,13 +108,8 @@ process()
     done
 
 
-    # --------------------------------------------------------------------------
-    # Replace '@' with '-AT-'
-    name=$(echo "${name//@/-AT-}")
-    msg_debug
-
-    # Replace ' -AT- ' with '-AT-'
-    name=$(echo "${name//\ -AT-\ /-AT-}")
+    name=$(echo "${name//@/-AT-}")              # Replace '@' with '-AT-'
+    name=$(echo "${name//\ -AT-\ /-AT-}")       # Replace ' -AT- ' with '-AT-'
     msg_debug
 
     # --------------------------------------------------------------------------
