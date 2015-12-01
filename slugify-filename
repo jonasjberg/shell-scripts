@@ -70,6 +70,8 @@ process()
 {
     local name="$@"
 
+    name=$(echo "${name//&/-and-}")             # Replace '&' with '-and-'
+    name=$(echo "${name//\ -and-\ /-and-}")     # Replace ' -and- ' with '-and-'
     if [[ -z ${name} ]];
     then
         die "process() function argument missing!"
@@ -78,9 +80,6 @@ process()
     #name=${name%/}                        # Remove trailing slash if present
     #echo "name: ${name}"
 
-    # --------------------------------------------------------------------------
-    # Replace '&' with '-and-'
-    name=$(echo "${name//&/-and-}")
     msg_debug
 
     # Replace special words
@@ -119,16 +118,9 @@ process()
     name=$(echo $name | sed -r 's/[_]{2,}/_/g')
     msg_debug
 
-    # Replace -_- with _
-    name=$(echo "${name//-_-/_}")
-    msg_debug
-
-    # Replace -_ with _
-    name=$(echo "${name//-_/_}")
-    msg_debug
-
-    # Replace _- with _
-    name=$(echo "${name//_-/_}")
+    name=$(echo "${name//-_-/${SEPAR_CHAR}}")   # Replace -_- with _
+    name=$(echo "${name//-_/${SEPAR_CHAR}}")    # Replace -_ with _
+    name=$(echo "${name//_-/${SEPAR_CHAR}}")    # Replace _- with _
     msg_debug
 
     # --------------------------------------------------------------------------
