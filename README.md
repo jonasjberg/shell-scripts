@@ -12,8 +12,10 @@ Listing
 ```
 check-tex-syntax              -- check syntax of LaTeX source file for errors
 clampimgheight                -- chop up images taller than a set max height
+clipboard-to-file             -- puts the clipboard contents in a file
 crop-instagram-screenshot     -- crop images to size
 exif-rename                   -- rename images from exif date/time
+fix-permissions               -- sets permissions recursively
 folder-manifest               -- generate txt file with folder info
 git-backup                    -- recursively find and backup git repos
 git-recursive-pull            -- recursively find repos and do git pull
