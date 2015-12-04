@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# ------------------------------------------------------------------------------
+
+
+set -e                         # Exit immediately if a command returns non-zero.
+
+SPACE_CHAR='-'
+SEPAR_CHAR='_'
+GLUE_CHARS='-_'
+SAFE_CHARS="${GLUECHARS}a-zA-Z0-9"
+TIMESTAMP=$(date +%F)
+
+
+src=$1
+
+if [[ ! -d ${src} ]]
+then
+    echo "WARNING: Pathname (source) argument isn't a directory." >&2
+    echo "         exiting .." >&2
+    exit 1
+fi
+
+
+# Generate a filename from the source directory name ..
+name=$src
+
+# Replace everything that is not in 'SAFE_CHARS' with a dash
+name=$(echo "${name//[^${SAFE_CHARS}]/-}")
+
+# Replace two or more dashes with a underline, collapse underlines
+name=$(echo $name | sed -r 's/[-]{2,}/_/g')
+name=$(echo $name | sed -r 's/[_]{2,}/_/g')
+
+name=$(echo "${name//-_-/${SEPAR_CHAR}}")   # Replace -_- with _
+name=$(echo "${name//-_/${SEPAR_CHAR}}")    # Replace -_ with _
+name=$(echo "${name//_-/${SEPAR_CHAR}}")    # Replace _- with _
+
+# Remove any dashes and underlines if first or last in name
+name=$(echo $name | sed -r 's/^[_-]+//g')
+name=$(echo $name | sed -r 's/[_-]+$//g')
+
+
+# Create archive ..
+tar -zcvf "${name}_${TIMESTAMP}.tar.gz" "$src"
+
+exit $?
+
+
+
+
+
+
+
+
