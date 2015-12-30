@@ -253,7 +253,7 @@ main()
 
 if [ $# -eq 0 ]
 then
-    die 1 "Positional arguments missing! At least one is required."
+    die "Positional arguments missing! At least one is required."
 else
     for arg in "$@"
     do
