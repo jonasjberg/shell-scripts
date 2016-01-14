@@ -126,6 +126,7 @@ then
     fi
 else
     # <URL> must be set. Display usage and exit.
-    usage
+    show_usage
+    exit 2
 fi
 
