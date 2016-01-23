@@ -65,6 +65,17 @@ msg_status()
     fi
 }
 
+msg_warning()
+{
+    if [[ "$VERBOSE_MODE" == true ]]
+    then
+        if [[ ! -z ${1} ]]
+        then
+            printf "\nWARNING: %s\n" "$1" 1>&2
+        fi
+    fi
+}
+
 msg_debug()
 {
     if [[ "$DEBUG_MODE" == true ]]
@@ -120,54 +131,79 @@ find_timestamp()
 rename_file()
 {
     #echo ""${1}"  -->  "${2}.${extension}""
-    mv -nv "${1}" "${2}.${extension}"
+    destination="${2}.${extension}"
+    
+    if [ -e "${destination}" ]
+    then 
+        msg_warning "target already exists, skipping .."
+        return
+    else
+        mv -nv "$1" "$destination"
+    fi
+}
+
+main()
+{
+    if [[ -z ${1} ]]
+    then
+        msg_warning "argument missing!"
+        return
+    fi
+
+    input=${1}
+    extension="${input##*.}"
+    msg_debug "input image:     $input"
+    msg_debug "input extension: $extension"
+
+    msg_status "searching for timestamp .."
+    timestamp=$(find_timestamp "${input}")
+
+    if [[ -z ${timestamp} ]]
+    then
+        msg_warning "timestamp not found! search FAILED"
+        return
+    fi
+
+    msg_debug "timestamp: "$timestamp""
+
+
+    msg_status "cleaning up timestamp .."
+    timestamp=$(clean_up_timestamp "${timestamp}")
+
+    if [[ -z ${timestamp} ]]
+    then
+        msg_warning "timestamp is NULL -- cleanup FAILED!"
+        return
+    fi
+
+    msg_debug "timestamp: "$timestamp""
+
+
+    msg_status "renaming file .."
+    rename_file "${input}" "${timestamp}"
+
+    msg_status "done .."
+    return
 }
 
 
 # ______________________________________________________________________________
-# SCRIPT CODE EXECUTION STARTS HERE
+# MAIN ROUTINE EXECUTION STARTS HERE
 
 if ! command -v "exiftool" >/dev/null
 then
     die "failed to execute exiftool!"
 fi
 
-if [[ -z ${1} ]]
+if [ $# -eq 0 ]
 then
-    die "argument missing!"
+    die "Positional arguments missing! At least one is required."
+else
+    for arg in "$@"
+    do
+        main "${arg}"
+    done
 fi
 
-input=${1}
-extension="${input##*.}"
-
-msg_debug "input image:     $input"
-msg_debug "input extension: $extension"
-
-
-msg_status "searching for timestamp .."
-timestamp=$(find_timestamp "${input}")
-
-if [[ -z ${timestamp} ]]
-then
-    die "timestamp not found! search FAILED"
-fi
-
-
-msg_debug "timestamp: "$timestamp""
-msg_status "cleaning up timestamp .."
-timestamp=$(clean_up_timestamp "${timestamp}")
-
-if [[ -z ${timestamp} ]]
-then
-    die "timestamp is NULL -- cleanup FAILED!"
-fi
-
-
-msg_debug "timestamp: "$timestamp""
-msg_status "renaming file .."
-rename_file "${input}" "${timestamp}"
-
-
-msg_status "done .."
 exit $?
 
