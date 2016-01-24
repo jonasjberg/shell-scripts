@@ -2,8 +2,7 @@
 #                                 ~~~~~~~~~~~
 #                                 exif-rename
 #                                 ~~~~~~~~~~~
-#
-#                       Copyright (C) 2015 Jonas Sjöberg
+#                    Copyright (C) 2015-2016 Jonas Sjöberg
 #                        https://github.com/jonasjberg
 #
 #                 Rename images based on exif time/date data.
