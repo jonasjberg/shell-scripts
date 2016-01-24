@@ -10,6 +10,8 @@
 #     Contents of SEARCHSTRINGS are ordered by priority, from high to low.
 #      The first match is used, so put whatever exif-fields that are more
 #      likely to contain the correct date/time higher in the list below.
+#    Compared to similar programs/scripts out there, this is a particularly
+#       poor implementation with astonishingly lackluster functionality.
 #     ____________________________________________________________________
 #
 #     This program is free software: you can redistribute it and/or modify
@@ -26,17 +28,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+# Example exiftool output this script will process:
+# 
+# > $ exiftool 2015-01-31\ 00.25.39.jpg | grep -i date
+#
+#     File Modification Date/Time     : 2015:01:31 00:25:39+01:00
+#     File Access Date/Time           : 2015:06:04 05:58:32+02:00
+#     File Inode Change Date/Time     : 2015:05:20 12:29:25+02:00
+#     Modify Date                     : 2015:01:31 00:25:39
+#     Date/Time Original              : 2015:01:31 00:25:39
+#     Create Date                     : 2015:01:31 00:25:39
+
+
 set -e                                                   ## exit on first error
 #set -x                                                  ## debug mode
-
-# Example exiftool output this script will process:
-# > $ exiftool 2015-01-31\ 00.25.39.jpg | grep -i date
-# File Modification Date/Time     : 2015:01:31 00:25:39+01:00
-# File Access Date/Time           : 2015:06:04 05:58:32+02:00
-# File Inode Change Date/Time     : 2015:05:20 12:29:25+02:00
-# Modify Date                     : 2015:01:31 00:25:39
-# Date/Time Original              : 2015:01:31 00:25:39
-# Create Date                     : 2015:01:31 00:25:39
 
 # Search strings ordered by priority, from high to low;
 SEARCHSTRINGS[0]='Create Date'
@@ -187,7 +192,7 @@ main()
 
 
 # ______________________________________________________________________________
-# MAIN ROUTINE EXECUTION STARTS HERE
+# CODE EXECUTION STARTS HERE
 
 if ! command -v "exiftool" >/dev/null
 then
