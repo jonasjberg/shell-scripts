@@ -100,11 +100,13 @@ find_timestamp()
     for str in "${SEARCHSTRINGS[@]}"
     do
         timestamp=$(exiftool "${image}" \
-            | grep -i --max-count=1 "${str}" \
+            | grep -ai --max-count=1 "${str}" \
             | cut -d ':' -f 2-)
 
         # Optional additional filter
         timestamp=$(echo ${timestamp} | grep -v "2015")
+        timestamp=$(echo ${timestamp} | grep -v "2016")
+        timestamp=$(echo ${timestamp} | grep -v "0000:00:00")
 
         if [[ ! -z ${timestamp} ]]
         then
