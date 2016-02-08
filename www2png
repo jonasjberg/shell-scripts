@@ -80,15 +80,18 @@ then
     URL_tail="$(echo ${URL##*/})"           # Get everything after the last '/'
 
     # Remove non-alphanumeric chars
-    URL_tail_alphanumeric=$(echo $URL_tail | sed 's/[^a-zA-Z0-9_-]/-/g')
+    URL_tail=$(echo $URL_tail | sed 's/[^a-zA-Z0-9_-]/-/g')
 
     # Remove any dashes and underlines if first or last in name
-    URL_slugify=$(echo $URL_tail_alphanumeric | sed -r 's/^[_-]+//g')
-    URL_slugifying=$(echo $URL_slugify | sed -r 's/[_-]+$//g')
+    URL_slugify=$(echo $URL_tail | sed -r 's/^[_-]+//g')
+    URL_slugify=$(echo $URL_slugify | sed -r 's/[_-]+$//g')
 
     # Replace two or more dashes with a underline, collapse underlines
-    URL_slugified=$(echo $URL_slugifying | sed -r 's/[-]{2,}/_/g')
-    URL_slugified=$(echo $URL_slugifying | sed -r 's/[_]{2,}/_/g')
+    URL_slugified=$(echo $URL_slugify | sed -r 's/[-]{2,}/_/g')
+    URL_slugified=$(echo $URL_slugify | sed -r 's/[_]{2,}/_/g')
+
+    # Update TARGET file name
+    TARGET=$URL_slugified
 fi
 
 if ! [[ $TARGET == *.${EXTENSION} ]]        # Append EXTENSION if missing.
