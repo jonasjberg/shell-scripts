@@ -2,7 +2,7 @@
 #                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #                              clipboard-to-file
 #                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#                       Copyright (C) 2015 Jonas Sjöberg
+#                    Copyright (C) 2015-2016 Jonas Sjöberg
 #                        https://github.com/jonasjberg
 #
 #              Create a file with the contents of the clipboard.
@@ -57,9 +57,12 @@ else
         echo "ERROR: ${dest} already exists and would be overwritten. Exiting .." >&2
         exit 1
     else
+        # Have xclip output the clipboard (X selection) contents to $dest
         xclip -out > "$dest"
 
-        if [[ ! -s $dest ]]     # Test for zero file size, delete file if true
+        # Test for zero file size, delete file if true. Could happen if the
+        # clipboard is empty or contains something unsuitable for stdout.
+        if [[ ! -s $dest ]]
         then
             rm "$dest"
         fi
