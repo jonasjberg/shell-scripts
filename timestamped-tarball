@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -13,8 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 set -e                         # Exit immediately if a command returns non-zero.
@@ -30,7 +29,7 @@ src=$1
 
 if [[ ! -d ${src} ]]
 then
-    echo "WARNING: Pathname (source) argument isn't a directory." >&2
+    echo "WARNING: Pathname (source) argument is not a directory." >&2
     echo "         exiting .." >&2
     exit 1
 fi
@@ -46,9 +45,10 @@ name=$(echo "${name//[^${SAFE_CHARS}]/-}")
 name=$(echo $name | sed -r 's/[-]{2,}/_/g')
 name=$(echo $name | sed -r 's/[_]{2,}/_/g')
 
-name=$(echo "${name//-_-/${SEPAR_CHAR}}")   # Replace -_- with _
-name=$(echo "${name//-_/${SEPAR_CHAR}}")    # Replace -_ with _
-name=$(echo "${name//_-/${SEPAR_CHAR}}")    # Replace _- with _
+# Replace what probable was some kind of separator with $SEPAR_CHAR
+name=$(echo "${name//-_-/${SEPAR_CHAR}}")
+name=$(echo "${name//-_/${SEPAR_CHAR}}")
+name=$(echo "${name//_-/${SEPAR_CHAR}}")
 
 # Remove any dashes and underlines if first or last in name
 name=$(echo $name | sed -r 's/^[_-]+//g')
