@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+# ______________________________________________________________________________
+#
+# notify -- notify-send functions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Wrapper around 'notify-send'. Does basic checks and formatting.
+# Can print messages of three basic types; normal, success and error.
+#
+# Copyright (C) 2016 Jonas Sjöberg
+# https://github.com/jonasjberg
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# ______________________________________________________________________________
+
+#set -x
+
+
+SCRIPT_NAME=$(basename $0)
+#PDF_VIEWER="xdg-open"
+PDF_VIEWER="evince"
+
+# Check that notify-send is available early on.
+unset HAS_NOTIFY
+command -v "notify-send" >/dev/null 2>&1 && HAS_NOTIFY="true"
+
+# Check that icons are available. Defaults to empty icon paths -- no icons.
+ICON_GOOD="/usr/share/icons/Adwaita/scalable/emotes/emote-love-symbolic.svg"
+[ -e "$ICON_GOOD" ] || unset ICON_GOOD
+ICON_BAD="/usr/share/icons/Adwaita/scalable/emotes/face-sick-symbolic.svg"
+[ -e "$ICON_BAD" ] || unset ICON_BAD
+
+
+# Settings used when running notify-send:
+NOTIFY_TIMEOUT="3000"                   # duration of message in microseconds
+NOTIFY_URGENCY="normal"                 # either 'low', 'normal' or 'critical'
+
+
+# Function 'msg_notify'
+# ------------------------------------------------------------------------------
+# Prints a message using notify-send. 
+# Example usage: msg_notify <code> <text>
+#
+# Parameter <code> can be one of:   null  neutral message
+#                                  -1     neutral message
+#                                   0     success
+#                                   1     failure
+#
+function msg_notify()
+{
+    if [ $# -gt 1 ];
+    then
+        local code="$1"
+        shift
+    fi
+    # TODO: Shift parameter only if the first parameter is a <code> ..
+    #       Currently, the first word is swallowed if <code> is null.
+        
+    local text="${@}"
+    local icon=""
+
+    case "$code" in
+        1  ) icon=$ICON_BAD
+             label="$SCRIPT_NAME FAILED!"    ;;
+        0  ) icon=$ICON_GOOD
+             label="$SCRIPT_NAME SUCCEEDED!" ;;
+        -1 ) icon=$ICON_INFO
+             label="$SCRIPT_NAME"            ;;
+        *  ) icon=$ICON_INFO
+             label="$SCRIPT_NAME"            ;;
+    esac
+
+    notify-send --icon="$icon"                  \
+                --expire-time="$NOTIFY_TIMEOUT" \
+                --urgency=normal                \
+                "$label" "$(echo "${text}")"
+}
+
+
+if [ -z "$HAS_NOTIFY" ]
+then
+    echo "Required executable \"notify-send\" is not available." >&2
+    exit 127
+fi
+
+if [ $# -eq 0 ]
+then
+    echo "[${PROGNAME}]: At least one argument is required"                      >&2
+    echo "Usage: ${PROGNAME} 0 \"Success message\nit was just great\nso great\"" >&2
+    echo "       ${PROGNAME} 1 \"Failure message\nso so bad\nbaaaaaaaad\""       >&2
+    echo "       ${PROGNAME} \"just a message\""                                 >&2
+    exit 1
+else
+    msg_notify "$@"
+    exit $?
+fi
+
