@@ -19,6 +19,7 @@ fix-permissions               -- sets permissions recursively
 folder-manifest               -- generate txt file with folder info
 git-backup                    -- recursively find and backup git repos
 git-recursive-pull            -- recursively find repos and do git pull
+notify                        -- notify-send functions
 prettyprintPATH               -- print out entries in $PATH separated by '\n'
 pull-from                     -- rsync wrapper for synchronizing directories
 slugify-filename              -- clean up file names
