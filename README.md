@@ -26,7 +26,7 @@ Listing
 | `pull-from`                 | rsync wrapper for synchronizing directories  |
 | `slugify-filename`          | clean up file names                          |
 | `slugify-filename-test`     | unit tests for 'slugify-filename'            |
-| `src2tex`                   | convert source code to $\LaTeX$              |
+| `src2tex`                   | convert source code to LaTeX                 |
 | `tex2pdf`                   | convert LaTeX to pdf                         |
 | `timestampdashes`           | rename files to "YYYY-MM-DD_hh-mm-ss.ext"    |
 | `timestampdashes-test`      | unit tests for 'timestampdashes'             |
