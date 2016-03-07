@@ -33,14 +33,6 @@ SCRIPT_NAME=$(basename $0)
 unset HAS_NOTIFY
 command -v "notify-send" >/dev/null 2>&1 && HAS_NOTIFY="true"
 
-# Check that icons are available. Empty icon paths results in no icon.
-ICON_SUCCESS="/usr/share/icons/Adwaita/scalable/emotes/emote-love-symbolic.svg"
-[ -e "$ICON_SUCCESS" ] || unset ICON_SUCCESS
-ICON_ERROR="/usr/share/icons/Adwaita/scalable/emotes/face-sick-symbolic.svg"
-[ -e "$ICON_ERROR" ] || unset ICON_ERROR
-# TODO: ICON_NORMAL="/usr/share/icons/.."
-[ -e "$ICON_NORMAL" ] || unset ICON_NORMAL
-
 # Settings used when running notify-send:
 NOTIFY_TIMEOUT="3000"                   # duration of message in microseconds
 NOTIFY_URGENCY="normal"                 # either 'low', 'normal' or 'critical'
@@ -86,19 +78,35 @@ function msg_notify()
                 "$label" "$(echo "${text}")"
 }
 
-
+# Abort if notify-send is unavailable.
+# TODO: How to best handle other this script being sourced?
+#       Returning an exit code this errory unnecessary?
 if [ -z "$HAS_NOTIFY" ]
 then
     echo "Required executable \"notify-send\" is not available." >&2
     exit 127
 fi
 
+# Check that icons are available. Empty icon paths results in no icon.
+ICON_SUCCESS="/usr/share/icons/Adwaita/scalable/emotes/emote-love-symbolic.svg"
+ICON_ERROR="/usr/share/icons/Adwaita/scalable/emotes/face-sick-symbolic.svg"
+# TODO: ICON_NORMAL="/usr/share/icons/.."
+
+[ -e "$ICON_ERROR" ]   || unset ICON_ERROR
+[ -e "$ICON_SUCCESS" ] || unset ICON_SUCCESS
+[ -e "$ICON_NORMAL" ]  || unset ICON_NORMAL
+
+
+
 if [ $# -eq 0 ]
 then
-    echo "[${PROGNAME}]: At least one argument is required"                      >&2
-    echo "Usage: ${PROGNAME} 0 \"Success message\nit was just great\nso great\"" >&2
-    echo "       ${PROGNAME} 1 \"Failure message\nso so bad\nbaaaaaaaad\""       >&2
+    echo "[${PROGNAME}] [ ! ] At least one argument is required"                 >&2
+    echo ""                                                                      >&2
+    echo "Usage: ${PROGNAME} [TYPE (0, 1, 2)] [MESSAGE] ... [MESSAGE n]"         >&2
+    echo "       ${PROGNAME} 0 \"Success message\nit was just great\nso great\"" >&2
+    echo "       ${PROGNAME} 1 \"Failure message" "\nso so bad\nbaaaaaaaad\""    >&2
     echo "       ${PROGNAME} \"just a message\""                                 >&2
+    echo "       ${PROGNAME} -1"                                                 >&2
     exit 1
 else
     msg_notify "$@"
