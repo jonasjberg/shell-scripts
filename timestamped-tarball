@@ -27,7 +27,7 @@ TIMESTAMP=$(date +%F)
 
 src=$1
 
-if [[ ! -d ${src} ]]
+if [ ! -d "$src" ]
 then
     echo "WARNING: Pathname (source) argument is not a directory." >&2
     echo "         exiting .." >&2

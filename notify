@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+#
+# notify -- notify-send functions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Written by Jonas Sjöberg 2016
+# https://github.com/jonasjberg
+#
+# Note that this script is currently a work in progress.
+# Wrapper around 'notify-send'. Does some basic checks and formatting.
+# Messages can be of three basic types; NORMAL, SUCCESS and ERROR.
+# The type determines the message icon and header text.
+# ______________________________________________________________________________
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# ______________________________________________________________________________
+
+#set -x
+
+SCRIPT_NAME=$(basename $0)
+
+# Check that notify-send is available and keep track of the result.
+unset HAS_NOTIFY
+command -v "notify-send" >/dev/null 2>&1 && HAS_NOTIFY="true"
+
+# Settings used when running notify-send:
+NOTIFY_TIMEOUT="3000"                   # duration of message in microseconds
+NOTIFY_URGENCY="normal"                 # either 'low', 'normal' or 'critical'
+
+
+# Function 'msg_notify'
+# ------------------------------------------------------------------------------
+# Prints a message using notify-send.
+# Example usage: msg_notify <code> <text>
+#
+# Parameter <code> can be one of:   null  neutral message
+#                                  -1     neutral message
+#                                   0     success
+#                                   1     failure
+#
+function msg_notify()
+{
+    if [ $# -gt 1 ];
+    then
+        local code="$1"
+        shift
+    fi
+    # TODO: Shift parameter only if the first parameter is a <code> ..
+    #       Currently, the first word is swallowed if <code> is null.
+
+    local text="${@}"
+    local icon=""
+
+    case "$code" in
+        1  ) icon=$ICON_ERROR
+             label="$SCRIPT_NAME FAILED!"    ;;
+        0  ) icon=$ICON_SUCCESS
+             label="$SCRIPT_NAME SUCCEEDED!" ;;
+        -1 ) icon=$ICON_INFO
+             label="$SCRIPT_NAME"            ;;
+        *  ) icon=$ICON_INFO
+             label="$SCRIPT_NAME"            ;;
+    esac
+
+    notify-send --icon="$icon"                  \
+                --expire-time="$NOTIFY_TIMEOUT" \
+                --urgency=normal                \
+                "$label" "$(echo "${text}")"
+}
+
+# Abort if notify-send is unavailable.
+# TODO: How to best handle other this script being sourced?
+#       Returning an exit code this errory unnecessary?
+if [ -z "$HAS_NOTIFY" ]
+then
+    echo "Required executable \"notify-send\" is not available." >&2
+    exit 127
+fi
+
+# Check that icons are available. Empty icon paths results in no icon.
+ICON_SUCCESS="/usr/share/icons/Adwaita/scalable/emotes/emote-love-symbolic.svg"
+ICON_ERROR="/usr/share/icons/Adwaita/scalable/emotes/face-sick-symbolic.svg"
+# TODO: ICON_NORMAL="/usr/share/icons/.."
+
+[ -e "$ICON_ERROR" ]   || unset ICON_ERROR
+[ -e "$ICON_SUCCESS" ] || unset ICON_SUCCESS
+[ -e "$ICON_NORMAL" ]  || unset ICON_NORMAL
+
+
+
+if [ $# -eq 0 ]
+then
+    echo "[${PROGNAME}] [ ! ] At least one argument is required"                 >&2
+    echo ""                                                                      >&2
+    echo "Usage: ${PROGNAME} [TYPE (0, 1, 2)] [MESSAGE] ... [MESSAGE n]"         >&2
+    echo "       ${PROGNAME} 0 \"Success message\nit was just great\nso great\"" >&2
+    echo "       ${PROGNAME} 1 \"Failure message" "\nso so bad\nbaaaaaaaad\""    >&2
+    echo "       ${PROGNAME} \"just a message\""                                 >&2
+    echo "       ${PROGNAME} -1"                                                 >&2
+    exit 1
+else
+    msg_notify "$@"
+    exit $?
+fi
+
