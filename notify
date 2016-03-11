@@ -97,19 +97,23 @@ ICON_ERROR="/usr/share/icons/Adwaita/scalable/emotes/face-sick-symbolic.svg"
 [ -e "$ICON_NORMAL" ]  || unset ICON_NORMAL
 
 
-
-if [ $# -eq 0 ]
+if [ $# -gt 0 ]
 then
-    echo "[${PROGNAME}] [ ! ] At least one argument is required"                 >&2
-    echo ""                                                                      >&2
-    echo "Usage: ${PROGNAME} [TYPE (0, 1, 2)] [MESSAGE] ... [MESSAGE n]"         >&2
-    echo "       ${PROGNAME} 0 \"Success message\nit was just great\nso great\"" >&2
-    echo "       ${PROGNAME} 1 \"Failure message" "\nso so bad\nbaaaaaaaad\""    >&2
-    echo "       ${PROGNAME} \"just a message\""                                 >&2
-    echo "       ${PROGNAME} -1"                                                 >&2
-    exit 1
-else
-    msg_notify "$@"
-    exit $?
+    msg_notify "${@}"
 fi
+
+# if [ $# -eq 0 ]
+# then
+#     echo "[${PROGNAME}] [ ! ] At least one argument is required"                 >&2
+#     echo ""                                                                      >&2
+#     echo "Usage: ${PROGNAME} [TYPE (0, 1, 2)] [MESSAGE] ... [MESSAGE n]"         >&2
+#     echo "       ${PROGNAME} 0 \"Success message\nit was just great\nso great\"" >&2
+#     echo "       ${PROGNAME} 1 \"Failure message" "\nso so bad\nbaaaaaaaad\""    >&2
+#     echo "       ${PROGNAME} \"just a message\""                                 >&2
+#     echo "       ${PROGNAME} -1"                                                 >&2
+#     exit 1
+# else
+#     msg_notify "$@"
+#     exit $?
+# fi
 
