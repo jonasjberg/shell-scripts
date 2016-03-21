@@ -116,7 +116,7 @@ function main()
 
     if ! check_number_of_digits "${1}"
     then
-        msg_warn "Filename doesn't contain the required amount of digits"
+        msg_warn "Filename \"${1}\" fails the amount-of-digits test"
         return
     fi
 
