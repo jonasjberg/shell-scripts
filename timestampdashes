@@ -62,7 +62,6 @@ function process()
     local safechars="0-9"
 
     # Remove everything except 'safechars'
-    #name=$(echo "${name//[^${safechars}]/}")
     name="${name//[^${safechars}]/}"
 
     # Add dashes and underlines at set positions.
