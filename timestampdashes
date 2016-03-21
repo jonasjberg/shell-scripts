@@ -2,9 +2,9 @@
 #
 #                               timestampdashes
 #                          Renames files to the form
-#                          "YYYY-MM-DD_hh-mm-ss.ext"
+#                           "YYYY-MM-DD_hhmmss.ext"
 #
-#                        Copyright(c)2015 Jonas Sjöberg
+#                     Copyright(c)2015-2016 Jonas Sjöberg
 #                        https://github.com/jonasjberg
 #_______________________________________________________________________________
 #
@@ -65,10 +65,9 @@ function process()
     name="${name//[^${safechars}]/}"
 
     # Add dashes and underlines at set positions.
-    # Dashes at index 5, 8, 14 and 17. Underline at index 11.
-    # For a final result like: 2015-01-01_01-00-00
+    # Dashes at indices 5 and 8. Underline at index 11.
+    # For a final result like: 2015-01-01_010000
     name=$(echo "${name}" | sed 's/./-&/5' | sed 's/./-&/8' | sed 's/./_&/11')
-    name=$(echo "${name}" | sed 's/./-&/14'| sed 's/./-&/17')
 
     echo "${name}" # Function "return" value
 }
