@@ -27,7 +27,7 @@
 
 #set -x
 
-SCRIPT_NAME=$(basename $0)
+PROGNAME=$(basename $0)
 
 # Check that notify-send is available and keep track of the result.
 unset HAS_NOTIFY
@@ -100,13 +100,16 @@ ICON_ERROR="/usr/share/icons/Adwaita/scalable/emotes/face-sick-symbolic.svg"
 
 if [ $# -eq 0 ]
 then
-    echo "[${PROGNAME}] [ ! ] At least one argument is required"                 >&2
-    echo ""                                                                      >&2
-    echo "Usage: ${PROGNAME} [TYPE (0, 1, 2)] [MESSAGE] ... [MESSAGE n]"         >&2
-    echo "       ${PROGNAME} 0 \"Success message\nit was just great\nso great\"" >&2
-    echo "       ${PROGNAME} 1 \"Failure message" "\nso so bad\nbaaaaaaaad\""    >&2
-    echo "       ${PROGNAME} \"just a message\""                                 >&2
-    echo "       ${PROGNAME} -1"                                                 >&2
+    if [ "$VERBOSE" ]
+    then
+        echo "[${PROGNAME}] ERROR: At least one argument is required"                >&2
+        echo ""                                                                      >&2
+        echo "Usage: ${PROGNAME} [TYPE (0, 1, 2)] [MESSAGE] ... [MESSAGE n]"         >&2
+        echo "       ${PROGNAME} 0 \"Success message\nit was just great\nso great\"" >&2
+        echo "       ${PROGNAME} 1 \"Failure message" "\nso so bad\nbaaaaaaaad\""    >&2
+        echo "       ${PROGNAME} \"just a message\""                                 >&2
+        echo "       ${PROGNAME} -1"                                                 >&2
+    fi
     exit 1
 else
     msg_notify "$@"
