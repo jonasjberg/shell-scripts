@@ -27,14 +27,15 @@
 
 #set -x
 
-PROGNAME=$(basename $0)
+BASENAME=$(basename $0)
+SCRIPT_NAME="${SCRIPT_NAME:=$BASENAME}"
 
 # Check that notify-send is available and keep track of the result.
 unset HAS_NOTIFY
 command -v "notify-send" >/dev/null 2>&1 && HAS_NOTIFY="true"
 
 # Settings used when running notify-send:
-NOTIFY_TIMEOUT="3000"                   # duration of message in microseconds
+NOTIFY_TIMEOUT="10000"                   # duration of message in microseconds
 NOTIFY_URGENCY="normal"                 # either 'low', 'normal' or 'critical'
 
 
@@ -97,22 +98,23 @@ ICON_ERROR="/usr/share/icons/Adwaita/scalable/emotes/face-sick-symbolic.svg"
 [ -e "$ICON_NORMAL" ]  || unset ICON_NORMAL
 
 
-
-if [ $# -eq 0 ]
+if [ $# -gt 0 ]
 then
-    if [ "$VERBOSE" ]
-    then
-        echo "[${PROGNAME}] ERROR: At least one argument is required"                >&2
-        echo ""                                                                      >&2
-        echo "Usage: ${PROGNAME} [TYPE (0, 1, 2)] [MESSAGE] ... [MESSAGE n]"         >&2
-        echo "       ${PROGNAME} 0 \"Success message\nit was just great\nso great\"" >&2
-        echo "       ${PROGNAME} 1 \"Failure message" "\nso so bad\nbaaaaaaaad\""    >&2
-        echo "       ${PROGNAME} \"just a message\""                                 >&2
-        echo "       ${PROGNAME} -1"                                                 >&2
-    fi
-    exit 1
-else
-    msg_notify "$@"
-    exit $?
+    msg_notify "${@}"
 fi
+
+# if [ $# -eq 0 ]
+# then
+#     echo "[${PROGNAME}] [ ! ] At least one argument is required"                 >&2
+#     echo ""                                                                      >&2
+#     echo "Usage: ${PROGNAME} [TYPE (0, 1, 2)] [MESSAGE] ... [MESSAGE n]"         >&2
+#     echo "       ${PROGNAME} 0 \"Success message\nit was just great\nso great\"" >&2
+#     echo "       ${PROGNAME} 1 \"Failure message" "\nso so bad\nbaaaaaaaad\""    >&2
+#     echo "       ${PROGNAME} \"just a message\""                                 >&2
+#     echo "       ${PROGNAME} -1"                                                 >&2
+#     exit 1
+# else
+#     msg_notify "$@"
+#     exit $?
+# fi
 

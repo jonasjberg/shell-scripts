@@ -24,6 +24,7 @@ Listing
 | `notify`                    | `notify-send` functions                        |
 | `prettyprintPATH`           | print entries in `$PATH` separated by `\n`     |
 | `pull-from`                 | `rsync` wrapper for synchronizing directories  |
+| `shrink-pdf`                | optimize pdf documents to use less disk space  |
 | `slugify-filename`          | clean up file names                            |
 | `slugify-filename-test`     | unit tests for `slugify-filename`              |
 | `src2tex`                   | convert source code to LaTeX                   |
