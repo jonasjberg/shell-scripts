@@ -7,33 +7,42 @@
 # Especially screen capture recordings in ogv- and webm-formats seem
 # to take up more space than necessary in my usage. This solves that.
 
+
 set -e
 
-# This esentially determines the final output format.
-NEW_EXT="mp4"
-
-function die()
+function handle_arg()
 {
-    FORMAT="[ERROR] %s \"%s\" ..\n"
-    printf "$FORMAT" "$1" "$2"
-    exit 1
+    src="$1"
+    dest="${1%.*}.mp4"
+    printf '%-25s : "%s"\n' "converting from source" "$src"
+    printf '%-25s : "%s"\n' "to destination"         "$dest"
+    # Information on ffmpeg command options used:
+    # http://askubuntu.com/questions/12182/how-can-i-convert-an-ogv-file-to-mp4
+    # http://askubuntu.com/a/470475
+    ffmpeg -i "$src" -c:v libx264 -preset veryslow -crf 22 -c:a libmp3lame \
+           -qscale:a 2 -ac 2 -ar 44100 -- "$dest"
+}
+
+function msg_error()
+{
+    printf '[ERROR] %s : "%s" ..\n' "$1" "$2" >&2
 }
 
 
-arg=${1:-}
-[ -z "$arg" ] && die "Got null argument" "${arg}"
-[ -e "$arg" ] || die "Does not exist"    "${arg}"
-[ -d "$arg" ] && die "Is a directory"    "${arg}"
-[ -f "$arg" ] || die "Not a file"        "${arg}"
+if [ $# -eq 0 ]
+then
+    printf "%-8s %s\n" "Usage:" "$(basename $0) [FILE]..."
+    printf "%-8s %s\n" "" "Specified file(s) will be converted to mp4."
+    exit 1
+else
+    for arg in "$@"
+    do
+        [ -z "$arg" ] && { msg_error "Got null argument" "$arg" ; continue ; }
+        [ -e "$arg" ] || { msg_error "Does not exist"    "$arg" ; continue ; }
+        [ -d "$arg" ] && { msg_error "Is a directory"    "$arg" ; continue ; }
+        [ -f "$arg" ] || { msg_error "Not a file"        "$arg" ; continue ; }
+        handle_arg "${arg}"
+    done
 
-orig="$arg"
-orig_no_ext="${arg%.*}"
-output="${orig_no_ext}.${NEW_EXT}"
-printf '%-25s : "%s"\n' "converting from source" "${orig}"
-printf '%-25s : "%s"\n' "to destination"         "${output}"
-
-# Information on ffmpeg command options used:
-# http://askubuntu.com/questions/12182/how-can-i-convert-an-ogv-file-to-mp4
-# http://askubuntu.com/a/470475
-ffmpeg -i "$orig" -c:v libx264 -preset veryslow -crf 22 -c:a libmp3lame -qscale:a 2 -ac 2 -ar 44100 -- "$output"
-
+    exit $?
+fi
