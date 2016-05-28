@@ -15,6 +15,7 @@ Listing
 | `check-tex-syntax`          | check syntax of LaTeX source file for errors   |
 | `clampimgheight`            | chop up images taller than a set max height    |
 | `clipboard-to-file`         | puts the clipboard contents in a file          |
+| `convert-video-to-mp4`      | converts videos to mp4 with `ffmpeg`           |
 | `crop-instagram-screenshot` | crop images to size                            |
 | `exif-rename`               | rename images from exif date/time              |
 | `fix-permissions`           | sets permissions recursively                   |
