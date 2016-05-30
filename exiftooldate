@@ -19,8 +19,6 @@ then
     exit 1
 fi
 
-
-# Start iteration over arguments.
 for arg in "$@"
 do
     printf "\n\n%s\n" "$arg"
