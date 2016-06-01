@@ -16,6 +16,7 @@ function handle_arg()
     dest="${1%.*}.mp4"
     printf '%-25s : "%s"\n' "converting from source" "$src"
     printf '%-25s : "%s"\n' "to destination"         "$dest"
+
     # Information on ffmpeg command options used:
     # http://askubuntu.com/questions/12182/how-can-i-convert-an-ogv-file-to-mp4
     # http://askubuntu.com/a/470475
