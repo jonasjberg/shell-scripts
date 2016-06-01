@@ -18,6 +18,7 @@ Listing
 | `convert-video-to-mp4`      | converts videos to mp4 with `ffmpeg`           |
 | `crop-instagram-screenshot` | crop images to size                            |
 | `exif-rename`               | rename images from exif date/time              |
+| `exiftooldatel`             | display date/time-information using `exiftool` |
 | `fix-permissions`           | sets permissions recursively                   |
 | `folder-manifest`           | generate txt file with folder info             |
 | `git-backup`                | recursively find and backup git repos          |

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# exiftooldate          Written in 2016 by Jonas Sjöberg
+# ~~~~~~~~~~~~          https://github.com/jonasjberg
+#
+# Get date/time-information from file(s) using exiftool.
+# Obviously requires exiftool to be installed.
+
+
+if ! command -v "exiftool" >/dev/null 2>&1
+then
+    printf "This script requires \"exiftool\" to run.\n"
+    exit 127
+fi
+
+if [ $# -eq 0 ]
+then
+    printf "Usage: $(basename $0) [FILE]..\n"
+    exit 1
+fi
+
+for arg in "$@"
+do
+    printf "\n\n%s\n" "$arg"
+    exiftool -short "$arg" | grep --color=never --ignore-case "date"
+done
+
+exit $?
+
