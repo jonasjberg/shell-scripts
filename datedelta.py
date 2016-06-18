@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# TIMEDELTA     Jonas Sjoberg
+# DATEDELTA     Jonas Sjoberg
 # ~~~~~~~~~     https://github.com/jonasjberg
 #               jomeganas@gmail.com
 #
-# Calculates and displays the difference between two dates.
+# Calculates and displays the difference between two dates as the number of
+# years, months and days.
 
 import argparse
 import sys
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-parser = argparse.ArgumentParser(prog='timedelta',
+parser = argparse.ArgumentParser(prog='datedelta',
                                  description='Show the difference between two '
                                              'dates in years, months and days.',
                                  epilog='The second date defaults to the '
