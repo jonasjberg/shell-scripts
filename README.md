@@ -34,6 +34,7 @@ Listing
 | `tex2pdf`                   | convert LaTeX to pdf                           |
 | `timestampdashes`           | rename files to `YYYY-MM-DD_hh-mm-ss.ext`      |
 | `timestampdashes-test`      | unit tests for `timestampdashes`               |
+| `today-dir`                 | creates a daily working directory symlink      |
 | `vrml2png`                  | generate png previews of vrml 3D models        |
 | `www2png`                   | convert a webpage to a image using `cutycapt`  |
 
