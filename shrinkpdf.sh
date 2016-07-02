@@ -78,10 +78,8 @@ function check_smaller()
 
 
   if [ "$ISIZE" -le "$OSIZE" ]; then
-    # '-le' -- less than or equal to
-    #cp -v "$1" "$2"
     printf "\n%-30.30s\n" "[ABORT] input is <= output .." >&2
-    rm -v "$2"
+    rm -v -- "$2"
     return
   fi
 
@@ -90,10 +88,10 @@ function check_smaller()
       
   if [ "$percentage" -gt "$PERCENT_THRESHOLD" ]; then
     printf "\n%-30.30s\n" "[ OK! ] above ${PERCENT_THRESHOLD}% threshold."
-    mv -v "$2" "$1"
+    mv -v -- "$2" "$1"
   else
     printf "\n%-30.30s\n" "[ABORT] ratio below threshold .." >&2
-    rm -v "$2"
+    rm -v -- "$2"
   fi
 }
 
