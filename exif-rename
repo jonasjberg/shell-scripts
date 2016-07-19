@@ -51,6 +51,7 @@ SEARCHSTRINGS[3]='Date/Time Digitized'
 #SEARCHSTRINGS[4]='Modify Date'
 #SEARCHSTRINGS[5]='Modification Date'
 #SEARCHSTRINGS[6]='Profile Date Time'
+SEARCHSTRINGS[6]='File Access Date/Time'
 
 VERBOSE_MODE=false
 DEBUG_MODE=false
