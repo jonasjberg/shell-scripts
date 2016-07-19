@@ -30,6 +30,7 @@
 
 
 DEBUG_MODE=false
+TEST_MODE=false
 VERBOSE_MODE=false
 SPACE_CHAR='-'
 SEPAR_CHAR='_'
@@ -42,27 +43,27 @@ SAFE_CHARS="${GLUECHARS}a-zA-Z0-9"
 msg_debug()
 {
     if [[ "$DEBUG_MODE" == true ]]; then
-        echo "${name_full}"
+        printf "%s\n" "${name_full}"
     fi
 }
 
 msg_prompt()
 {
     if [[ "$VERBOSE_MODE" == true ]]; then
-        echo -e "\n[*] $* .."
+        printf "\n[*] %s ..\n" "$*"
     fi
 }
 
 msg_progress()
 {
     if [[ "$VERBOSE_MODE" == true ]]; then
-        echo "    $*"
+        printf "    %s\n" "$*"
     fi
 }
 
 die()
 {
-    echo "ERROR: $*"
+    printf "[ERROR]: %s\n" "$*"
     exit 1
 }
 
@@ -70,13 +71,13 @@ process()
 {
     local name="$@"
 
-    name=$(echo "${name//&/-and-}")             # Replace '&' with '-and-'
-    name=$(echo "${name//\ -and-\ /-and-}")     # Replace ' -and- ' with '-and-'
+    name="${name//&/-and-}"             # Replace '&' with '-and-'
+    name="${name//\ -and-\ /-and-}"     # Replace ' -and- ' with '-and-'
     msg_debug
 
     # Replace special words
-    name=$(echo "${name//C++/C-plusplus}")
-    name=$(echo "${name//C#/C-sharp}")
+    name="${name//C++/C-plusplus}"
+    name="${name//C#/C-sharp}"
     
     # Remove these words
     REMOVE_STRING[0]='V413HAV'
@@ -89,32 +90,32 @@ process()
     
     for string in "${REMOVE_STRING[@]}"
     do
-        name=$(echo "${name//${string}/}")
+        name="${name//${string}/}"
         msg_debug
     done
 
 
-    name=$(echo "${name//@/-AT-}")              # Replace '@' with '-AT-'
-    name=$(echo "${name//\ -AT-\ /-AT-}")       # Replace ' -AT- ' with '-AT-'
+    name="${name//@/-AT-}"              # Replace '@' with '-AT-'
+    name="${name//\ -AT-\ /-AT-}"       # Replace ' -AT- ' with '-AT-'
     msg_debug
 
     # Replace everything that is not in 'SAFE_CHARS' with a dash
-    name=$(echo "${name//[^${SAFE_CHARS}]/-}")
+    name="${name//[^${SAFE_CHARS}]/-}"
     msg_debug
 
     # Replace two or more dashes with a underline, collapse underlines
-    name=$(echo $name | sed -r 's/[-]{2,}/_/g')
-    name=$(echo $name | sed -r 's/[_]{2,}/_/g')
+    name="$(echo "$name" | sed -r 's/[-]{2,}/_/g')"
+    name="$(echo "$name" | sed -r 's/[_]{2,}/_/g')"
     msg_debug
 
-    name=$(echo "${name//-_-/${SEPAR_CHAR}}")   # Replace -_- with _
-    name=$(echo "${name//-_/${SEPAR_CHAR}}")    # Replace -_ with _
-    name=$(echo "${name//_-/${SEPAR_CHAR}}")    # Replace _- with _
+    name="${name//-_-/${SEPAR_CHAR}}"   # Replace -_- with _
+    name="${name//-_/${SEPAR_CHAR}}"    # Replace -_ with _
+    name="${name//_-/${SEPAR_CHAR}}"    # Replace _- with _
     msg_debug
 
     # Remove any dashes and underlines if first or last in name
-    name=$(echo $name | sed -r 's/^[_-]+//g')
-    name=$(echo $name | sed -r 's/[_-]+$//g')
+    name="$(echo "$name" | sed -r 's/^[_-]+//g')"
+    name="$(echo "$name" | sed -r 's/[_-]+$//g')"
     msg_debug
 
 
@@ -126,7 +127,7 @@ process_hard()
     local name="$@"
 
     # Remove everything other than a-z, A-Z and 0-9
-    name=$(echo $name | sed 's/[^a-zA-Z0-9]//g')
+    name="$(echo "$name" | sed 's/[^a-zA-Z0-9]//g')"
 
     echo "${name}" # Function "return" value
 }
@@ -165,25 +166,25 @@ main()
     name_full="${1}"
     name_no_path="${name_full##*/}"
     extension="${name_full##*.}"
-    name_no_ext=${name_full%.*}
+    name_no_ext="${name_full%.*}"
 
-    msg_progress "name_full:      $name_full"
-    msg_progress "name_no_path:   $name_no_path"
-    msg_progress "extension:      $extension"
-    msg_progress "name_no_ext:    $name_no_ext"
+    msg_progress "name_full:      ${name_full}"
+    msg_progress "name_no_path:   ${name_no_path}"
+    msg_progress "extension:      ${extension}"
+    msg_progress "name_no_ext:    ${name_no_ext}"
 
     if [[ ! -z ${extension} ]]
     then
         msg_prompt "slugifying extension"
         extension="$(process "${extension}")"
-        msg_progress "extension:      $extension"
+        msg_progress "extension:      ${extension}"
     fi
 
     if [[ ! -z ${name_no_ext} ]]
     then
         msg_prompt "slugifying name_no_ext"
         name_no_ext="$(process "${name_no_ext}")"
-        msg_progress "name_no_ext:    $name_no_ext"
+        msg_progress "name_no_ext:    ${name_no_ext}"
     fi
 
     if [[ -z ${name_no_ext} ]]
@@ -191,8 +192,8 @@ main()
         msg_prompt "name without extension is EMPTY! setting to .extension"
         name_no_ext=".${extension}"
         extension=''
-        msg_progress "extension:      $extension"
-        msg_progress "name_no_ext:    $name_no_ext"
+        msg_progress "extension:      ${extension}"
+        msg_progress "name_no_ext:    ${name_no_ext}"
     fi
 
 
@@ -207,17 +208,17 @@ main()
             #name_no_ext=".${name_no_ext}"
         else
             extension=".${extension}"
-            msg_progress "extension:      $extension"
+            msg_progress "extension:      ${extension}"
         fi
     fi
 
 
     name_new="${name_no_ext}"
-    msg_progress "name_new:       $name_new"
+    msg_progress "name_new:       ${name_new}"
 
     msg_prompt "start second run process"
     name_new="$(process_second_run "${name_new}")"
-    msg_progress "name_new:       $name_new"
+    msg_progress "name_new:       ${name_new}"
 
     if [[ -z ${name_new} ]]
     then
@@ -237,7 +238,7 @@ main()
     fi
 
 
-    if [[ "$DEBUG_MODE" == true ]]
+    if [[ "$DEBUG_MODE" == true ]] || [[ "$TEST_MODE" == true ]]
     then
         echo "${name_new_full}"
         return
