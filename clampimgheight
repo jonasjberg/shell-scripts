@@ -28,7 +28,7 @@
 #_______________________________________________________________________________
 
 
-IMAGE_HEIGHT_MAX=4000
+IMAGE_HEIGHT_MAX=2000
 
 set -e                                                  # exit on first error
 #set -x                                                 # debug mode

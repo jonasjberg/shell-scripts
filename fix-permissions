@@ -30,6 +30,7 @@ FILE_PERMS='664'                # files          664   r w     r w     r
 
 
 path=${1%/}
+USE_USER="spock"
 
 if [[ ${path} && ${path-x} ]];
 then
@@ -41,8 +42,8 @@ then
     echo "confirm starting path: \"$path\" .."
     read -rsp $'Press any key to continue...\n' -n 1 key
 
-    #echo "changing owner .."
-    #chown -R ${USER}:${USER} "${path}"
+    echo "changing owner .."
+    chown -R ${USE_USER}:${USE_USER} "${path}"
 
     echo "chmodding directories .."
     find "${path}" -type d -exec chmod $DIR_PERMS '{}' \;

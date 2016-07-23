@@ -26,29 +26,23 @@ set -e
 
 NUMBER_TESTS_TOTAL=0
 NUMBER_TESTS_PASSED=0
-VERBOSE=false
+VERBOSE=true
 executable="./slugify-filename"
 
 fail()
 {
-    if [[ "$VERBOSE" == true ]];
-    then
-        echo "FAILED: $*"
-    fi
+    [ "$VERBOSE" == true ] && printf "[FAILED] -- %-60.60s\n" "$*"
 }
 
 pass()
 {
-    if [[ "$VERBOSE" == true ]];
-    then
-        echo "Test passed!"
-    fi
+    [ "$VERBOSE" == true ] && printf "[PASSED] -- %-60.60s\n" "$*"
     NUMBER_TESTS_PASSED=$((NUMBER_TESTS_PASSED+1))
 }
 
 die()
 {
-    echo "$*"
+    printf "%s\n" "$*"
     exit 1
 }
 
@@ -56,14 +50,20 @@ run_test()
 {
     NUMBER_TESTS_TOTAL=$((NUMBER_TESTS_TOTAL+1))
 
-    if [[ "$VERBOSE" == true ]];
+    printf "Running \"${executable}\" ..\n"
+    result="$($executable "$1")"
+
+    if [ "$VERBOSE" == true ]
     then
-        echo -e "\nRunning test #${NUMBER_TESTS_TOTAL} .."
-        echo "input string: "${1}""
-        echo "expected out: "${2}""
+        FORMAT="%15.15s : %-65.65s\n"
+        printf "\n"
+        printf "$FORMAT" ": : : : : :" "Running test #${NUMBER_TESTS_TOTAL} .."
+        printf "$FORMAT" "input string" "$1"
+        printf "$FORMAT" "expected output" "$2"
+        printf "$FORMAT" "actual output" "$result"
     fi
 
-    if [[ "$(${executable} "${1}")" == "${2}" ]];
+    if [ "$result" == "$2" ]
     then
         pass
     else
@@ -73,7 +73,7 @@ run_test()
 
 #_______________________________________________________________________________
 
-if [[ ! -e ${executable} ]];
+if [ ! -e "$executable" ]
 then
     die "Unable to locate \"${executable}\"! exiting .."
 fi
@@ -119,13 +119,13 @@ run_test "${TEST_STRING_9}" "${EXPECTED_9}"
 
 #_______________________________________________________________________________
 
-echo -e "\n\n${NUMBER_TESTS_PASSED}/${NUMBER_TESTS_TOTAL} tests passed"
+printf "\n\n%s\n" "[${NUMBER_TESTS_PASSED}/${NUMBER_TESTS_TOTAL}] tests passed"
 
-if [[ "$NUMBER_TESTS_PASSED" -eq "$NUMBER_TESTS_TOTAL" ]];
+if [ "$NUMBER_TESTS_PASSED" -eq "$NUMBER_TESTS_TOTAL" ]
 then
-    echo "ALL TESTS PASSED!"
+    printf "\nALL TESTS PASSED!\n"
     exit 0
 else
-    echo "FAILED!"
+    printf "\nFAILED!\n"
     exit 1
 fi
