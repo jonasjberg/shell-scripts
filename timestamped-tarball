@@ -38,8 +38,8 @@ fi
 # Generate a filename from the source directory name ..
 name="$src"
 
-# Replace everything that is not in 'SAFE_CHARS' with a dash
-name="${name//[^${SAFE_CHARS}]/-}"
+# Replace everything that is not in 'SAFE_CHARS' with 'SPACE_CHAR'
+name="${name//[^${SAFE_CHARS}]/${SPACE_CHAR}}"
 
 # Replace two or more dashes with a underline, collapse underlines
 name="$(echo "$name" | sed -r 's/[-]{2,}/_/g')"
