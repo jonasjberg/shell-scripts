@@ -35,7 +35,7 @@ VERBOSE_MODE=false
 SPACE_CHAR='-'
 SEPAR_CHAR='_'
 GLUE_CHARS='-_'
-SAFE_CHARS="${GLUECHARS}a-zA-Z0-9"
+SAFE_CHARS="${GLUE_CHARS}a-zA-Z0-9"
 
 #_______________________________________________________________________________
 
@@ -99,8 +99,8 @@ process()
     name="${name//\ -AT-\ /-AT-}"       # Replace ' -AT- ' with '-AT-'
     msg_debug
 
-    # Replace everything that is not in 'SAFE_CHARS' with a dash
-    name="${name//[^${SAFE_CHARS}]/-}"
+    # Replace everything that is not in 'SAFE_CHARS' with 'SPACE_CHAR'
+    name="${name//[^${SAFE_CHARS}]/${SPACE_CHAR}}"
     msg_debug
 
     # Replace two or more dashes with a underline, collapse underlines
