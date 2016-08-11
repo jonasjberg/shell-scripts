@@ -133,35 +133,6 @@ process_hard()
     echo "${name}" # Function "return" value
 }
 
-process_second_run()
-{
-    local name="$@"
-
-    # Replace dashes with underlines for special fields 
-    MATCH_FIELD[0]='1st-Edition'
-    MATCH_FIELD[1]='2nd-Edition'
-    MATCH_FIELD[2]='3rd-Edition'
-    MATCH_FIELD[3]='4th-Edition'
-    MATCH_FIELD[4]='5th-Edition'
-    MATCH_FIELD[5]='6th-Edition'
-    MATCH_FIELD[6]='7th-Edition'
-    MATCH_FIELD[7]='8th-Edition'
-    MATCH_FIELD[8]='9th-Edition'
-
-    for match in "${MATCH_FIELD[@]}"
-    do
-        name=$(echo "${name//-${match}-/_${match}_}")
-        msg_debug
-    done
-
-    #if [[ $NAME =~ [$[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}] ]]
-    #then
-    # TODO: Check for date-like patterns (2015-01-01-11-11-11) and rename appropriately.
-    #fi
-
-    echo "${name}" # Function "return" value
-}
-
 main()
 {
     name_full="${1}"
@@ -215,10 +186,6 @@ main()
 
 
     name_new="${name_no_ext}"
-    msg_progress "name_new:       ${name_new}"
-
-    msg_prompt "start second run process"
-    name_new="$(process_second_run "${name_new}")"
     msg_progress "name_new:       ${name_new}"
 
     if [[ -z ${name_new} ]]
