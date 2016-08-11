@@ -21,7 +21,7 @@ set -e                         # Exit immediately if a command returns non-zero.
 SPACE_CHAR='-'
 SEPAR_CHAR='_'
 GLUE_CHARS='-_'
-SAFE_CHARS="${GLUECHARS}a-zA-Z0-9"
+SAFE_CHARS="${GLUE_CHARS}a-zA-Z0-9"
 TIMESTAMP="$(date +%F)"
 
 
