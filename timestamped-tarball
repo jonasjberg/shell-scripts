@@ -22,10 +22,10 @@ SPACE_CHAR='-'
 SEPAR_CHAR='_'
 GLUE_CHARS='-_'
 SAFE_CHARS="${GLUECHARS}a-zA-Z0-9"
-TIMESTAMP=$(date +%F)
+TIMESTAMP="$(date +%F)"
 
 
-src=$1
+src="$1"
 
 if [ ! -d "$src" ]
 then
@@ -36,23 +36,23 @@ fi
 
 
 # Generate a filename from the source directory name ..
-name=$src
+name="$src"
 
 # Replace everything that is not in 'SAFE_CHARS' with a dash
-name=$(echo "${name//[^${SAFE_CHARS}]/-}")
+name="${name//[^${SAFE_CHARS}]/-}"
 
 # Replace two or more dashes with a underline, collapse underlines
-name=$(echo $name | sed -r 's/[-]{2,}/_/g')
-name=$(echo $name | sed -r 's/[_]{2,}/_/g')
+name="$(echo "$name" | sed -r 's/[-]{2,}/_/g')"
+name="$(echo "$name" | sed -r 's/[_]{2,}/_/g')"
 
 # Replace what probable was some kind of separator with $SEPAR_CHAR
-name=$(echo "${name//-_-/${SEPAR_CHAR}}")
-name=$(echo "${name//-_/${SEPAR_CHAR}}")
-name=$(echo "${name//_-/${SEPAR_CHAR}}")
+name="${name//-_-/${SEPAR_CHAR}}"
+name="${name//-_/${SEPAR_CHAR}}"
+name="${name//_-/${SEPAR_CHAR}}"
 
 # Remove any dashes and underlines if first or last in name
-name=$(echo $name | sed -r 's/^[_-]+//g')
-name=$(echo $name | sed -r 's/[_-]+$//g')
+name="$(echo "$name" | sed -r 's/^[_-]+//g')"
+name="$(echo "$name" | sed -r 's/[_-]+$//g')"
 
 
 # Create archive ..
