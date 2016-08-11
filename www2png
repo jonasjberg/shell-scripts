@@ -35,22 +35,21 @@ FLAGS="--out-format=${EXTENSION} --javascript=off --java=off"
 
 set -e                          # Exit immediately if a command returns non-zero.
 
-URL=${1}                        # The URL to capture (http:...|file:...|...)
-TARGET=${2}                     # The target file (.png|pdf|ps|svg|jpeg|...)
+URL="${1}"                      # The URL to capture (http:...|file:...|...)
+TARGET="${2}"                   # The target file (.png|pdf|ps|svg|jpeg|...)
 
-PROGNAME=$(basename $0)         # Name of this script
+PROGNAME="$(basename $0)"       # Name of this script
 TIMESTAMP="$(date +%F\ %H:%M:%S)"
 
 
 function die()
 {
-    if [[ ! -z $1 ]];
+    if [[ ! -z $1 ]]
     then
         printf "%s: %s\n\n" "$PROGNAME" "$1" 1>&2
     fi
     exit 1
 }
-
 
 function show_usage()
 {
@@ -60,6 +59,7 @@ function show_usage()
     printf "       Target is optional and defaults to using whatever comes\n"
     printf "       after the last \'/\' in the URL with '.png' appended.\n"
 }
+
 
 # Check for required program.
 if ! command -v "cutycapt" >/dev/null
@@ -76,22 +76,22 @@ fi
 if ! [[ ${TARGET} && ${TARGET-x} ]]         # is TARGET set?
 then
     # TARGET is NOT set. Extract last part of URL
-    URL=${URL%/}                            # Remove trailing slash if present
-    URL_tail="$(echo ${URL##*/})"           # Get everything after the last '/'
+    URL="${URL%/}"                          # Remove trailing slash if present
+    URL_tail="${URL##*/}"                   # Get everything after the last '/'
 
-    # Remove non-alphanumeric chars
-    URL_tail=$(echo $URL_tail | sed 's/[^a-zA-Z0-9_-]/-/g')
+    # Remove all non-alphanumerics/underscores/dashes
+    URL_tail="$(echo "$URL_tail" | sed 's/[^a-zA-Z0-9_-]/-/g')"
 
-    # Remove any dashes and underlines if first or last in name
-    URL_slugify=$(echo $URL_tail | sed -r 's/^[_-]+//g')
-    URL_slugify=$(echo $URL_slugify | sed -r 's/[_-]+$//g')
+    # Remove any leading and trailing dashes/underlines
+    URL_slugify="$(echo "$URL_tail" | sed -r 's/^[_-]+//g')"
+    URL_slugify="$(echo "$URL_slugify" | sed -r 's/[_-]+$//g')"
 
     # Replace two or more dashes with a underline, collapse underlines
-    URL_slugified=$(echo $URL_slugify | sed -r 's/[-]{2,}/_/g')
-    URL_slugified=$(echo $URL_slugify | sed -r 's/[_]{2,}/_/g')
+    URL_slugified="$(echo "$URL_slugify" | sed -r 's/[-]{2,}/_/g')"
+    URL_slugified="$(echo "$URL_slugify" | sed -r 's/[_]{2,}/_/g')"
 
     # Update TARGET file name
-    TARGET=$URL_slugified
+    TARGET="$URL_slugified"
 fi
 
 if ! [[ $TARGET == *.${EXTENSION} ]]        # Append EXTENSION if missing.
@@ -99,12 +99,12 @@ then
     TARGET="${TARGET}.${EXTENSION}"
 fi
 
-if [[ -e $TARGET ]]                       # does TARGET exist?
+if [[ -e $TARGET ]]                         # does TARGET exist?
 then
     die "Output file already exists!"
 fi
 
-echo "Saving to \"$TARGET\" .."
+echo "Saving to \"${TARGET}\" .."
 printf "Running cutycapt.. "
 cutycapt $FLAGS --url="$URL" --out="$TARGET"
 
