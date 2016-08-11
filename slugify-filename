@@ -78,7 +78,7 @@ process()
     # Replace special words
     name="${name//C++/C-plusplus}"
     name="${name//C#/C-sharp}"
-    
+
     # Remove these words
     REMOVE_STRING[0]='V413HAV'
     REMOVE_STRING[1]='EPUB'
@@ -87,7 +87,7 @@ process()
     REMOVE_STRING[4]='TLU622'
     REMOVE_STRING[5]='darksiderg'
     REMOVE_STRING[6]='ebook'
-    
+
     for string in "${REMOVE_STRING[@]}"
     do
         name="${name//${string}/}"
@@ -108,12 +108,13 @@ process()
     name="$(echo "$name" | sed -r 's/[_]{2,}/_/g')"
     msg_debug
 
-    name="${name//-_-/${SEPAR_CHAR}}"   # Replace -_- with _
-    name="${name//-_/${SEPAR_CHAR}}"    # Replace -_ with _
-    name="${name//_-/${SEPAR_CHAR}}"    # Replace _- with _
+    # Replace '-_-', '-_' and '_-' with SEPAR_CHAR
+    name="${name//-_-/${SEPAR_CHAR}}"
+    name="${name//-_/${SEPAR_CHAR}}"
+    name="${name//_-/${SEPAR_CHAR}}"
     msg_debug
 
-    # Remove any dashes and underlines if first or last in name
+    # Remove any leading and trailing dashes/underlines
     name="$(echo "$name" | sed -r 's/^[_-]+//g')"
     name="$(echo "$name" | sed -r 's/[_-]+$//g')"
     msg_debug
