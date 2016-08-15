@@ -35,7 +35,7 @@ unset HAS_NOTIFY
 command -v "notify-send" >/dev/null 2>&1 && HAS_NOTIFY="true"
 
 # Settings used when running notify-send:
-NOTIFY_TIMEOUT="10000"                   # duration of message in microseconds
+NOTIFY_TIMEOUT="10000"                  # duration of message in microseconds
 NOTIFY_URGENCY="normal"                 # either 'low', 'normal' or 'critical'
 
 
