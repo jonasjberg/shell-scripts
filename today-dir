@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # today-dir
+# =========
 # Written by Jonas Sjöberg in 2016
 #
 # Create a daily working directory called "today", which is a symlink to a
@@ -9,6 +10,9 @@
 # Example: "~/jonas/today" symlinks to "~/jonas/Archive/2016-05-29" and ..
 #          "~/jonas/today" symlinks to "~/jonas/Archive/2016-05-30" the next day
 #
+#
+# Similar and more sophisticated project:
+# https://github.com/mdsummers/today_cmd
 
 #set -e
 
