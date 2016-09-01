@@ -37,6 +37,7 @@ Listing
 | `timestampdashes-test`      | unit tests for `timestampdashes`               |
 | `today-dir`                 | creates a daily working directory symlink      |
 | `vrml2png`                  | generate png previews of vrml 3D models        |
+| `www2pdf`                   | save URLs as pdf using `wkhtmltopdf`           |
 | `www2png`                   | convert a webpage to a image using `cutycapt`  |
 
 
