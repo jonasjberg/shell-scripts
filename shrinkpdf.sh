@@ -71,14 +71,11 @@ function check_smaller()
   TAB='  '
   SEP=': '
   FORMAT="${TAB}%-7.7s%-50.50s${SEP}%-12d\n"
-  printf "\n%s\n" 'File size (1K blocks):'
-  printf "$FORMAT" "input"  "(${1})" "$ISIZE"
-  printf "$FORMAT" "output" "(${2})" "$OSIZE"
-  printf "${TAB}%-7.7s%-50.50s${SEP}%-6.6s\n" "ratio" "(approximate)" "${percentage}%"
-
+  printf "%-28.28s %-12.12s %-12.12s %-8.8s\n" 'File size (1K blocks)' 'Input' 'Output' 'Ratio'
+  printf "%-28.28s %-12.12s %-12.12s %-8.8s\n" ' ' "$ISIZE" "$OSIZE" "${percentage}%"
 
   if [ "$ISIZE" -le "$OSIZE" ]; then
-    printf "\n%-30.30s\n" "[ABORT] input is <= output .." >&2
+    printf "%s\n" "[ABORT] Input size <= Output size .." >&2
     rm -v -- "$2"
     return
   fi
@@ -87,10 +84,10 @@ function check_smaller()
   percentage="${percentage%%.*}"
       
   if [ "$percentage" -gt "$PERCENT_THRESHOLD" ]; then
-    printf "\n%-30.30s\n" "[ OK! ] above ${PERCENT_THRESHOLD}% threshold."
+    printf "%s\n" "[ OK! ] Above ${PERCENT_THRESHOLD}% threshold."
     mv -v -- "$2" "$1"
   else
-    printf "\n%-30.30s\n" "[ABORT] ratio below threshold .." >&2
+    printf "%s\n" "[ABORT] Ratio below threshold .." >&2
     rm -v -- "$2"
   fi
 }
@@ -113,7 +110,7 @@ function main()
   fi
 
 
-  #echo "processing \"$origfile\""
+  echo "Processing file: \"${origfile}\""
 
   resultfile="${origfile%.*}_tmp.pdf"
 
