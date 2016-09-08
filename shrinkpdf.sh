@@ -97,25 +97,25 @@ function check_smaller()
 
 function main()
 {
-  IFILE="$1"
+  origfile="$1"
 
   # Need an input file:
-  if [ ! -f "$IFILE" ]; then
-    echo "$IFILE is not a file. Aborting .." >&2
+  if [ ! -f "$origfile" ]; then
+    echo "$origfile is not a file. Aborting .." >&2
     return 1
   fi
 
-  #echo "processing \"$IFILE\""
+  #echo "processing \"$origfile\""
 
-  OFILE="${IFILE%.*}_tmp.pdf"
+  resultfile="${origfile%.*}_tmp.pdf"
 
-  if [ -e "$OFILE" ]; then
-    echo "$OFILE already exists and would be overwritten. Aborting .." >&2
+  if [ -e "$resultfile" ]; then
+    echo "$resultfile already exists and would be overwritten. Aborting .." >&2
     return 1
   fi
 
-  shrink "$IFILE" "$OFILE" || return
-  check_smaller "$IFILE" "$OFILE"
+  shrink "$origfile" "$resultfile" || return
+  check_smaller "$origfile" "$resultfile"
 
   echo ""
 }
