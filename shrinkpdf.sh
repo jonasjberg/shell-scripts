@@ -63,10 +63,10 @@ function check_smaller()
       return 0;
   fi
 
-  ISIZE=$(du -k "$1" | cut -f1)
-  OSIZE=$(du -k "$2" | cut -f1)
+  ISIZE="$(du -k "$1" | cut -f1)"
+  OSIZE="$(du -k "$2" | cut -f1)"
   
-  percentage=$(echo "scale=2; ($OSIZE - $ISIZE)/$ISIZE * 100" | bc)
+  percentage="$(echo "scale=2; ($OSIZE - $ISIZE)/$ISIZE * 100" | bc)"
 
   TAB='  '
   SEP=': '
@@ -83,8 +83,8 @@ function check_smaller()
     return
   fi
 
-  percentage=${percentage//-}
-  percentage=${percentage%%.*}
+  percentage="${percentage//-}"
+  percentage="${percentage%%.*}"
       
   if [ "$percentage" -gt "$PERCENT_THRESHOLD" ]; then
     printf "\n%-30.30s\n" "[ OK! ] above ${PERCENT_THRESHOLD}% threshold."
