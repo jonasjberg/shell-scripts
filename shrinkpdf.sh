@@ -105,6 +105,14 @@ function main()
     return 1
   fi
 
+  # Check file type by reading magic header bytes.
+  if [ ! "$(file --mime-type --brief -- "$origfile")" == 'application/pdf' ]
+  then
+    echo "Not a PDF document: \"${origfile}\" .. Aborting." >&2
+    return 1
+  fi
+
+
   #echo "processing \"$origfile\""
 
   resultfile="${origfile%.*}_tmp.pdf"
