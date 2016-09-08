@@ -101,7 +101,7 @@ function main()
 
   # Need an input file:
   if [ ! -f "$origfile" ]; then
-    echo "$origfile is not a file. Aborting .." >&2
+    echo "Not a file: \"${origfile}\" .. Aborting." >&2
     return 1
   fi
 
