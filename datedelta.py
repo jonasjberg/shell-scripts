@@ -31,7 +31,6 @@ def str_to_datetime(string):
     for char in string:
         if char.isdigit():
             digits += char
-    digits = digits.strip()
     try:
         dt = datetime.strptime(digits, '%Y%m%d')
     except ValueError:
