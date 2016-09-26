@@ -55,10 +55,10 @@ function slugifystring()
     # Remove any trailing '/'.
     slug=${slug%/}
 
-    # Replace '/' with SEPAR_CHAR.
+    # Replace '/' with 'SEPAR_CHAR'.
     slug="${slug//\//${SEPAR_CHAR}}"
 
-    # Replace everything that is not in 'SAFE_CHARS' with a dash
+    # Replace everything not in 'SAFE_CHARS' with 'SEPAR_CHAR'.
     slug="${slug//[^${SAFE_CHARS}]/${SEPAR_CHAR}}"
 
     # Remove any leading and trailing dashes/underlines
