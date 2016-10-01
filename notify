@@ -42,14 +42,16 @@ NOTIFY_URGENCY="normal"                 # either 'low', 'normal' or 'critical'
 # Function 'msg_notify'
 # ------------------------------------------------------------------------------
 # Prints a message using notify-send.
-# Example usage: msg_notify <code> <text>
+# Example usage: msg_notify ([code]) [text] [text] ...
 #
-# Parameter <code> can be one of:   null  neutral message
-#                                   0     success
-#                                   1     failure
+# If the first parameter consists of only digits, it is interpreted as [code]
+# and will not be included in the message.
+# The intended purpose is to pass program exit codes. The value of [code]
+# determines the message heading, urgency and icon; 0 is a "success", any other
+# value some kind of error -- "failure".
 function msg_notify()
 {
-    # Try to detect and grab the first parameter (<code>) ..
+    # Try to detect and grab the first parameter ([code]) ..
     if [ $# -gt 1 ]
     then
         # Test first parameter is non-empty and contains only digits.
