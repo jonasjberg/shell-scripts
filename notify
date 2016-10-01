@@ -51,13 +51,16 @@ NOTIFY_URGENCY="normal"                 # either 'low', 'normal' or 'critical'
 #
 function msg_notify()
 {
-    if [ $# -gt 1 ];
+    # Try to detect and grab the first parameter (<code>) ..
+    if [ $# -gt 1 ]
     then
-        local code="$1"
-        shift
+        # Test first parameter is non-empty and contains only digits.
+        if [ ! -z "${1##*[!0-9]*}" ]
+        then
+            local code="$1"
+            shift
+        fi
     fi
-    # TODO: Shift parameter only if the first parameter is a <code> ..
-    #       Currently, the first word is swallowed if <code> is null.
 
     local text="${@}"
     local icon=""
