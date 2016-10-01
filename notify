@@ -27,7 +27,7 @@
 
 #set -x
 
-BASENAME=$(basename $0)
+BASENAME="$(basename $0)"
 NOTIFYMSG_TITLE="${NOTIFYMSG_TITLE:=$BASENAME}"
 
 # Check that notify-send is available and keep track of the result.
@@ -64,13 +64,13 @@ function msg_notify()
 
     case "$code" in
         1  ) icon=$ICON_ERROR
-             label="$NOTIFYMSG_TITLE FAILED!"    ;;
+             label="${NOTIFYMSG_TITLE} FAILED!"    ;;
         0  ) icon=$ICON_SUCCESS
-             label="$NOTIFYMSG_TITLE SUCCEEDED!" ;;
+             label="${NOTIFYMSG_TITLE} SUCCEEDED!" ;;
         -1 ) icon=$ICON_INFO
-             label="$NOTIFYMSG_TITLE"            ;;
+             label="${NOTIFYMSG_TITLE}"            ;;
         *  ) icon=$ICON_INFO
-             label="$NOTIFYMSG_TITLE"            ;;
+             label="${NOTIFYMSG_TITLE}"            ;;
     esac
 
     notify-send --icon="$icon"                  \
