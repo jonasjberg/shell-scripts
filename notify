@@ -92,9 +92,9 @@ ICON_SUCCESS="/usr/share/icons/Adwaita/scalable/emotes/emote-love-symbolic.svg"
 ICON_ERROR="/usr/share/icons/Adwaita/scalable/emotes/face-sick-symbolic.svg"
 # TODO: ICON_NORMAL="/usr/share/icons/.."
 
-[ -e "$ICON_ERROR" ]   || unset ICON_ERROR
-[ -e "$ICON_SUCCESS" ] || unset ICON_SUCCESS
-[ -e "$ICON_NORMAL" ]  || unset ICON_NORMAL
+[ -r "$ICON_ERROR"   ] || unset ICON_ERROR
+[ -r "$ICON_SUCCESS" ] || unset ICON_SUCCESS
+[ -r "$ICON_NORMAL"  ] || unset ICON_NORMAL
 
 
 if [ $# -gt 0 ]
