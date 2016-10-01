@@ -45,10 +45,8 @@ NOTIFY_URGENCY="normal"                 # either 'low', 'normal' or 'critical'
 # Example usage: msg_notify <code> <text>
 #
 # Parameter <code> can be one of:   null  neutral message
-#                                  -1     neutral message
 #                                   0     success
 #                                   1     failure
-#
 function msg_notify()
 {
     # Try to detect and grab the first parameter (<code>) ..
@@ -66,14 +64,12 @@ function msg_notify()
     local icon=""
 
     case "$code" in
-        1  ) icon=$ICON_ERROR
-             label="${NOTIFYMSG_TITLE} FAILED!"    ;;
         0  ) icon=$ICON_SUCCESS
-             label="${NOTIFYMSG_TITLE} SUCCEEDED!" ;;
-        -1 ) icon=$ICON_INFO
-             label="${NOTIFYMSG_TITLE}"            ;;
+             label="${NOTIFYMSG_TITLE} - SUCCEEDED!" ;;
+        1  ) icon=$ICON_ERROR
+             label="${NOTIFYMSG_TITLE} - FAILED!"
         *  ) icon=$ICON_INFO
-             label="${NOTIFYMSG_TITLE}"            ;;
+             label="${NOTIFYMSG_TITLE}"              ;;
     esac
 
     notify-send --icon="$icon"                  \
