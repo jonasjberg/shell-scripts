@@ -18,17 +18,29 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #_______________________________________________________________________________
 
-# User configurable options:
-                                #                    Owner   Group   Other
-CHMOD_DIRS='775'                # DIRECTORIES (775)  R W X   R W X   R   X
-CHMOD_FILE='664'                #       FILES (664)  R W     R W     R
-CHOWN_USER="$(whoami)"
-CHOWN_GROUP="$(whoami)"
-
-#_______________________________________________________________________________
 
 #set -e                         # exit on first error
 #set -x                         # debug mode
+
+
+EXTERNAL_CONFIG_FILE="./fix-permissions_config"
+if [ -f "$EXTERNAL_CONFIG_FILE" ]
+then
+    printf "Using external configuration: \"${EXTERNAL_CONFIG_FILE}\" ..\n"
+    . "$EXTERNAL_CONFIG_FILE"
+else
+    printf "Using default configuration (!)\n"
+fi
+
+#                       OWNER   GROUP   OTHER
+# DIRECTORIES: 775  ->  R W X   R W X   R   X
+#       FILES: 664  ->  R W     R W     R
+
+[ -z "$CHMOD_DIRS" ]  && CHMOD_DIRS="775"
+[ -z "$CHMOD_FILE" ]  && CHMOD_FILE="664"
+[ -z "$CHOWN_USER" ]  && CHOWN_USER="spock"
+[ -z "$CHOWN_GROUP" ] && CHOWN_GROUP="spock"
+
 
 function msg_error()
 {
