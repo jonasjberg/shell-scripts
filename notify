@@ -27,8 +27,8 @@
 
 #set -x
 
-BASENAME=$(basename $0)
-SCRIPT_NAME="${SCRIPT_NAME:=$BASENAME}"
+BASENAME="$(basename $0)"
+NOTIFYMSG_TITLE="${NOTIFYMSG_TITLE:=$BASENAME}"
 
 # Check that notify-send is available and keep track of the result.
 unset HAS_NOTIFY
@@ -42,35 +42,36 @@ NOTIFY_URGENCY="normal"                 # either 'low', 'normal' or 'critical'
 # Function 'msg_notify'
 # ------------------------------------------------------------------------------
 # Prints a message using notify-send.
-# Example usage: msg_notify <code> <text>
+# Example usage: msg_notify ([code]) [text] [text] ...
 #
-# Parameter <code> can be one of:   null  neutral message
-#                                  -1     neutral message
-#                                   0     success
-#                                   1     failure
-#
+# If the first parameter consists of only digits, it is interpreted as [code]
+# and will not be included in the message.
+# The intended purpose is to pass program exit codes. The value of [code]
+# determines the message heading, urgency and icon; 0 is a "success", any other
+# value some kind of error -- "failure".
 function msg_notify()
 {
-    if [ $# -gt 1 ];
+    # Try to detect and grab the first parameter ([code]) ..
+    if [ $# -gt 1 ]
     then
-        local code="$1"
-        shift
+        # Test first parameter is non-empty and contains only digits.
+        if [ ! -z "${1##*[!0-9]*}" ]
+        then
+            local code="$1"
+            shift
+        fi
     fi
-    # TODO: Shift parameter only if the first parameter is a <code> ..
-    #       Currently, the first word is swallowed if <code> is null.
 
     local text="${@}"
     local icon=""
 
     case "$code" in
-        1  ) icon=$ICON_ERROR
-             label="$SCRIPT_NAME FAILED!"    ;;
         0  ) icon=$ICON_SUCCESS
-             label="$SCRIPT_NAME SUCCEEDED!" ;;
-        -1 ) icon=$ICON_INFO
-             label="$SCRIPT_NAME"            ;;
+             label="${NOTIFYMSG_TITLE} - SUCCEEDED!" ;;
+        1  ) icon=$ICON_ERROR
+             label="${NOTIFYMSG_TITLE} - FAILED!"
         *  ) icon=$ICON_INFO
-             label="$SCRIPT_NAME"            ;;
+             label="${NOTIFYMSG_TITLE}"              ;;
     esac
 
     notify-send --icon="$icon"                  \
@@ -93,9 +94,9 @@ ICON_SUCCESS="/usr/share/icons/Adwaita/scalable/emotes/emote-love-symbolic.svg"
 ICON_ERROR="/usr/share/icons/Adwaita/scalable/emotes/face-sick-symbolic.svg"
 # TODO: ICON_NORMAL="/usr/share/icons/.."
 
-[ -e "$ICON_ERROR" ]   || unset ICON_ERROR
-[ -e "$ICON_SUCCESS" ] || unset ICON_SUCCESS
-[ -e "$ICON_NORMAL" ]  || unset ICON_NORMAL
+[ -r "$ICON_ERROR"   ] || unset ICON_ERROR
+[ -r "$ICON_SUCCESS" ] || unset ICON_SUCCESS
+[ -r "$ICON_NORMAL"  ] || unset ICON_NORMAL
 
 
 if [ $# -gt 0 ]
