@@ -66,12 +66,12 @@ function msg_notify()
     local icon=""
 
     case "$code" in
-        0  ) icon=$ICON_SUCCESS
-             label="${NOTIFYMSG_TITLE} - SUCCEEDED!" ;;
-        1  ) icon=$ICON_ERROR
-             label="${NOTIFYMSG_TITLE} - FAILED!"
-        *  ) icon=$ICON_INFO
-             label="${NOTIFYMSG_TITLE}"              ;;
+        0) icon=$ICON_SUCCESS
+           label="${NOTIFYMSG_TITLE} - SUCCEEDED!" ;;
+        1) icon=$ICON_ERROR
+           label="${NOTIFYMSG_TITLE} - FAILED!"
+        *) icon=$ICON_INFO
+           label="${NOTIFYMSG_TITLE}"              ;;
     esac
 
     notify-send --icon="$icon"                  \
