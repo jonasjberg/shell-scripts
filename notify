@@ -69,7 +69,7 @@ function msg_notify()
         0) icon=$ICON_SUCCESS
            label="${NOTIFYMSG_TITLE} - SUCCEEDED!" ;;
         1) icon=$ICON_ERROR
-           label="${NOTIFYMSG_TITLE} - FAILED!"
+           label="${NOTIFYMSG_TITLE} - FAILED!"    ;;
         *) icon=$ICON_INFO
            label="${NOTIFYMSG_TITLE}"              ;;
     esac
