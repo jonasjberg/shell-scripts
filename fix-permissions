@@ -23,7 +23,8 @@
 #set -x                         # debug mode
 
 
-EXTERNAL_CONFIG_FILE="./fix-permissions_config"
+THIS_SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+EXTERNAL_CONFIG_FILE="${THIS_SCRIPT_PATH}/fix-permissions_config"
 if [ -f "$EXTERNAL_CONFIG_FILE" ]
 then
     printf "Using external configuration: \"${EXTERNAL_CONFIG_FILE}\" ..\n"
