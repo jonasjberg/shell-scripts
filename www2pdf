@@ -19,6 +19,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # _____________________________________________________________________
 
+WKHTMLTOPDF_OPTIONS="--enable-javascript --javascript-delay 5000 --cookie-jar wkhtml2pdfcookies.jar"
+
 
 function msg_error()
 {
@@ -37,7 +39,7 @@ function grabpagewithwkhtmltopdf()
     printf "%15s : %-65s\n" "Source URL" "\""${1}"\""
     printf "%15s : %-65s\n" "Destination" "\""${2}"\""
 
-    wkhtmltopdf "$1" "$2"
+    wkhtmltopdf $WKHTMLTOPDF_OPTIONS "$1" "$2"
     return $?
 }
 
