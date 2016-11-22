@@ -64,19 +64,21 @@ function msg_notify()
 
     local text="${@}"
     local icon=""
+    local urgency="normal"
 
     case "$code" in
         0  ) icon=$ICON_SUCCESS
              label="${NOTIFYMSG_TITLE} - SUCCEEDED!" ;;
         1  ) icon=$ICON_ERROR
              label="${NOTIFYMSG_TITLE} - FAILED!"
+             urgency="critical"                      ;;
         *  ) icon=$ICON_INFO
              label="${NOTIFYMSG_TITLE}"              ;;
     esac
 
     notify-send --icon="$icon"                  \
                 --expire-time="$NOTIFY_TIMEOUT" \
-                --urgency=normal                \
+                --urgency="$urgency"            \
                 "$label" "$(echo "${text}")"
 }
 
