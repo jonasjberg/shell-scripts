@@ -82,11 +82,11 @@ chown -R "${CHOWN_USER}:${CHOWN_GROUP}" "${path}"
 printf " [OK]\n"
 
 printf "Chmodding directories .. "
-find "$path" -type d -exec chmod $CHMOD_DIRS '{}' \;
+find "$path" -xdev -type d -exec chmod $CHMOD_DIRS '{}' \;
 [ $? -eq 0 ] && printf "[OK]\n"
 
 printf "Chmodding files .. "
-find "$path" -type f -exec chmod $CHMOD_FILE '{}' \;
+find "$path" -xdev -type f -exec chmod $CHMOD_FILE '{}' \;
 [ $? -eq 0 ] && printf "[OK]\n"
 
 [ -n ${SECONDS} ] && printf "\nTotal execution time: ${SECONDS} seconds\n"
