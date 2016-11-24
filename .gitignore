@@ -11,3 +11,6 @@
 Session.vim
 .netrwhist
 *~
+
+# Project specific
+fix-permissions_config
