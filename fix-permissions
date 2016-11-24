@@ -71,7 +71,6 @@ fi
 
 path="${1%/}"
 [ -z "$path" ] && { msg_argerr "Got null argument" "$path" ; exit 1 ; }
-[ -e "$path" ] || { msg_argerr "Does not exist"    "$path" ; exit 1 ; }
 [ -d "$path" ] || { msg_argerr "Not a directory"   "$path" ; exit 1 ; }
 
 printf "Using path: \"${path}\"\n"
