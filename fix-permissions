@@ -40,8 +40,8 @@ fi
 
 [ -z "$CHMOD_DIRS" ]  && CHMOD_DIRS="775"
 [ -z "$CHMOD_FILE" ]  && CHMOD_FILE="664"
-[ -z "$CHOWN_USER" ]  && CHOWN_USER="spock"
-[ -z "$CHOWN_GROUP" ] && CHOWN_GROUP="spock"
+[ -z "$CHOWN_USER" ]  && CHOWN_USER="jonas"
+[ -z "$CHOWN_GROUP" ] && CHOWN_GROUP="jonas"
 
 
 function msg_error()
@@ -72,7 +72,6 @@ fi
 
 path="${1%/}"
 [ -z "$path" ] && { msg_argerr "Got null argument" "$path" ; exit 1 ; }
-[ -e "$path" ] || { msg_argerr "Does not exist"    "$path" ; exit 1 ; }
 [ -d "$path" ] || { msg_argerr "Not a directory"   "$path" ; exit 1 ; }
 
 printf "Using path: \"${path}\"\n"
@@ -83,11 +82,11 @@ chown -R "${CHOWN_USER}:${CHOWN_GROUP}" "${path}"
 printf " [OK]\n"
 
 printf "Chmodding directories .. "
-find "$path" -type d -exec chmod $CHMOD_DIRS '{}' \;
+find "$path" -xdev -type d -exec chmod $CHMOD_DIRS '{}' \;
 [ $? -eq 0 ] && printf "[OK]\n"
 
 printf "Chmodding files .. "
-find "$path" -type f -exec chmod $CHMOD_FILE '{}' \;
+find "$path" -xdev -type f -exec chmod $CHMOD_FILE '{}' \;
 [ $? -eq 0 ] && printf "[OK]\n"
 
 [ -n ${SECONDS} ] && printf "\nTotal execution time: ${SECONDS} seconds\n"
