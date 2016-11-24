@@ -39,8 +39,8 @@ fi
 
 [ -z "$CHMOD_DIRS" ]  && CHMOD_DIRS="775"
 [ -z "$CHMOD_FILE" ]  && CHMOD_FILE="664"
-[ -z "$CHOWN_USER" ]  && CHOWN_USER="spock"
-[ -z "$CHOWN_GROUP" ] && CHOWN_GROUP="spock"
+[ -z "$CHOWN_USER" ]  && CHOWN_USER="jonas"
+[ -z "$CHOWN_GROUP" ] && CHOWN_GROUP="jonas"
 
 
 function msg_error()
