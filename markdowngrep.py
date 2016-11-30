@@ -57,6 +57,7 @@ def processInput(input, pattern):
                         break
                     i -= 1
 
+                # TODO: FIX THIS HACKY MESS!
                 i = num
                 while i > 0:
                     sr_lh = re.match(lheading, input_data[i - 1])
@@ -64,10 +65,6 @@ def processInput(input, pattern):
                         log.info('Found heading: [{heading}] ... {content}'.format(heading=sr_lh.group(1), content=pattern))
                         break
                     i -= 1
-
-
-
-
     return
 
 
