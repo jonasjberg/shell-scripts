@@ -35,7 +35,6 @@ def parseCommandLine():
 def processInput(input, pattern):
     log.debug('Got input:' + str(input) + ' and pattern: ' + str(pattern))
 
-    match_linenums = []
 
     input_data = [line.rstrip() for line in input]
 
@@ -46,20 +45,39 @@ def processInput(input, pattern):
     for num, line in enumerate(input_data):
         if line.strip():
             if pattern in line:
-                log.debug('Found match [{number}] {content}'.format(number=num, content=line.strip()))
-                match_linenums.append(num)
+                log.debug('Found match: [{number}] {content}'.format(number=num, content=line.strip()))
 
-                for i in range(0, num):
-                    if re.match('^# \w', )
+                # Now go backwards, starting from the matching line.
+                i = num
+                while i > 0:
+                    # log.debug('Searching line {}'.format(i))
+                    sr_h = re.match(heading, input_data[i])
+                    if sr_h:
+                        log.info('Found heading: [{heading}] ... {content}'.format(heading=sr_h.group(2), content=pattern))
+                        break
+                    i -= 1
+
+                i = num
+                while i > 0:
+                    sr_lh = re.match(lheading, input_data[i - 1])
+                    if sr_lh:
+                        log.info('Found heading: [{heading}] ... {content}'.format(heading=sr_lh.group(1), content=pattern))
+                        break
+                    i -= 1
+
+
 
 
     return
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s')
-
     args = parseCommandLine()
+
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s')
+    else:
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
     log = logging.getLogger()
     log.info('markdowngrep started')
