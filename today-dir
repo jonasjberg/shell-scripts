@@ -52,8 +52,8 @@ then
     fi
 fi
 
-# Create a new symlink if path does not already exist.
-if [ ! -e "$link_path" ]
+# Create a new symlink if path does not already exist or is a (dead) symlink.
+if [ ! -e "$link_path" -a ! -h "$link_path" ]
 then
     ln --verbose --symbolic -- "$today_dir" "$link_path" 
 else
