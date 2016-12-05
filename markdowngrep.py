@@ -26,6 +26,9 @@ import pprint
 import fileinput
 
 
+log = logging.getLogger()
+
+
 def parse_commandline():
     parser = argparse.ArgumentParser(prog='markdowngrep',
         description='Searches markdown-formatted text files for a given '
@@ -127,21 +130,20 @@ def find_line_parent_headings(textlines, start_line):
     lheading = re.compile(r'^.*?\n[=-]+[ ]*(\n|$)', re.MULTILINE)
 
     parents = []
-    # textlines = textlines.rsplit('\n')
     i = start_line
     while i >= 0:
         sr_h = re.match(heading, textlines[i])
         if sr_h:
-            # log.debug('Found parent on line {l} : '
-            #           '{p}'.format(l=i, p=sr_h.group(2)))
+            log.debug('Found parent on line {l} : '
+                      '{p}'.format(l=i, p=sr_h.group(2)))
             parents += [{'line': i,
                          'level': len(sr_h.group(1)),
                          'text': sr_h.group(2)}]
 
         sr_lh = re.match(lheading, textlines[i - 1] + '\n' + textlines[i])
         if sr_lh:
-            # log.debug('Found parent on line {l} : '
-            #           '{p}'.format(l=i, p=sr_lh.group(0)))
+            log.debug('Found parent on line {l} : '
+                      '{p}'.format(l=i, p=sr_lh.group(0)))
             if textlines[i].startswith('='):
                 level = 1
             else:
@@ -164,7 +166,6 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(message)s')
 
-    log = logging.getLogger()
     log.debug('[STARTING]')
 
     startTime = time.time()

@@ -62,6 +62,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
         # Note that Title is on line 1.
 
+        self.sampletext = self.sampletext.rsplit('\n')
+
     def test_find_line_parent_headings(self):
         # text = [line.rstrip('\n') for line in self.sampletext]
         self.assertCountEqual(find_line_parent_headings(self.sampletext, 3),
