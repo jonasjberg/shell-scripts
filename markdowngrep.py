@@ -76,7 +76,7 @@ def process_input(input, pattern):
     matches = []
     for num, line in enumerate(input_data):
         if line.strip():
-            if find_match(line, pattern):
+            if has_match(line, pattern):
             # if pattern in line:
                 matches += [{'line': num,
                              'text': line.strip()}]
@@ -91,7 +91,7 @@ def process_input(input, pattern):
     return matches
 
 
-def find_match(line, regexp):
+def has_match(line, regexp):
     return line if regexp.search(line) else False
 
 
