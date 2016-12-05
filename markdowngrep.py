@@ -44,7 +44,7 @@ def parse_commandline():
     parser.add_argument(dest='pattern',
                         nargs=1,
                         metavar='PATTERN',
-                        help='Pattern to match.')
+                        help='Regular expression to match.')
 
     parser.add_argument(dest='file',
                         nargs='*',
@@ -53,9 +53,8 @@ def parse_commandline():
 
     parser.add_argument('-t', '--top-level',
                         dest='top_level',
-                        action='store_true',
-                        help='Climb to closest first level heading. Default '
-                             'is closest heading, regardless of level.')
+                        action=parser.arg,
+                        help='Equivalent to "--level 1".')
 
     parser.add_argument('-l', '--level',
                         dest='level',
@@ -99,18 +98,19 @@ def has_match(line, regexp):
 
 def display_results(matches):
     max_width = 120
-    text_width = 20
+    text_width = 10
     for match in matches:
         for parent in match['parents']:
+            text_width = max(text_width, len(parent['text']))
 
-            if len(parent['text']) > text_width:
-                text_width = len(parent['text'])
-
+    for match in matches:
+        for parent in match['parents']:
             if args.top_level:
                 if parent['level'] == 1:
-                    print('{n:04d} "{t}" {m}'.format(n=parent['line'],
-                                                     t=parent['text'],
-                                                     m=match['text']))
+                    print('({n:04d}) {t:{tw}} : {m}'.format(n=parent['line'],
+                                                        t=parent['text'],
+                                                        tw=text_width+2,
+                                                        m=match['text']))
                     break
             else:
                 print('{n:04d} "{t}" {m}'.format(n=parent['line'],
@@ -119,7 +119,7 @@ def display_results(matches):
                 break
 
 
-def find_line_parent_headings(textlines, start_line):
+def find_line_parent_headings(text_lines, start_line):
     # https://github.com/lepture/mistune/blob/master/mistune.py
     heading = re.compile(r'^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)')
 
@@ -131,21 +131,21 @@ def find_line_parent_headings(textlines, start_line):
     parents = []
     i = start_line
     while i >= 0:
-        sr_h = re.match(heading, textlines[i])
+        sr_h = re.match(heading, text_lines[i])
         if sr_h:
             parents += [{'line': i,
                          'level': len(sr_h.group(1)),
                          'text': sr_h.group(2)}]
 
-        sr_lh = re.match(lheading, textlines[i - 1] + '\n' + textlines[i])
+        sr_lh = re.match(lheading, text_lines[i - 1] + '\n' + text_lines[i])
         if sr_lh:
-            if textlines[i].startswith('='):
+            if text_lines[i].startswith('='):
                 level = 1
             else:
                 level = 2
             parents += [{'line': i - 1,
                          'level': level,
-                         'text': textlines[i - 1]}]
+                         'text': text_lines[i - 1]}]
         i -= 1
 
     return parents
@@ -165,15 +165,15 @@ if __name__ == '__main__':
 
     startTime = time.time()
 
-    if args.pattern:
-        try:
-            pattern = re.compile(args.pattern[0])
-        except re.error:
-            pattern = args.pattern[0]
+    # TODO: If PATTERN is missing and FILE is the last argument, FILE will be
+    #       interpreted as PATTERN.
+    try:
+        pattern = re.compile(args.pattern[0])
+    except re.error as e:
+        log.error('Invalid PATTERN: ' + str(e))
+        exit(1)
 
-    # input = [line.rstrip('\n') for line in args.file]
-    input = fileinput.input(args.file)
-    results = process_input(input, pattern)
+    results = process_input(fileinput.input(args.file), pattern)
     display_results(results)
 
     endTime = time.time()
