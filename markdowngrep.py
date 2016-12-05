@@ -48,7 +48,6 @@ def parse_commandline():
 
     parser.add_argument(dest='file',
                         nargs='*',
-                        type=argparse.FileType('r'), #default=sys.stdin,
                         metavar='FILE',
                         help='Files to search.')
 
