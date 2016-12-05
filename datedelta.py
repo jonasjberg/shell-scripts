@@ -11,7 +11,13 @@
 import argparse
 import sys
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
+
+try:
+    from dateutil.relativedelta import relativedelta
+except ImportError:
+    print('Please install "dateutil" first.')
+    sys.exit(1)
+
 
 parser = argparse.ArgumentParser(prog='datedelta',
                                  description='Show the difference between two '
