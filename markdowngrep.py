@@ -23,11 +23,11 @@ import time
 import sys
 import re
 import pprint
+import fileinput
 
 
 def parse_commandline():
-    parser = argparse.ArgumentParser(
-        prog='markdowngrep by jonasjberg',
+    parser = argparse.ArgumentParser(prog='markdowngrep',
         description='Searches markdown-formatted text files for a given '
                     'pattern and displays information on where, as in under '
                     'which heading; that the pattern was found.',
@@ -38,23 +38,29 @@ def parse_commandline():
                              "printed to stdout.",
                         action='store_true')
 
-    parser.add_argument('pattern',
-                        nargs='?',
+    parser.add_argument(dest='pattern',
+                        nargs=1,
+                        metavar='PATTERN',
                         help='Pattern to match.')
 
-    parser.add_argument('-i', '--input',
-                        dest='input',
-                        nargs='?',
-                        help='Files to search.',
-                        type=argparse.FileType('r'), default=sys.stdin)
+    parser.add_argument(dest='file',
+                        nargs='*',
+                        type=argparse.FileType('r'), #default=sys.stdin,
+                        metavar='FILE',
+                        help='Files to search.')
 
     parser.add_argument('-t', '--top-level',
-                        dest='toplevel',
+                        dest='top_level',
                         action='store_true',
                         help='Climb to closest first level heading. Default '
                              'is closest heading, regardless of level.')
 
-    parser.add_argument()
+    parser.add_argument('-l', '--level',
+                        dest='level',
+                        type=int,
+                        choices=range(1, 6),
+                        metavar='N',
+                        help='Climb to heading level N.')
 
     args = parser.parse_args()
     return args
@@ -65,11 +71,13 @@ def process_input(input, pattern):
     log.debug('Pattern: {}'.format(str(pattern)))
 
     input_data = [line.rstrip() for line in input]
+    # input_data = input
 
     matches = []
     for num, line in enumerate(input_data):
         if line.strip():
-            if pattern in line:
+            if find_match(line, pattern):
+            # if pattern in line:
                 matches += [{'line': num,
                              'text': line.strip()}]
 
@@ -83,6 +91,10 @@ def process_input(input, pattern):
     return matches
 
 
+def find_match(line, regexp):
+    return line if regexp.search(line) else False
+
+
 def display_results(matches):
     max_width = 120
     text_width = 20
@@ -92,7 +104,7 @@ def display_results(matches):
             if len(parent['text']) > text_width:
                 text_width = len(parent['text'])
 
-            if args.toplevel:
+            if args.top_level:
                 if parent['level'] == 1:
                     print('{n:04d} "{t}" {m}'.format(n=parent['line'],
                                                      t=parent['text'],
@@ -157,7 +169,15 @@ if __name__ == '__main__':
 
     startTime = time.time()
 
-    results = process_input(args.input, args.pattern)
+    if args.pattern:
+        try:
+            pattern = re.compile(args.pattern[0])
+        except re.error:
+            pattern = args.pattern[0]
+
+    # input = [line.rstrip('\n') for line in args.file]
+    input = fileinput.input(args.file)
+    results = process_input(input, pattern)
     display_results(results)
 
     endTime = time.time()
