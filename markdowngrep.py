@@ -25,6 +25,7 @@ import re
 import pprint
 import fileinput
 
+from colorama import Fore
 
 log = logging.getLogger()
 
@@ -37,9 +38,11 @@ def parse_commandline():
         epilog='')
 
     parser.add_argument('-v', '--verbose',
-                        help="Enable verbose output. Increases information "
-                             "printed to stdout.",
-                        action='store_true')
+                        action='count',
+                        default=0,
+                        help='Increase output verbosity. Increases information '
+                             'printed to stdout. Use "-vv", "-vvv" for '
+                             'additional output.')
 
     parser.add_argument(dest='pattern',
                         nargs=1,
@@ -53,8 +56,8 @@ def parse_commandline():
 
     parser.add_argument('-t', '--top-level',
                         dest='top_level',
-                        action=parser.arg,
-                        help='Equivalent to "--level 1".')
+                        action='store_true',
+                        help='Equivalent to "--level 1". Overrides level."')
 
     parser.add_argument('-l', '--level',
                         dest='level',
@@ -154,15 +157,35 @@ def find_line_parent_headings(text_lines, start_line):
 if __name__ == '__main__':
     args = parse_commandline()
 
-    if args.verbose:
-        logging.basicConfig(level=logging.DEBUG,
-                            format='%(asctime)s %(message)s')
+    if args.verbose >= 3:
+        fmt = Fore.LIGHTBLACK_EX + '%(asctime)s' + Fore.RESET + \
+              Fore.LIGHTBLUE_EX + ' %(levelname)-8.8s' + Fore.RESET + \
+              ' %(funcName)-25.25s (%(lineno)3d) ' + \
+              ' %(message)-100.100s'
+        logging.basicConfig(level=logging.DEBUG, format=fmt,
+                            datefmt='%Y-%m-%d %H:%M:%S')
+    elif args.verbose == 2:
+        fmt = Fore.LIGHTBLACK_EX + '%(asctime)s' + Fore.RESET + \
+              Fore.LIGHTBLUE_EX + ' %(levelname)-8.8s' + Fore.RESET + \
+              ' %(message)-120.120s'
+        logging.basicConfig(level=logging.INFO, format=fmt,
+                            datefmt='%Y-%m-%d %H:%M:%S')
+    elif args.verbose == 1:
+        fmt = Fore.LIGHTBLUE_EX + '%(levelname)-8.8s' + Fore.RESET + \
+              ' %(message)s'
+        logging.basicConfig(level=logging.WARNING, format=fmt)
     else:
-        logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s %(message)s')
+        fmt = Fore.LIGHTBLUE_EX + '%(levelname)-8.8s' + Fore.RESET + \
+              ' %(message)s'
+        logging.basicConfig(level=logging.CRITICAL, format=fmt)
+
+    if args.top_level:
+        if args.level:
+            log.warning('Option "-t", "--top-level" overrides option "-l", '
+                        '"--level".')
+        args.level = 1
 
     log.debug('[STARTING]')
-
     startTime = time.time()
 
     # TODO: If PATTERN is missing and FILE is the last argument, FILE will be
@@ -179,4 +202,4 @@ if __name__ == '__main__':
     endTime = time.time()
     duration = endTime - startTime
 
-    logging.debug('[FINISHED] Elapsed time: ' + str(duration) + ' seconds')
+    logging.info('[FINISHED] Elapsed time: ' + str(duration) + ' seconds')
