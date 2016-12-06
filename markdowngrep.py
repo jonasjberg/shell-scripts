@@ -114,7 +114,7 @@ def process_input(input, pattern):
 
         for match in matches:
             parents = match['parents']
-            parents[:] = [p for p in parents if p['level'] <= args.level]
+            parents[:] = [p for p in parents if p['level'] == args.level]
 
     for match in matches:
         log.debug('Filtered results:')
@@ -130,24 +130,29 @@ def has_match(line, regexp):
 
 def display_results(matches):
     # Figure out field widths required to fit largest entries.
-    textwidth_lineno = 1
-    textwidth_match = 10
-    textwidth_parent = 10
+    textwidth_lineno = 4
+    textwidth_parent = 7
+    textwidth_match = 16
     for match in matches:
         textwidth_match = max(textwidth_match, len(match['text']))
         for parent in match['parents']:
             textwidth_parent = max(textwidth_parent, len(parent['text']))
             textwidth_lineno = max(textwidth_lineno, len(str(parent['line'])))
 
+    print('{n:{twn}}  {tp:{twp}}   {tm:{twm}}'.format(n='Line',
+                                                      twn=textwidth_lineno,
+                                                      tp='Heading',
+                                                      twp=textwidth_parent,
+                                                      tm='Matching pattern',
+                                                      twm=textwidth_match))
     for match in matches:
         for parent in match['parents']:
-            print('{n:>{twn}d}: {tp:{twp}} | {tm:{twm}}'.format(
-                n=parent['line'],
-                twn=textwidth_lineno,
-                tp=parent['text'],
-                twp=textwidth_parent,
-                tm=match['text'],
-                twm=textwidth_match))
+            print('{n:>{twn}d}: {tp:{twp}} | {tm:{twm}}'.format(n=parent['line'],
+                                                                twn=textwidth_lineno,
+                                                                tp=parent['text'],
+                                                                twp=textwidth_parent,
+                                                                tm=match['text'],
+                                                                twm=textwidth_match))
 
             if not args.all_parents:
                 break
