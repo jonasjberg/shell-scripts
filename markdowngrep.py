@@ -32,10 +32,14 @@ log = logging.getLogger()
 
 def parse_commandline():
     parser = argparse.ArgumentParser(prog='markdowngrep',
-        description='Searches markdown-formatted text files for a given '
-                    'pattern and displays information on where, as in under '
-                    'which heading; that the pattern was found.',
-        epilog='')
+                                     description='Searches markdown-formatted '
+                                                 'text files for a given '
+                                                 'pattern and displays '
+                                                 'information on where, '
+                                                 'as in under '
+                                                 'which heading; that the '
+                                                 'pattern was found.',
+                                     epilog='')
 
     parser.add_argument('-v', '--verbose',
                         action='count',
@@ -54,17 +58,30 @@ def parse_commandline():
                         metavar='FILE',
                         help='Files to search.')
 
-    parser.add_argument('-t', '--top-level',
-                        dest='top_level',
-                        action='store_true',
-                        help='Equivalent to "--level 1". Overrides level."')
+    arg_group_output = parser.add_argument_group('output options')
 
-    parser.add_argument('-l', '--level',
-                        dest='level',
-                        type=int,
-                        choices=range(1, 6),
-                        metavar='N',
-                        help='Climb to heading level N.')
+    arg_group_output.add_argument('-t', '--top-level',
+                                  dest='top_level',
+                                  action='store_true',
+                                  help='Equivalent to "--level 1". '
+                                       'NOTE: Overrides the level option.')
+
+    arg_group_output.add_argument('-l', '--level',
+                                  dest='level',
+                                  type=int,
+                                  choices=range(1, 6),
+                                  metavar='N',
+                                  help='Climb from the matching text to '
+                                       'heading level N. '
+                                       'Default is to climb to the closest '
+                                       'parent heading.')
+
+    arg_group_output.add_argument('-a', '--all-parents',
+                                  dest='all_parents',
+                                  action='store_true',
+                                  default=False,
+                                  help='Traverse all parents, all the way to '
+                                       'the tree root.')
 
     args = parser.parse_args()
     return args
@@ -81,7 +98,7 @@ def process_input(input, pattern):
     for num, line in enumerate(input_data):
         if line.strip():
             if has_match(line, pattern):
-            # if pattern in line:
+                # if pattern in line:
                 matches += [{'line': num,
                              'text': line.strip()}]
 
@@ -89,6 +106,18 @@ def process_input(input, pattern):
         match['parents'] = find_line_parent_headings(input_data, match['line'])
 
         log.debug('Found match:')
+        for line in pprint.pformat(match).split('\n'):
+            log.debug(line)
+
+    if args.level:
+        log.debug('Level filter ENABLED')
+
+        for match in matches:
+            parents = match['parents']
+            parents[:] = [p for p in parents if p['level'] <= args.level]
+
+    for match in matches:
+        log.debug('Filtered results:')
         for line in pprint.pformat(match).split('\n'):
             log.debug(line)
 
@@ -101,24 +130,27 @@ def has_match(line, regexp):
 
 def display_results(matches):
     max_width = 120
-    text_width = 10
+    textwidth_lineno = 1
+    textwidth_match = 10
+    textwidth_parent = 10
+
     for match in matches:
+        textwidth_match = max(textwidth_match, len(match['text']))
         for parent in match['parents']:
-            text_width = max(text_width, len(parent['text']))
+            textwidth_parent = max(textwidth_parent, len(parent['text']))
+            textwidth_lineno = max(textwidth_lineno, len(str(parent['line'])))
 
     for match in matches:
         for parent in match['parents']:
-            if args.top_level:
-                if parent['level'] == 1:
-                    print('({n:04d}) {t:{tw}} : {m}'.format(n=parent['line'],
-                                                        t=parent['text'],
-                                                        tw=text_width+2,
-                                                        m=match['text']))
-                    break
-            else:
-                print('{n:04d} "{t}" {m}'.format(n=parent['line'],
-                                                 t=parent['text'],
-                                                 m=match['text']))
+            print('{n:>{twn}d}: {tp:{twp}} | {tm:{twm}}'.format(
+                n=parent['line'],
+                twn=textwidth_lineno,
+                tp=parent['text'],
+                twp=textwidth_parent,
+                tm=match['text'],
+                twm=textwidth_match))
+
+            if not args.all_parents:
                 break
 
 
