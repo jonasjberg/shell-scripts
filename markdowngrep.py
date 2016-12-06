@@ -139,21 +139,22 @@ def display_results(matches):
             textwidth_parent = max(textwidth_parent, len(parent['text']))
             textwidth_lineno = max(textwidth_lineno, len(str(parent['line'])))
 
-    print('{n:{twn}}  {tp:{twp}}   {tm:{twm}}'.format(n='Line',
-                                                      twn=textwidth_lineno,
-                                                      tp='Heading',
-                                                      twp=textwidth_parent,
-                                                      tm='Matching pattern',
-                                                      twm=textwidth_match))
+    # Local function for printing a columnated line.
+    def print_line(line_num, text_parent, text_match):
+        print('{n:{twn}}  {tp:{twp}}   {tm:{twm}}'.format(n=line_num,
+                                                          twn=textwidth_lineno,
+                                                          tp=text_parent,
+                                                          twp=textwidth_parent,
+                                                          tm=text_match,
+                                                          twm=textwidth_match))
+
+    # Print header.
+    if args.verbose > 0:
+        print_line('Line', 'Heading', 'Matching pattern')
+
     for match in matches:
         for parent in match['parents']:
-            print('{n:>{twn}d}: {tp:{twp}} | {tm:{twm}}'.format(n=parent['line'],
-                                                                twn=textwidth_lineno,
-                                                                tp=parent['text'],
-                                                                twp=textwidth_parent,
-                                                                tm=match['text'],
-                                                                twm=textwidth_match))
-
+            print_line(parent['line'], parent['text'], match['text'])
             if not args.all_parents:
                 break
 
