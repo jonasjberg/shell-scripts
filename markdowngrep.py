@@ -129,11 +129,10 @@ def has_match(line, regexp):
 
 
 def display_results(matches):
-    max_width = 120
+    # Figure out field widths required to fit largest entries.
     textwidth_lineno = 1
     textwidth_match = 10
     textwidth_parent = 10
-
     for match in matches:
         textwidth_match = max(textwidth_match, len(match['text']))
         for parent in match['parents']:
