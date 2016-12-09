@@ -44,13 +44,14 @@
 # - Text is wrapped at WRAP_WIDTH columns.
 # - Trailing whitespace is removed.
 
+from datetime import datetime
 import os
 import re
 import sys
 import textwrap
 
-RE_TIMESTAMP = r'\[(\d\d)\.(\d\d)\.(\d\d) (\d\d):(\d\d)\]'
 RE_SENDER = r'^(\w+[\s\w]*), '
+RE_TIMESTAMP = r'\[(\d\d\.\d\d\.\d\d \d\d:\d\d)\]'
 RE_MESSAGE_HEADER = re.compile(RE_SENDER + RE_TIMESTAMP)
 WRAP_WIDTH = 80
 
@@ -71,8 +72,57 @@ def handle_line(textline):
         return wrap(textline.strip())
 
 
+def match_header(line):
+    pass
+
+
+def handle_file(file):
+    prev_time = datetime.fromtimestamp(0)
+    new_file = []
+
+    for line in file:
+        line = line.rstrip()
+        if not line.strip():
+           new_file.append('')
+
+        header_match = RE_MESSAGE_HEADER.match(line)
+        if header_match:
+            sender, timestamp = header_match.groups()
+            try:
+                this_time = datetime.strptime(timestamp, "%d.%m.%y %H:%M")
+            except ValueError:
+                pass
+
+            if this_time.year > prev_time.year:
+                new_file.append(this_time.strftime('%Y'))
+                new_file.append(('=' * 80) + '\n')
+            if this_time.month > prev_time.month:
+                new_file.append('')
+                new_file.append('')
+                new_file.append(this_time.strftime('%B %Y'))
+                new_file.append(('-' * 80) + '\n')
+                new_file.append('')
+                new_file.append(this_time.strftime('### %Y-%m-%d %A'))
+                new_file.append('')
+            if this_time.day > prev_time.day:
+                new_file.append('')
+                new_file.append(this_time.strftime('### %Y-%m-%d %A'))
+                new_file.append('')
+
+            prev_time = this_time
+
+            l = '#### `{ts}` -- {n}'.format(ts=prev_time.strftime("%Y-%m-%d "
+                                                                  "%H:%M"),
+                                            n=sender)
+            new_file.append(l)
+        else:
+            new_file.append(line.strip())
+
+    return new_file
+
+
 def wrap(string):
-    return '\n'.join(textwrap.wrap(string, width=WRAP_WIDTH)) + '\n'
+    return '\n'.join(textwrap.wrap(string, width=WRAP_WIDTH))
 
 
 def show_usage_and_exit():
@@ -87,9 +137,10 @@ if __name__ == '__main__':
     arg = sys.argv[1]
     if os.path.isfile(arg):
         with open(arg, encoding='utf-8') as f:
-            for line in f:
-                fixed_line = handle_line(line.rstrip())
-                print(fixed_line)
+            fixed_lines = handle_file(f)
+            for line in fixed_lines:
+                print(wrap(line))
+
     else:
         print('Not a file: {}'.format(arg), file=sys.stderr)
         show_usage_and_exit()
