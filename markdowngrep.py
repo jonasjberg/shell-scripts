@@ -125,7 +125,7 @@ def process_input(input, pattern):
 
         for match in matches:
             parents = match['parents']
-            parents[:] = [p for p in parents if p['level'] == args.level]
+            parents[:] = [p for p in parents if p['level'] <= args.level]
 
     for match in matches:
         log.debug('Filtered results:')
