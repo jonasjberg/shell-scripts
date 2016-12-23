@@ -114,6 +114,8 @@ def process_input(input, pattern):
     for match in matches:
         match['parents'] = find_line_parent_headings(input_data, match['line'])
 
+        if not log.debug:
+            continue
         log.debug('Found match:')
         for line in pprint.pformat(match).split('\n'):
             log.debug(line)
