@@ -108,7 +108,6 @@ def process_input(input, pattern):
     for num, line in enumerate(input_data):
         if line.strip():
             if has_match(line, pattern):
-                # if pattern in line:
                 matches += [{'line': num,
                              'text': line.strip()}]
 
