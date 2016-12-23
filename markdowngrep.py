@@ -58,8 +58,14 @@ def parse_commandline():
                         metavar='FILE',
                         help='Files to search.')
 
-    arg_group_output = parser.add_argument_group('output options')
+    arg_group_match = parser.add_argument_group('matching control')
+    arg_group_match.add_argument('-i', '--ignore-case',
+                                 dest='ignore_case',
+                                 action='store_true',
+                                 help='Ignore case distinctions in the '
+                                      'PATTERN.')
 
+    arg_group_output = parser.add_argument_group('output options')
     arg_group_output.add_argument('-t', '--top-level',
                                   dest='top_level',
                                   action='store_true',
