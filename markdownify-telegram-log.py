@@ -124,9 +124,8 @@ def handle_file(file):
 
             prev_time = this_time
 
-            l = '#### `{ts}` -- {n}'.format(ts=prev_time.strftime("%Y-%m-%d "
-                                                                  "%H:%M"),
-                                            n=sender)
+            ts = prev_time.strftime("%Y-%m-%d %H:%M")
+            l = '#### `{ts}` -- {n}'.format(ts=ts, n=sender)
             new_file.append(l)
         else:
             new_file.append(line.strip())
