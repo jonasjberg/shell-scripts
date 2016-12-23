@@ -1,48 +1,62 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#     markdownify-telegram-log.py
-#     ===========================
-#     Written by Jonas Sjöberg   www.jonasjberg.com  github.com/jonasjberg
-#     ____________________________________________________________________
+#  markdownify-telegram-log.py
+#  ===========================
+#  Written by Jonas Sjöberg   www.jonasjberg.com  github.com/jonasjberg
+#  ____________________________________________________________________
 #
-#     This program is free software: you can redistribute it and/or modify
-#     it under the terms of the GNU General Public License as published by
-#      the Free Software Foundation, either version 3 of the License, or
-#                     (at your option) any later version.
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#                  (at your option) any later version.
 #
-#       This program is distributed in the hope that it will be useful,
-#        but WITHOUT ANY WARRANTY; without even the implied warranty of
-#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#                 GNU General Public License for more details.
+#    This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#              GNU General Public License for more details.
 #
-#      You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#     ____________________________________________________________________
+#   You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see http://www.gnu.org/licenses/.
+#  ____________________________________________________________________
 #
-# Telegram log file excerpt:
-# ==========================
+# Reformats Telegram messenger chat logs in the following way:
 #
-#     Jonas Sjöberg, [21.10.16 18:02]
-#     This is the first line of message text.
-#     Messages with the same timestamp are separated by an empty line.
+#     - Extra Markdown-style headings are added for years and months.
+#     - Message timestamp and sender name is placed under a Markdown-style
+#       level 4 heading.
+#     - Message header elements, timestamp and sender; are reordered.
+#     - All text is wrapped at "WRAP_WIDTH" columns.
+#     - Any trailing/leading whitespace is removed.
+#
+# Example -- original log file excerpt:
+#
+#     Jonas Sjöberg, [21.10.16 18:34]
+#     This is the first line of text in this message. Messages with the same timestamp (sent within a minute of eachother (?)) are separated by newlines.
+#     Like this second message, sent just after the above.
+#
+#     Jonas Sjöberg, [21.10.16 18:35]
+#     This is a second message. This is a second message. This is a second message. This is a second message. This is a second message. This is a second message.
 #
 #
-# Desired output format:
-# ======================
+# Example -- resulting output:
 #
-#     #### `2016-10-21 18:02` -- Jonas Sjöberg
-#     This is the first line of message text.
-#     Seems that a new line means separate message
-#     within previous timestamp.
-#     Messages with the same timestamp are separated
-#     by an empty line.
+#     2016
+#     ================================================================================
 #
+#     October 2016
+#     --------------------------------------------------------------------------------
 #
-# - Header is a level 4 Markdown heading.
-# - Header elements are reordered.
-# - Text is wrapped at WRAP_WIDTH columns.
-# - Trailing whitespace is removed.
+#     ### 2016-10-21 Friday
+#     #### `2016-10-21 18:34` -- Jonas Sjöberg
+#     This is the first line of text in this message. Messages with the same timestamp
+#     (sent within a minute of eachother (?)) are separated by newlines.
+#     Like this second message, sent just after the above.
+#
+#     #### `2016-10-21 18:35` -- Jonas Sjöberg
+#     This is a second message. This is a second message. This is a second message.
+#     This is a second message. This is a second message. This is a second message.
+
 
 from datetime import datetime
 import os
