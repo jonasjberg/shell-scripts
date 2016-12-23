@@ -97,8 +97,7 @@ def handle_file(file):
                 new_file.append(this_time.strftime('%Y'))
                 new_file.append(('=' * 80) + '\n')
             if this_time.month > prev_time.month:
-                new_file.append('')
-                new_file.append('')
+                new_file.append('\n')
                 new_file.append(this_time.strftime('%B %Y'))
                 new_file.append(('-' * 80) + '\n')
                 new_file.append('')
