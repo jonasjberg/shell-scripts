@@ -151,9 +151,14 @@ def display_results(matches):
             textwidth_lineno = max(textwidth_lineno, len(str(parent['line'])))
 
     # Local function for printing a columnated line.
-    def print_line(line_num, text_parent, text_match):
-        print('{n:{twn}}  {tp:{twp}}   {tm:{twm}}'.format(n=line_num,
+    def print_line(line_num, level, text_parent, text_match):
+        if type(level) == int:
+            lvl = '#' * level
+        else:
+            lvl = 'Level'
+        print('{n:{twn}} {l:6} {tp:{twp}}   {tm:{twm}}'.format(n=line_num,
                                                           twn=textwidth_lineno,
+                                                          l=lvl,
                                                           tp=text_parent,
                                                           twp=textwidth_parent,
                                                           tm=text_match,
@@ -161,11 +166,12 @@ def display_results(matches):
 
     # Print header.
     if args.verbose > 0:
-        print_line('Line', 'Heading', 'Matching pattern')
+        print_line('Line', 'Level', 'Heading', 'Matching pattern')
 
     for match in matches:
         for parent in match['parents']:
-            print_line(parent['line'], parent['text'], match['text'])
+            print_line(parent['line'] + 1, parent['level'], parent['text'],
+                       match['text'])
             if not args.all_parents:
                 break
 
