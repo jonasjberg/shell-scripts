@@ -239,13 +239,18 @@ if __name__ == '__main__':
                         '"--level".')
         args.level = 1
 
+
     log.debug('[STARTING]')
     startTime = time.time()
 
     # TODO: If PATTERN is missing and FILE is the last argument, FILE will be
     #       interpreted as PATTERN.
     try:
-        pattern = re.compile(args.pattern[0])
+        re_flags = 0
+        if args.ignore_case:
+            log.debug('Case-insensitive matching enabled.')
+            re_flags = re.IGNORECASE
+        pattern = re.compile(args.pattern[0], re_flags)
     except re.error as e:
         log.error('Invalid PATTERN: ' + str(e))
         exit(1)
