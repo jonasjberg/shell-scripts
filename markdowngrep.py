@@ -72,7 +72,7 @@ def parse_commandline():
                                   choices=range(1, 6),
                                   metavar='N',
                                   help='Climb from the matching text to '
-                                       'heading level N. '
+                                       'at least heading level N. '
                                        'Default is to climb to the closest '
                                        'parent heading.')
 
@@ -80,8 +80,12 @@ def parse_commandline():
                                   dest='all_parents',
                                   action='store_true',
                                   default=False,
-                                  help='Traverse all parents, all the way to '
-                                       'the tree root.')
+                                  help='Keep climbing after reaching the closest'
+                                       ' parent heading (default) or, '
+                                       'if a level has been specified; keep '
+                                       'climbing after reaching level N.'
+                                       'I.E. Traverse all parents, all the '
+                                       'way up to the tree root.')
 
     args = parser.parse_args()
     return args
