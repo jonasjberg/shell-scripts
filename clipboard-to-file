@@ -50,6 +50,12 @@ then
     echo "              (Defaults to \"${DEFAULT_FILENAME}\")" >&2
     exit 1
 else
+    if [ ! -d "$1" ]
+    then
+        echo "ERROR: Not a directory: \"${dest}\". Exiting .." >&2
+        exit 1
+    fi
+
     dest="${1}/${2:-$DEFAULT_FILENAME}"
 
     if [ -e "$dest" ]
