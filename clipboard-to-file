@@ -63,8 +63,7 @@ fi
 
 dest="${1}/${2:-$DEFAULT_FILENAME}"
 
-[ -e "$dest" ] && { msg_error "Would be overwritten: \"${dest}\" .."     ; exit 1 ; }
-[ -w "$dest" ] || { msg_error "Missing write permission: \"${dest}\" .." ; exit 1 ; }
+[ -e "$dest" ] && { msg_error "Would be overwritten: \"${dest}\" .." ; exit 1 ; }
 
 # Have xclip output the clipboard (X selection) contents to $dest
 xclip -out > "$dest"
