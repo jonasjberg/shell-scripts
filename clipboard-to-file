@@ -2,8 +2,9 @@
 #                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #                              clipboard-to-file
 #                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#                    Copyright (C) 2015-2016 Jonas Sjöberg
+#                    Copyright (C) 2015-2017 Jonas Sjöberg
 #                        https://github.com/jonasjberg
+#                              www.jonasjberg.com
 #
 #              Create a file with the contents of the clipboard.
 #              Intended for use as a Thunar custom action.
