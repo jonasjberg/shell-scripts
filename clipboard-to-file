@@ -32,7 +32,8 @@ set -e                                                  # exit on first error
 #set -x                                                 # debug mode
 
 PROGNAME="$(basename $0)"
-DEFAULT_FILENAME="readme.txt"
+timestamp="$(date +%FT%H%M%S)"
+DEFAULT_FILENAME="xclipboard_${timestamp}.txt"
 
 
 msg_error()
