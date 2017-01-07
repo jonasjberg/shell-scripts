@@ -41,14 +41,13 @@ then
     exit 127
 fi
 
-
 if [ $# -eq 0 ]
 then
-    echo "ERROR: Positional argument is missing!"              >&2
-    echo "USAGE: ${PROGNAME} [PATH] [FILE]"                    >&2
-    echo "       PATH - Create the file in this directory"     >&2
-    echo "       FILE - Optional name of the file."            >&2
-    echo "              (Defaults to \"${DEFAULT_FILENAME}\")" >&2
+    echo "ERROR: Positional argument is missing!"
+    echo "USAGE: ${PROGNAME} [PATH] [FILE]"
+    echo "       PATH - Create the file in this directory"
+    echo "       FILE - Optional name of the file."
+    echo "              (Defaults to \"${DEFAULT_FILENAME}\")"
     exit 1
 else
     if [ ! -d "$1" ]
