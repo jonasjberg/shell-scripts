@@ -30,13 +30,13 @@
 set -e                                                  # exit on first error
 #set -x                                                 # debug mode
 
-PROGNAME=$(basename $0)                                 # name of this script
+PROGNAME="$(basename $0)"
 DEFAULT_FILENAME="readme.txt"
 
 
 if ! command -v "xclip" >/dev/null
 then
-    echo "ERROR: Unable to execute xclip! Exiting .."
+    echo "ERROR: Unable to execute xclip. Exiting .."
     exit 127
 fi
 
@@ -52,22 +52,22 @@ then
 else
     dest="${1}/${2:-$DEFAULT_FILENAME}"
 
-    if [[ -e $dest ]]
+    if [ -e "$dest" ]
     then
         echo "ERROR: ${dest} already exists and would be overwritten. Exiting .." >&2
         exit 1
-    else
-        # Have xclip output the clipboard (X selection) contents to $dest
-        xclip -out > "$dest"
-
-        # Test for zero file size, delete file if true. Could happen if the
-        # clipboard is empty or contains something unsuitable for stdout.
-        if [[ ! -s $dest ]]
-        then
-            rm "$dest"
-        fi
-
-        exit 0
     fi
+
+    # Have xclip output the clipboard (X selection) contents to $dest
+    xclip -out > "$dest"
+
+    # Test for zero file size, delete file if true. Could happen if the
+    # clipboard is empty or contains something unsuitable for stdout.
+    if [ ! -s "$dest" ]
+    then
+        rm -v -- "$dest"
+    fi
+
+    exit 0
 fi
 
