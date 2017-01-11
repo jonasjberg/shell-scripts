@@ -2,8 +2,9 @@
 #                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #                              clipboard-to-file
 #                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#                    Copyright (C) 2015-2016 Jonas Sjöberg
+#                    Copyright (C) 2015-2017 Jonas Sjöberg
 #                        https://github.com/jonasjberg
+#                              www.jonasjberg.com
 #
 #              Create a file with the contents of the clipboard.
 #              Intended for use as a Thunar custom action.
@@ -30,44 +31,48 @@
 set -e                                                  # exit on first error
 #set -x                                                 # debug mode
 
-PROGNAME=$(basename $0)                                 # name of this script
-DEFAULT_FILENAME="readme.txt"
+PROGNAME="$(basename $0)"
+timestamp="$(date +%FT%H%M%S)"
+DEFAULT_FILENAME="xclipboard_${timestamp}.txt"
+
+
+msg_error()
+{
+    printf '[ERROR] %s\n' "$*" >&2
+}
 
 
 if ! command -v "xclip" >/dev/null
 then
-    echo "ERROR: Unable to execute xclip! Exiting .."
+    echo "ERROR: Unable to execute xclip. Exiting .."
     exit 127
 fi
 
-
 if [ $# -eq 0 ]
 then
-    echo "ERROR: Positional argument is missing!"              >&2
-    echo "USAGE: ${PROGNAME} [PATH] [FILE]"                    >&2
-    echo "       PATH - Create the file in this directory"     >&2
-    echo "       FILE - Optional name of the file."            >&2
-    echo "              (Defaults to \"${DEFAULT_FILENAME}\")" >&2
+    echo "ERROR: Positional argument is missing!"
+    echo "USAGE: ${PROGNAME} [PATH] [FILE]"
+    echo "       PATH - Create the file in this directory"
+    echo "       FILE - Optional name of the file."
+    echo "              (Defaults to \"${DEFAULT_FILENAME}\")"
     exit 1
-else
-    dest="${1}/${2:-$DEFAULT_FILENAME}"
-
-    if [[ -e $dest ]]
-    then
-        echo "ERROR: ${dest} already exists and would be overwritten. Exiting .." >&2
-        exit 1
-    else
-        # Have xclip output the clipboard (X selection) contents to $dest
-        xclip -out > "$dest"
-
-        # Test for zero file size, delete file if true. Could happen if the
-        # clipboard is empty or contains something unsuitable for stdout.
-        if [[ ! -s $dest ]]
-        then
-            rm "$dest"
-        fi
-
-        exit 0
-    fi
 fi
 
+[ -e "$1" ] || { msg_error "Does not exist: \"${1}\" .."  ; exit 1 ; }
+[ -d "$1" ] || { msg_error "Not a directory: \"${1}\" .." ; exit 1 ; }
+
+dest="${1}/${2:-$DEFAULT_FILENAME}"
+
+[ -e "$dest" ] && { msg_error "Would be overwritten: \"${dest}\" .." ; exit 1 ; }
+
+# Have xclip output the clipboard (X selection) contents to $dest
+xclip -out > "$dest"
+
+# Test for zero file size, delete file if true. Could happen if the
+# clipboard is empty or contains something unsuitable for stdout.
+if [ ! -s "$dest" ]
+then
+    rm -v -- "$dest"
+fi
+
+exit $?

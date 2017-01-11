@@ -58,8 +58,14 @@ def parse_commandline():
                         metavar='FILE',
                         help='Files to search.')
 
-    arg_group_output = parser.add_argument_group('output options')
+    arg_group_match = parser.add_argument_group('matching control')
+    arg_group_match.add_argument('-i', '--ignore-case',
+                                 dest='ignore_case',
+                                 action='store_true',
+                                 help='Ignore case distinctions in the '
+                                      'PATTERN.')
 
+    arg_group_output = parser.add_argument_group('output options')
     arg_group_output.add_argument('-t', '--top-level',
                                   dest='top_level',
                                   action='store_true',
@@ -72,7 +78,7 @@ def parse_commandline():
                                   choices=range(1, 6),
                                   metavar='N',
                                   help='Climb from the matching text to '
-                                       'heading level N. '
+                                       'at least heading level N. '
                                        'Default is to climb to the closest '
                                        'parent heading.')
 
@@ -80,8 +86,12 @@ def parse_commandline():
                                   dest='all_parents',
                                   action='store_true',
                                   default=False,
-                                  help='Traverse all parents, all the way to '
-                                       'the tree root.')
+                                  help='Keep climbing after reaching the closest'
+                                       ' parent heading (default) or, '
+                                       'if a level has been specified; keep '
+                                       'climbing after reaching level N.'
+                                       'I.E. Traverse all parents, all the '
+                                       'way up to the tree root.')
 
     args = parser.parse_args()
     return args
@@ -98,13 +108,14 @@ def process_input(input, pattern):
     for num, line in enumerate(input_data):
         if line.strip():
             if has_match(line, pattern):
-                # if pattern in line:
                 matches += [{'line': num,
                              'text': line.strip()}]
 
     for match in matches:
         match['parents'] = find_line_parent_headings(input_data, match['line'])
 
+        if not log.debug:
+            continue
         log.debug('Found match:')
         for line in pprint.pformat(match).split('\n'):
             log.debug(line)
@@ -130,25 +141,37 @@ def has_match(line, regexp):
 
 def display_results(matches):
     # Figure out field widths required to fit largest entries.
-    textwidth_lineno = 1
-    textwidth_match = 10
-    textwidth_parent = 10
+    textwidth_lineno = 4
+    textwidth_parent = 7
+    textwidth_match = 16
     for match in matches:
         textwidth_match = max(textwidth_match, len(match['text']))
         for parent in match['parents']:
             textwidth_parent = max(textwidth_parent, len(parent['text']))
             textwidth_lineno = max(textwidth_lineno, len(str(parent['line'])))
 
+    # Local function for printing a columnated line.
+    def print_line(line_num, level, text_parent, text_match):
+        if type(level) == int:
+            lvl = '#' * level
+        else:
+            lvl = 'Level'
+        print('{n:{twn}} {l:6} {tp:{twp}}   {tm:{twm}}'.format(n=line_num,
+                                                          twn=textwidth_lineno,
+                                                          l=lvl,
+                                                          tp=text_parent,
+                                                          twp=textwidth_parent,
+                                                          tm=text_match,
+                                                          twm=textwidth_match))
+
+    # Print header.
+    if args.verbose > 0:
+        print_line('Line', 'Level', 'Heading', 'Matching pattern')
+
     for match in matches:
         for parent in match['parents']:
-            print('{n:>{twn}d}: {tp:{twp}} | {tm:{twm}}'.format(
-                n=parent['line'],
-                twn=textwidth_lineno,
-                tp=parent['text'],
-                twp=textwidth_parent,
-                tm=match['text'],
-                twm=textwidth_match))
-
+            print_line(parent['line'] + 1, parent['level'], parent['text'],
+                       match['text'])
             if not args.all_parents:
                 break
 
@@ -216,13 +239,18 @@ if __name__ == '__main__':
                         '"--level".')
         args.level = 1
 
+
     log.debug('[STARTING]')
     startTime = time.time()
 
     # TODO: If PATTERN is missing and FILE is the last argument, FILE will be
     #       interpreted as PATTERN.
     try:
-        pattern = re.compile(args.pattern[0])
+        re_flags = 0
+        if args.ignore_case:
+            log.debug('Case-insensitive matching enabled.')
+            re_flags = re.IGNORECASE
+        pattern = re.compile(args.pattern[0], re_flags)
     except re.error as e:
         log.error('Invalid PATTERN: ' + str(e))
         exit(1)
