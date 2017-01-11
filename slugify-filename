@@ -37,6 +37,15 @@ SEPAR_CHAR='_'
 GLUE_CHARS='-_'
 SAFE_CHARS="${GLUE_CHARS}a-zA-Z0-9"
 
+THIS_SCRIPT_PATH="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+EXTERNAL_CONFIG_FILE="${THIS_SCRIPT_PATH}/slugify-filename_config"
+if [ -f "$EXTERNAL_CONFIG_FILE" ]
+then
+    msg_debug "Using external configuration: \"${EXTERNAL_CONFIG_FILE}\" ..\n"
+    . "$EXTERNAL_CONFIG_FILE"
+fi
+
+
 #_______________________________________________________________________________
 
 
@@ -79,20 +88,14 @@ process()
     name="${name//C++/C-plusplus}"
     name="${name//C#/C-sharp}"
 
-    # Remove these words
-    REMOVE_STRING[0]='V413HAV'
-    REMOVE_STRING[1]='EPUB'
-    REMOVE_STRING[2]='STORMRG'
-    REMOVE_STRING[3]='GOLU'
-    REMOVE_STRING[4]='TLU622'
-    REMOVE_STRING[5]='darksiderg'
-    REMOVE_STRING[6]='ebook'
-
-    for string in "${REMOVE_STRING[@]}"
-    do
-        name="${name//${string}/}"
-        msg_debug
-    done
+    if [ -n "$REMOVE_STRINGS" ]
+    then
+        for string in "${REMOVE_STRING[@]}"
+        do
+            name="${name//${string}/}"
+            msg_debug
+        done
+    fi
 
 
     name="${name//@/-AT-}"              # Replace '@' with '-AT-'
