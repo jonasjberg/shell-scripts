@@ -2,7 +2,7 @@
 #
 # slugify-filename
 # ~~~~~~~~~~~~~~~~
-# Copyright(c)2015 Jonas Sjöberg
+# Copyright(c)2015-2017 Jonas Sjöberg
 # https://github.com/jonasjberg
 #
 # Does filename cleanup. I try to use very conservative filenames.
