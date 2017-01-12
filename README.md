@@ -24,6 +24,7 @@ Listing
 | `folder-manifest`           | generate txt file with folder info             |
 | `git-backup`                | recursively find and backup git repos          |
 | `git-recursive-pull`        | recursively find repos and do `git pull`       |
+| `markdowngrep.py`           | find markdown headings in text given a pattern |
 | `notify`                    | `notify-send` functions                        |
 | `prettyprintPATH`           | print entries in `$PATH` separated by `\n`     |
 | `pull-from`                 | `rsync` wrapper for synchronizing directories  |
