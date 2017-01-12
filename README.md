@@ -26,7 +26,7 @@ Listing
 | `crop-instagram-screenshot` | crop images to size                            |
 | `datedelta.py`              | calculates years, months, days between dates   |
 | `exif-rename`               | rename images from exif date/time              |
-| `exiftooldatel`             | display date/time-information using `exiftool` |
+| `exiftooldate`              | display date/time-information using `exiftool` |
 | `fix-permissions`           | sets permissions recursively                   |
 | `folder-manifest`           | generate txt file with folder info             |
 | `git-backup`                | recursively find and backup git repos          |
