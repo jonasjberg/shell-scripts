@@ -1,15 +1,16 @@
 `markdowngrep`
 ==============
 
-| Written by Jonas Sjöberg in 2016
-| <https://github.com/jonasjberg>
-| <https://jonasjberg.github.io>
-| `jomeganasatgmaildotcom`
+Written by Jonas Sjöberg in 2016
+
+    https://github.com/jonasjberg
+    https://jonasjberg.github.io
+    jomeganasatgmaildotcom
+
 
 
 This is an attempt at program design by first sketching out different use cases
 and what the program output might be.
-
 
 
 Example usage
