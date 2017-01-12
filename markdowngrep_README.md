@@ -139,8 +139,8 @@ Miaoouuuw
 
 * Climb to heading level 1 and show all parents.
     * Simple pattern:
-        $ markdowngrep --level 1 --all-parents 'Miau' ~/catsay.md
         ```bash
+        $ markdowngrep --level 1 --all-parents 'Miau' ~/catsay.md
          0: H1 Cats say      | Miau      
         13: H1 Cats also say | Miau      
          0: H1 Cats say      | Miau
