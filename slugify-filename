@@ -84,6 +84,10 @@ process()
     name="${name//\ -and-\ /-and-}"     # Replace ' -and- ' with '-and-'
     msg_debug
 
+    name="${name//,\ /\ }"              # Replace comma-space with space
+    name="${name//,/${SPACE_CHAR}}"     # Replace comma with 'SPACE_CHAR'
+    name="${name//\'/}"                 # Remove single quotes
+
     # Replace special words
     name="${name//C++/C-plusplus}"
     name="${name//C#/C-sharp}"
