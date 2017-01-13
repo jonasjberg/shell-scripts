@@ -125,6 +125,9 @@ process()
     name="$(echo "$name" | sed -r 's/[_-]+$//g')"
     msg_debug
 
+    # Replace two or more dashes with a underline, collapse underlines
+    name="$(echo "$name" | sed -r 's/[-]{2,}/_/g')"
+    name="$(echo "$name" | sed -r 's/[_]{2,}/_/g')"
 
     echo "${name}" # Function "return" value
 }
