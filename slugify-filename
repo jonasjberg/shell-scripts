@@ -89,8 +89,8 @@ process()
     name="${name//\'/}"                 # Remove single quotes
 
     # Replace special words
-    name="${name//C++/C-plusplus}"
-    name="${name//C#/C-sharp}"
+    name="${name//C++/CPP}"
+    name="${name//C#/CSharp}"
 
     if [ -n "$REMOVE_STRINGS" ]
     then
