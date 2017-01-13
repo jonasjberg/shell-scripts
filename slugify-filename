@@ -101,7 +101,6 @@ process()
         done
     fi
 
-
     name="${name//@/-AT-}"              # Replace '@' with '-AT-'
     name="${name//\ -AT-\ /-AT-}"       # Replace ' -AT- ' with '-AT-'
     msg_debug
