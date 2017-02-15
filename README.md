@@ -33,6 +33,7 @@ Listing
 | `git-recursive-pull`          | recursively find repos and do `git pull`       |
 | `markdowngrep.py`             | find markdown headings in text given a pattern |
 | `markdownify-telegram-log.py` | reformat telegram messenger log file           |
+| `markdowntoprettypdf.sh`      | `pandoc` wrapper with my favorite settings     |
 | `notify`                      | `notify-send` functions                        |
 | `prettyprintPATH`             | print entries in `$PATH` separated by `\n`     |
 | `pull-from`                   | `rsync` wrapper for synchronizing directories  |
