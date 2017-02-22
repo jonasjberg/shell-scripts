@@ -36,7 +36,7 @@ todays_date="$(date +%F)"
 today_dir="${archive_dir}/${todays_date}"
 if [ ! -d "$today_dir" ]
 then
-    mkdir --verbose --parents -- "$today_dir"
+    mkdir -vp "$today_dir"
 else
     msg "Directory \"$today_dir\" already exists."
 fi
@@ -53,14 +53,14 @@ then
         msg "The symlink exists and points to todays directory."
     else
         msg "The symlink exists but does not point to todays directory .."
-        rm --verbose -- "$link_path"
+        rm -v -- "$link_path"
     fi
 fi
 
 # Create a new symlink if path does not already exist or is a (dead) symlink.
 if [ ! -e "$link_path" -a ! -h "$link_path" ]
 then
-    ln --verbose --symbolic -- "$today_dir" "$link_path" 
+    ln -vs -- "$today_dir" "$link_path"
 else
     msg "Symlink path \"${link_path}\" already exists! Aborting.."
 fi
