@@ -5,7 +5,7 @@
 # Written by Jonas Sjöberg in 2016
 #
 # Create a daily working directory called "today", which is a symlink to a
-# directory with the actual date. 
+# directory with the actual date.
 #
 # Example: "~/jonas/today" symlinks to "~/jonas/Archive/2016-05-29" and ..
 #          "~/jonas/today" symlinks to "~/jonas/Archive/2016-05-30" the next day
@@ -18,8 +18,8 @@
 
 VERBOSE=1
 
-function msg() 
-{ 
+function msg()
+{
     if [ "$VERBOSE" -gt "0" ]
     then
         local timestamp="$(date +%FT%M:%M:%S)"
@@ -44,7 +44,7 @@ fi
 
 # Path to the symlink pointing to todays directory
 link_path="${HOME}/today"
-    
+
 # Check the state of any existing symlink, remove if stale.
 if [ -L "$link_path" ]
 then
