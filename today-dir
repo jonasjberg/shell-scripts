@@ -16,10 +16,15 @@
 
 #set -e
 
+VERBOSE=1
+
 function msg() 
 { 
-    ts="$(date +%FT%M:%M:%S)"
-    printf '%s %s %s\n' "$ts" "$(basename $0)" "$*"
+    if [ "$VERBOSE" -gt "0" ]
+    then
+        local timestamp="$(date +%FT%M:%M:%S)"
+        printf '%s %s %s\n' "$timestamp" "$(basename $0)" "$*"
+    fi
 }
 
 # Base directory where everything is stored.
