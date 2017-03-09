@@ -31,6 +31,7 @@ Listing
 | `folder-manifest`             | generate txt file with folder info             |
 | `git-backup`                  | recursively find and backup git repos          |
 | `git-recursive-pull`          | recursively find repos and do `git pull`       |
+| `macbook-battery-logger.sh`   | generate MacBook laptop battery CSV statistics |
 | `markdowngrep.py`             | find markdown headings in text given a pattern |
 | `markdownify-telegram-log.py` | reformat telegram messenger log file           |
 | `markdowntoprettypdf.sh`      | `pandoc` wrapper with my favorite settings     |
