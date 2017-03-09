@@ -65,7 +65,7 @@ def download_orly_books():
 
             t = clean_web_text(post.text)
             post_re_match = re.search(r'(\d+\n)?(\d+\n)?(.*)\n(.*)\n\d?.*', t, re.MULTILINE)
-            if post_re_match.group(2):
+            if post_re_match.group(3):
                 post_data['title'] = post_re_match.group(3)
             else:
                 post_data['title'] = 'Untitled'
