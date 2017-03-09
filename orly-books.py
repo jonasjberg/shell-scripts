@@ -107,7 +107,7 @@ def download_orly_books():
         for post in post_list:
             post_ts = post['timestamp'][:10]
             try:
-                timestamp = datetime.datetime.fromtimestamp(int(post_ts))
+                timestamp = datetime.datetime.fromtimestamp(int(post_ts)).strftime('%Y-%m-%dT%H%M%S')
             except ValueError:
                 timestamp = ''
 
