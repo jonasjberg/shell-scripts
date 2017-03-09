@@ -56,6 +56,8 @@ def download_orly_books():
         postarea = driver.find_element_by_id("siteTable")
         if postarea:
             posts = postarea.find_elements_by_class_name('link')
+        else:
+            break
 
         # Iterate over the posts on this page ..
         for post in posts:
