@@ -44,11 +44,9 @@ TIMESTAMP="$(date +%F\ %H:%M:%S)"
 
 function die()
 {
-    if [[ ! -z $1 ]]
-    then
-        printf "%s: %s\n\n" "$PROGNAME" "$1" 1>&2
-    fi
-    exit 1
+    local msg="${1:-"ABORTING because of unspecified error."}"
+    printf "%s ERROR: %s\n\n" "$PROGNAME" "$msg" 1>&2
+    exit ${2:-1}
 }
 
 function show_usage()
