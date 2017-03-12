@@ -62,7 +62,7 @@ function show_usage()
 # Check for required program.
 if ! command -v "cutycapt" >/dev/null
 then
-    die "Can not execute cutycapt! Is it installed? Is it in your \$PATH?"
+    die "Can not execute \"cutycapt\", is it installed? Is it in your \$PATH?"
 fi
 
 if ! [[ ${URL} && ${URL-x} ]]               # is URL set?
@@ -99,10 +99,10 @@ fi
 
 if [[ -e $TARGET ]]                         # does TARGET exist?
 then
-    die "Output file already exists!"
+    die "Target file already exists and would be overwritten"
 fi
 
-echo "Saving to \"${TARGET}\" .."
+echo "Saving \"${URL}\" to \"${TARGET}\" .."
 printf "Running cutycapt.. "
 cutycapt $FLAGS --url="$URL" --out="$TARGET"
 
