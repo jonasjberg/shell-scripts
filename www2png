@@ -4,7 +4,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Convert html to jpg/png/pdf/.. etc., with cutycapt.
 #
-# Copyright (C) 2015-2016 Jonas Sjöberg
+# Copyright (C) 2015-2017 Jonas Sjöberg
 # https://github.com/jonasjberg
 
 # Restricts what cutycapt can do to just this one thing.
