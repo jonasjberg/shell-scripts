@@ -4,7 +4,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Convert html to jpg/png/pdf/.. etc., with cutycapt.
 #
-# Copyright (C) 2015-2016 Jonas Sjöberg
+# Copyright (C) 2015-2017 Jonas Sjöberg
 # https://github.com/jonasjberg
 
 # Restricts what cutycapt can do to just this one thing.
@@ -44,11 +44,9 @@ TIMESTAMP="$(date +%F\ %H:%M:%S)"
 
 function die()
 {
-    if [[ ! -z $1 ]]
-    then
-        printf "%s: %s\n\n" "$PROGNAME" "$1" 1>&2
-    fi
-    exit 1
+    local msg="${1:-"ABORTING because of unspecified error."}"
+    printf "%s ERROR: %s\n\n" "$PROGNAME" "$msg" 1>&2
+    exit ${2:-1}
 }
 
 function show_usage()
@@ -64,7 +62,7 @@ function show_usage()
 # Check for required program.
 if ! command -v "cutycapt" >/dev/null
 then
-    die "Can not execute cutycapt! Is it installed? Is it in your \$PATH?"
+    die "Can not execute \"cutycapt\", is it installed? Is it in your \$PATH?"
 fi
 
 if ! [[ ${URL} && ${URL-x} ]]               # is URL set?
@@ -101,10 +99,10 @@ fi
 
 if [[ -e $TARGET ]]                         # does TARGET exist?
 then
-    die "Output file already exists!"
+    die "Target file already exists and would be overwritten"
 fi
 
-echo "Saving to \"${TARGET}\" .."
+echo "Saving \"${URL}\" to \"${TARGET}\" .."
 printf "Running cutycapt.. "
 cutycapt $FLAGS --url="$URL" --out="$TARGET"
 
