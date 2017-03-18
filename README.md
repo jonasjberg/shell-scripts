@@ -39,6 +39,7 @@ Listing
 | `prettyprintPATH`             | print entries in `$PATH` separated by `\n`     |
 | `pull-from`                   | `rsync` wrapper for synchronizing directories  |
 | `reencode-opx-video`          | reencodes videos with `ffmpeg` to save space   |
+| `rename-macos-screenshot.py`  | used by MacOS Automator to rename screenshots  |
 | `rotate-opx-video-90cw`       | rotates "OnePlus X" videos with `ffmpeg`       |
 | `shrink-pdf.sh`               | optimize pdf documents to use less disk space  |
 | `slugify-filename`            | clean up file names                            |
