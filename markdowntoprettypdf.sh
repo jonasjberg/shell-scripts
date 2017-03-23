@@ -52,7 +52,8 @@ then
     echo "USAGE: \"$(basename $0) [FILE]...\""
     echo ""
     echo "Where [FILE] is one or more text files written in markdown syntax,"
-    echo "suitable for use with \"pandoc\"."
+    echo "suitable for use with \"pandoc\".  The input is modified prior to "
+    echo "processing by \"pandoc\", see the script source for the specifics."
     exit 1
 else
     for arg in "$@"
