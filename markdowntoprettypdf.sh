@@ -31,7 +31,7 @@ markdowntoprettypdf()
     dest="${1}.pdf"
 
     # Do character replacements before piping to pandoc.
-    cat "$src" | sed 's/➡/-->/' | \
+    cat "$src" | sed 's/➡/-->/' | sed 's/⇒/-->/g' | sed 's/”/"/' | \
     pandoc --smart --normalize --standalone \
            --highlight-style=monochrome \
            --variable mainfont="DejaVu Sans" \
