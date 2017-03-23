@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-  
+
 # markdowntoprettypdf.sh
 # ~~~~~~~~~~~~~~~~~~~~~~
 # Copyright 2016-2017 by Jonas Sjöberg
