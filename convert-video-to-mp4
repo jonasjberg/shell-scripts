@@ -30,6 +30,11 @@ function msg_error()
 }
 
 
+if ! command -v ffmpeg >/dev/null 2>&1; then
+    echo "Required program \"ffmpeg\" is not available. Exiting." 2>&1
+    exit 1
+fi
+
 if [ $# -eq 0 ]
 then
     printf "%-8s %s\n" "Usage:" "$(basename $0) [FILE]..."
