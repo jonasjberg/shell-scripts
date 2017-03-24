@@ -32,7 +32,7 @@ function msg_error()
 
 
 if ! command -v ffmpeg >/dev/null 2>&1; then
-    echo "Required program \"ffmpeg\" is not available. Exiting." 2>&1
+    msg_error "Unable to continue without program" "ffmpeg"
     exit 1
 fi
 
