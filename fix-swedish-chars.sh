@@ -7,11 +7,11 @@
 #   <https://github.com/jonasjberg>
 #
 #   Recursively finds and renames files with swedish characters in the file
-#   names (åäö), starting from the specified path. The starting path defaults
-#   to the currnet working directory if left empty.
+#   names (åäöÅÄÖ), starting from the specified path.  The starting path
+#   defaults to the currnet working directory if left empty.
 #
 #   The purpose of this script is to work around problems when rsyncing from a
-#   Linux system to MacOS. Files with non-ASCII characters are encoded
+#   Linux system to MacOS.  Files with non-ASCII characters are encoded
 #   differently and consequently deleted and transferred at every rsync
 #   invocation.
 #
