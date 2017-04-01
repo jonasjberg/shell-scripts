@@ -19,6 +19,8 @@
 #   operations are in fact necessary, the characters are displayed just about
 #   indentically but the underlying encodings stored in this source files is
 #   different.
+#
+#   WARNING: This will NOT handle newlines in path/directory/file names safely.
 #   __________________________________________________________________________
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -40,7 +42,16 @@ set -e
 
 searchpath="${1:-.}"
 
-# NOTE: This will NOT handle newlines in path/directory/file names safely.
+
+# TODO: Find returns a lot of files that contain non-printable ASCII characters
+#       other than the swedish characters to be replace. This results in the
+#       renaming operation source '$f' and destination '$fnew' being the same.
+#       The "no clobber" flag '-n' used with 'mv' results in these operations
+#       to simply print a warning and skip the file.
+
+
+# The find pattern matches all non-printable ASCII characters.
+# Source:  http://unix.stackexchange.com/a/109753
 LC_ALL=C find "$searchpath" -xdev -name '*[! -~]*' | while IFS='\n' read f
 do
     # [ -f "$f" ] || continue
