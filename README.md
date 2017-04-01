@@ -28,6 +28,7 @@ Listing
 | `exif-rename`                 | rename images from exif date/time              |
 | `exiftooldate`                | display date/time-information using `exiftool` |
 | `fix-permissions`             | sets permissions recursively                   |
+| `fix-swedish-chars.sh`        | rename files with "åäöÅÄÖ" in the file names   |
 | `folder-manifest`             | generate txt file with folder info             |
 | `git-backup`                  | recursively find and backup git repos          |
 | `git-recursive-pull`          | recursively find repos and do `git pull`       |
