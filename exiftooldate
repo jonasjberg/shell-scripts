@@ -22,7 +22,8 @@ fi
 for arg in "$@"
 do
     printf "\n\n%s\n" "$arg"
-    exiftool -short "$arg" | grep --color=never --ignore-case "date"
+    exiftool -short -e -a -s -G1 "-*date*" "$arg" \
+    | awk '{printf "%-15.15s %20.20s %-s %-s %s\n", $1, $2, $3, $4, $5}'
 done
 
 exit $?
