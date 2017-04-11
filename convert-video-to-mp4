@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-# convert-video-to-mp4          Copyright (C) 2016 Jonas Sjöberg
+# convert-video-to-mp4          Copyright (C) 2016-2017 Jonas Sjöberg
 # ~~~~~~~~~~~~~~~~~~~~          https://github.com/jonasjberg
+#                               http://www.jonasjberg.com
 #
 # Convert videos to mp4 using ffmpeg, motivated by reducing disk space.
 # Especially screen capture recordings in ogv- and webm-formats seem
