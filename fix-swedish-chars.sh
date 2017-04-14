@@ -55,11 +55,8 @@ searchpath="${1:-.}"
 
 # The find pattern matches all non-printable ASCII characters.
 # Source:  http://unix.stackexchange.com/a/109753
-LC_ALL=C find "$searchpath" -xdev -name '*[! -~]*' | while IFS='\n' read f
+LC_ALL=C find "$searchpath" -xdev -type d -name '*[! -~]*' | while IFS='\n' read f
 do
-    # [ -f "$f" ] || continue
-    # [ -d "$f" ] || continue
-
     fnew="${f/å/a}"
     fnew="${fnew/å/a}"
     fnew="${fnew/Å/A}"
@@ -67,16 +64,39 @@ do
     fnew="${fnew/ä/a}"
     fnew="${fnew/ä/a}"
     fnew="${fnew/ä/a}"
+    fnew="${fnew/ä/a}"
+    fnew="${fnew/ä/a}"
     fnew="${fnew/Ä/A}"
     fnew="${fnew/Ä/A}"
     fnew="${fnew/Ä/A}"
+    fnew="${fnew/ö/o}"
+    fnew="${fnew/ö/o}"
     fnew="${fnew/ö/o}"
     fnew="${fnew/ö/o}"
     fnew="${fnew/Ö/O}"
 
-    # echo "OLD: \"${f}\""
-    # echo "NEW: \"${fnew}\""
-    # echo ""
+    mv -nvi -- "${f}" "${fnew}"
+done
+
+LC_ALL=C find "$searchpath" -xdev -type f -name '*[! -~]*' | while IFS='\n' read f
+do
+    fnew="${f/å/a}"
+    fnew="${fnew/å/a}"
+    fnew="${fnew/Å/A}"
+    fnew="${fnew/Å/A}"
+    fnew="${fnew/ä/a}"
+    fnew="${fnew/ä/a}"
+    fnew="${fnew/ä/a}"
+    fnew="${fnew/ä/a}"
+    fnew="${fnew/ä/a}"
+    fnew="${fnew/Ä/A}"
+    fnew="${fnew/Ä/A}"
+    fnew="${fnew/Ä/A}"
+    fnew="${fnew/ö/o}"
+    fnew="${fnew/ö/o}"
+    fnew="${fnew/ö/o}"
+    fnew="${fnew/ö/o}"
+    fnew="${fnew/Ö/O}"
 
     mv -nvi -- "${f}" "${fnew}"
 done
