@@ -28,9 +28,9 @@ then
     exit 127
 fi
 
-if [ $# -eq 0 ]
+if [ "$#" -eq "0" ]
 then
-    printf "Usage: $(basename $0) [FILE]..\n"
+    printf "Usage: $(basename "$0") [FILE]..\n"
     exit 1
 fi
 
