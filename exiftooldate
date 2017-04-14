@@ -36,6 +36,9 @@ fi
 
 for arg in "$@"
 do
+    [ -e "$arg" ] || continue
+    [ -r "$arg" ] || continue
+    [ -d "$arg" ] && continue
 
     printf '\nExtracted date/time-information for: "%s"\n' "$arg"
     exiftool -short -e -a -s -G1 "-*date*" "-*year*" "$arg" \
