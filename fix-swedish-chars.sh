@@ -49,6 +49,9 @@ searchpath="${1:-.}"
 #       The "no clobber" flag '-n' used with 'mv' results in these operations
 #       to simply print a warning and skip the file.
 
+# TODO: Handle nesting better. The current approach does directories first,
+#       then files.  Though this _might_ work, it is a hack fix at best.
+
 
 # The find pattern matches all non-printable ASCII characters.
 # Source:  http://unix.stackexchange.com/a/109753
