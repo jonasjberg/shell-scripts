@@ -58,7 +58,8 @@ then
 else
     for arg in "$@"
     do
-        arg="$(readlink -m -- "$arg")"
+        arg="$(realpath -e -- "$arg")"
+
         if [ ! -r "$arg" ]
         then
             echo "Not a readable file: \"${arg}\""
