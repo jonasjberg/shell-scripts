@@ -24,6 +24,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ______________________________________________________________________________
 
+set -o pipefail
 
 # [DEFAULT] Include these options if the '--skip-toc' argument is not specified.
 FLAGS_TOC="--table-of-contents --toc-depth=4 --number-sections"
@@ -80,9 +81,15 @@ else
             arg="$(realpath -e -- "$arg")"
 
             case "$arg" in
-            *.markdown | *.md )
-                echo "Processing file \"${arg}\" .." ;
-                markdowntoprettypdf "$arg" ;;
+            *.markdown | *.md | *.mkd )
+                echo "Processing file: \"${arg}\" .." ;
+                markdowntoprettypdf "$arg" ;
+                if [ "$?" -eq "0" ]
+                then
+                    echo "FINISHED! Wrote: \"${dest}\""
+                else
+                    echo "FAILED! An error occured while processing .."
+                fi ;;
             *)
                 echo "Skipping: \"${arg}\"" ;;
             esac
