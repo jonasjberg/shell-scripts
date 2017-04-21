@@ -25,7 +25,10 @@
 # ______________________________________________________________________________
 
 
-markdowntoprettypdf() 
+# [DEFAULT] Include these options if the '--skip-toc' argument is not specified.
+FLAGS_TOC="--table-of-contents --toc-depth=4 --number-sections"
+
+markdowntoprettypdf()
 {
     src="$1"
     dest="${1}.pdf"
@@ -39,9 +42,7 @@ markdowntoprettypdf()
            --variable fontsize=11pt \
            --variable geometry:"top=1.5cm, bottom=2.5cm, left=1.5cm, right=1.5cm" \
            --variable geometry:a4paper \
-           --table-of-contents \
-           --toc-depth=4 \
-           --number-sections \
+           $FLAGS_TOC \
            -f markdown \
            -o "$dest"
 }
@@ -49,22 +50,35 @@ markdowntoprettypdf()
 
 if [ "$#" -eq 0 ]
 then
-    echo "USAGE: \"$(basename $0) [FILE]...\""
+    echo "USAGE: \"$(basename $0) [OPTIONS] [FILE]...\""
     echo ""
     echo "Where [FILE] is one or more text files written in markdown syntax,"
     echo "suitable for use with \"pandoc\".  The input is modified prior to "
     echo "processing by \"pandoc\", see the script source for the specifics."
+    echo ""
+    echo "Argument OPTIONS:"
+    echo "    --skip-toc        Do not include a table of contents."
+    echo "                      Also disables section numberings, suitable"
+    echo "                      for shorter and less formal documents."
     exit 1
 else
     for arg in "$@"
     do
-        arg="$(realpath -e -- "$arg")"
+        # TODO: Use getopts instead! (does not handle long options..)
+        case "$arg" in
+            '--skip-toc' )
+                FLAGS_TOC='' ;
+                continue ;;
+            *) ;;
+        esac
 
         if [ ! -r "$arg" ]
         then
             echo "Not a readable file: \"${arg}\""
             continue
         else
+            arg="$(realpath -e -- "$arg")"
+
             case "$arg" in
             *.markdown | *.md )
                 echo "Processing file \"${arg}\" .." ;
