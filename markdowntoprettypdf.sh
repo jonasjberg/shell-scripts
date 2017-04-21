@@ -73,7 +73,7 @@ else
             *) ;;
         esac
 
-        if [ ! -r "$arg" ]
+        if [ ! -r "$arg" ] || [ -d "$arg" ]
         then
             echo "Not a readable file: \"${arg}\""
             continue
