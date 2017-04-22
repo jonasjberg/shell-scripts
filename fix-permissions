@@ -58,13 +58,13 @@ function msg_usage()
 {
     printf "\nUSAGE: $(basename "$0") [PATH]\n"
     printf "\nModifies owner, group and permissions for PATH recursively using options:\n"
-    FMT="  %-30.30s: %s\n"
+    local FMT="  %-30.30s: %s\n"
     printf "$FMT" "chown (owner, group)"       "[${CHOWN_USER}] [${CHOWN_GROUP}]"
     printf "$FMT" "chmod (directories, files)" "[${CHMOD_DIRS}] [${CHMOD_FILE}]"
     printf "\nNote that this script should be executed with elevated privileges.\n"
 }
 
-if [ $# -eq 0 ]
+if [ "$#" -eq "0" ]
 then
     msg_usage
     exit 1
@@ -83,12 +83,12 @@ printf " [OK]\n"
 
 printf "Chmodding directories .. "
 find "$path" -xdev -type d -exec chmod $CHMOD_DIRS '{}' \;
-[ $? -eq 0 ] && printf "[OK]\n"
+[ "$?" -eq "0" ] && printf "[OK]\n"
 
 printf "Chmodding files .. "
 find "$path" -xdev -type f -exec chmod $CHMOD_FILE '{}' \;
-[ $? -eq 0 ] && printf "[OK]\n"
+[ "$?" -eq "0" ] && printf "[OK]\n"
 
-[ -n ${SECONDS} ] && printf "\nTotal execution time: ${SECONDS} seconds\n"
+[ -n "$SECONDS" ] && printf "\nTotal execution time: ${SECONDS} seconds\n"
 
 exit $?
