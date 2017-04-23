@@ -84,11 +84,11 @@ printf " [OK]\n"
 
 printf "Chmodding directories .. "
 find "$path" -xdev -type d -exec chmod $CHMOD_DIRS '{}' \;
-[ "$?" -eq "0" ] && printf "[OK]\n"
+[ "$?" -eq "0" ] && printf "[DONE]\n"
 
 printf "Chmodding files .. "
 find "$path" -xdev -type f -exec chmod $CHMOD_FILE '{}' \;
-[ "$?" -eq "0" ] && printf "[OK]\n"
+[ "$?" -eq "0" ] && printf "[DONE]\n"
 
 [ -n "$SECONDS" ] && printf "\nTotal execution time: ${SECONDS} seconds\n"
 
