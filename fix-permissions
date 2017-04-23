@@ -21,6 +21,7 @@
 
 #set -e                         # exit on first error
 #set -x                         # debug mode
+set -o pipefail
 
 
 THIS_SCRIPT_PATH="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
