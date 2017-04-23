@@ -79,8 +79,12 @@ printf "Using path: \"${path}\"\n"
 read -rsp $'Press any key to continue .. (ctrl-c aborts)\n' -n 1 key
 
 printf "\nChowning directories and files .."
-chown -R "${CHOWN_USER}:${CHOWN_GROUP}" "${path}"
-printf " [OK]\n"
+if chown -R "${CHOWN_USER}:${CHOWN_GROUP}" "${path}" 2>/dev/null
+then
+    printf " [OK]\n"
+else
+    printf " [FAILED]\n"
+fi
 
 printf "Chmodding directories .. "
 find "$path" -xdev -type d -exec chmod $CHMOD_DIRS '{}' \;
