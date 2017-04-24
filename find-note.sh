@@ -95,6 +95,8 @@ spotlight_search()
     done | perl -p -e 's/\n/\0/;'
 }
 
+# Used to complement the Spotlight metadata search which doesn't include
+# markdown files in MacOS Sierra v10.12.4 ..
 find_markdown_files()
 {
     find $_search_path -type f -name "*.md" -print0
