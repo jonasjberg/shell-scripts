@@ -46,26 +46,63 @@ do
     [ -d "$note_path" ] || continue
     [ -x "$note_path" ] || continue  # Check that directory can be searched.
 
-    echo "note_path OK: \"${note_path}\""
     _search_path="${note_path} ${_search_path}"
 done
 
-echo "_search_path: \"${_search_path}\""
+echo "Searching: \"${_search_path}\""
 
 # Check for capital letters in query, "smart-case" re-implemented, badly.
 _ignorecase='--ignore-case'
 [[ "$*" =~ [A-Z] ]] && _ignorecase=''
 
+# Method #1
+# ---------
 # grep options used:
 #
 #     -H     Always print filename headers with output lines.
 #     -m, --max-count  Behaviour differs between GNU and BSD versions.
 #                      GNU grep counts per file, BSD grep counts all as one..
 #
-grep --color=always ${_ignorecase} --recursive -H  \
-     --exclude-dir={.git} --include={*.md,*.txt}   \
-     --extended-regexp --only-matching             \
-     -- ".{0,40}$*.{0,40}" $_search_path
-    #| less --RAW-CONTROL-CHARS --chop-long-lines
+#grep --color=always ${_ignorecase} --recursive -H  \
+#     --exclude-dir={.git} --include={*.md,*.txt}   \
+#     --extended-regexp --only-matching             \
+#     -- ".{0,40}$*.{0,40}" $_search_path
+#    #| less --RAW-CONTROL-CHARS --chop-long-lines
 
-#     -- "$*"                                                    \
+
+# Method #2
+# ---------
+## Attempt at improving performance ..
+#find $_search_path -type f \( -name "*.md" -or -name "*.txt" \) -print0 \
+#| xargs -0 -P4 grep --color=always ${_ignorecase} -H --extended-regexp --only-matching -- ".{0,40}$*.{0,40}"
+
+
+# Method #3
+# ---------
+# Indexed search is required for real performance. But, Mac OS only.
+# Also does not include markdown files in MacOS Sierra v10.12.4 ..
+#
+# Final perl code substitutes newlines with NULL-bytes.
+spotlight_search()
+{
+    command -v "mdfind" >/dev/null 2>&1 || return
+
+    mdfind "$*" | while IFS='\n' read f
+    do
+       case "$(file --mime-type --brief -- "$f")" in
+           text/plain) echo "$f" ;;
+           *) continue ;;
+       esac
+    done | perl -p -e 's/\n/\0/;'
+}
+
+find_markdown_files()
+{
+    find $_search_path -type f -name "*.md" -print0
+}
+
+# Concatenate streams, sequential execution.
+# Only the final grep is potentially parallelized.
+( spotlight_search "$*" ; find_markdown_files "$*" ; ) \
+| xargs -0 -P4 grep --color=always ${_ignorecase} -oHE -- ".{0,40}$*.{0,40}"
+
