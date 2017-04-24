@@ -20,16 +20,16 @@
 LC_ALL=C
 
 SELF="$(basename "$0")"
-
 NOTES_PATH=("${HOME}/Dropbox/txt" "${HOME}/today" "${HOME}/Archive")
 
 print_usage()
 {
-    printf "USAGE:  ${SELF} [DIR] [FILE(s)]\n\n"
-    printf 'Arguments should be either files or directories.\n'
-    printf 'Directories are searched *non-recursively*; "sub-directories" are ignored.\n'
-    printf 'Files whose names matches "[0-9]+.webm" are searched for metadata.\n'
-    printf 'If suitable metadata is found the files are renamed from the results.\n'
+    printf "USAGE:  ${SELF} [PATTERN]\n\n"
+    printf 
+    printf "A predetermined set of paths are searched for plain text files\n"
+    printf "Sportlight metadata stores are utilized on Mac OS.\n"
+    printf "The PATTERN query is passed as-is to grep. The search is\n"
+    printf "case-sensitive only if PATTERN contains a capital letter.\n"
 }
 
 
@@ -38,7 +38,6 @@ then
     print_usage
     exit 1
 fi
-
 
 _search_path=""
 for note_path in "${NOTES_PATH[@]}"
