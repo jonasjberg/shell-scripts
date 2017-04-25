@@ -25,12 +25,62 @@ NOTES_PATH=("${HOME}/Dropbox/txt" "${HOME}/today" "${HOME}/Archive")
 print_usage()
 {
     printf "USAGE:  ${SELF} [PATTERN]\n\n"
-    printf 
+    printf
     printf "A predetermined set of paths are searched for plain text files\n"
     printf "Sportlight metadata stores are utilized on Mac OS.\n"
     printf "The PATTERN query is passed as-is to grep. The search is\n"
     printf "case-sensitive only if PATTERN contains a capital letter.\n"
 }
+
+# Filter files by MIME-type and substitutes newlines with NULL-bytes.
+filter_by_mime_and_zero_terminate()
+{
+    while IFS='\n' read f
+    do
+       case "$(file --mime-type --brief -- "$f")" in
+           text/plain) echo "$f" ;;
+           *) continue ;;
+       esac
+    done | perl -p -e 's/\n/\0/;'
+}
+
+# Indexed search is required for real performance. But, Mac OS only.
+# Also does not include markdown files in MacOS Sierra v10.12.4 ..
+spotlight_search()
+{
+    command -v "mdfind" >/dev/null 2>&1 || return
+
+    mdfind -literal "kMDItemTextContent == \"*$**\"cd" | filter_by_mime_and_zero_terminate
+}
+
+# Use "recoll" for indexed searches under Linux, if available.
+recoll_search()
+{
+    command -v "recoll" >/dev/null 2>&1 || return
+
+    recoll -t -b "$*" | sed 's&file://%%g' | filter_by_mime_and_zero_terminate
+}
+
+# Used to complement the Spotlight metadata search which doesn't include
+# markdown files in MacOS Sierra v10.12.4 ..
+find_markdown_files()
+{
+    find $_search_path -type f -name "*.md" -print0
+}
+
+# Performs OS-specific search, returns a NULL-terminated list of files.
+# Takes any number of arguments as the search query.
+find_notes()
+{
+    case "$OSTYPE" in
+        darwin*)
+            # Concatenate streams, executed sequentially.
+            ( spotlight_search "$*" ; find_markdown_files "$*" ; ) ;;
+        linux*)  recoll_search "$*" ;;
+        *) { echo "Unsupported OS; \"${OSTYPE}\" -- Exiting .." ; exit 1 ; } ;;
+    esac
+}
+
 
 
 if [ "$#" -eq "0" ]
@@ -54,56 +104,11 @@ echo "Searching: \"${_search_path}\""
 _ignorecase='--ignore-case'
 [[ "$*" =~ [A-Z] ]] && _ignorecase=''
 
-# Method #1
-# ---------
-# grep options used:
-#
-#     -H     Always print filename headers with output lines.
-#     -m, --max-count  Behaviour differs between GNU and BSD versions.
-#                      GNU grep counts per file, BSD grep counts all as one..
-#
-#grep --color=always ${_ignorecase} --recursive -H  \
-#     --exclude-dir={.git} --include={*.md,*.txt}   \
-#     --extended-regexp --only-matching             \
-#     -- ".{0,40}$*.{0,40}" $_search_path
-#    #| less --RAW-CONTROL-CHARS --chop-long-lines
+# # Concatenate streams, sequential execution.
+# # Only the final grep is potentially parallelized.
+# ( spotlight_search "$*" ; find_markdown_files "$*" ; ) \
+# | xargs -0 -P4 grep --color=always ${_ignorecase} -oHE -- ".{0,40}$*.{0,40}"
 
+find_notes "$*" | xargs -0 -P4 grep --color=always ${_ignorecase} -oHE -- ".{0,40}$*.{0,40}"
 
-# Method #2
-# ---------
-## Attempt at improving performance ..
-#find $_search_path -type f \( -name "*.md" -or -name "*.txt" \) -print0 \
-#| xargs -0 -P4 grep --color=always ${_ignorecase} -H --extended-regexp --only-matching -- ".{0,40}$*.{0,40}"
-
-
-# Method #3
-# ---------
-# Indexed search is required for real performance. But, Mac OS only.
-# Also does not include markdown files in MacOS Sierra v10.12.4 ..
-#
-# Final perl code substitutes newlines with NULL-bytes.
-spotlight_search()
-{
-    command -v "mdfind" >/dev/null 2>&1 || return
-
-    mdfind "$*" | while IFS='\n' read f
-    do
-       case "$(file --mime-type --brief -- "$f")" in
-           text/plain) echo "$f" ;;
-           *) continue ;;
-       esac
-    done | perl -p -e 's/\n/\0/;'
-}
-
-# Used to complement the Spotlight metadata search which doesn't include
-# markdown files in MacOS Sierra v10.12.4 ..
-find_markdown_files()
-{
-    find $_search_path -type f -name "*.md" -print0
-}
-
-# Concatenate streams, sequential execution.
-# Only the final grep is potentially parallelized.
-( spotlight_search "$*" ; find_markdown_files "$*" ; ) \
-| xargs -0 -P4 grep --color=always ${_ignorecase} -oHE -- ".{0,40}$*.{0,40}"
 
