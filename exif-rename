@@ -104,7 +104,7 @@ clean_up_timestamp()
     tstp=${tstp//:/-}                          # replace any : with -
     tstp=${tstp//+/-}                          # replace any + with -
     tstp=${tstp//\ /_}                         # replace any spaces with _
-    tstp=$(echo $tstp | sed -r 's/^[_-]+//g')  # remove any leading _ or -
+    tstp=$(echo $tstp | sed 's/^[_-]+//g')     # remove any leading _ or -
 
     echo "${tstp}"                             # function "return"
 }
