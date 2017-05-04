@@ -48,12 +48,13 @@ SEARCHSTRINGS[0]='Create Date'
 SEARCHSTRINGS[1]='Date/Time Created'
 SEARCHSTRINGS[2]='Date/Time Original'
 SEARCHSTRINGS[3]='Date/Time Digitized'
-#SEARCHSTRINGS[4]='Modify Date'
-#SEARCHSTRINGS[5]='Modification Date'
-#SEARCHSTRINGS[6]='Profile Date Time'
-#SEARCHSTRINGS[6]='File Access Date/Time'
+SEARCHSTRINGS[4]='Metadata Date'
+#SEARCHSTRINGS[5]='Modify Date'
+#SEARCHSTRINGS[6]='Modification Date'
+#SEARCHSTRINGS[7]='Profile Date Time'
+#SEARCHSTRINGS[8]='File Access Date/Time'
 
-VERBOSE_MODE=true
+VERBOSE_MODE=false
 DEBUG_MODE=false
 
 
@@ -120,8 +121,8 @@ find_timestamp()
             | cut -d ':' -f 2-)
 
         # Optional additional filter
-        timestamp=$(echo ${timestamp} | grep -v "2015")
-        timestamp=$(echo ${timestamp} | grep -v "2016")
+        #timestamp=$(echo ${timestamp} | grep -v "2015")
+        #timestamp=$(echo ${timestamp} | grep -v "2016")
         timestamp=$(echo ${timestamp} | grep -iv "binary")
         timestamp=$(echo ${timestamp} | grep -v "0000:00:00")
 
