@@ -58,7 +58,7 @@ recoll_search()
 {
     command -v "recoll" >/dev/null 2>&1 || return
 
-    recoll -t -b "$*" | sed 's&file://%%g' | filter_by_mime_and_zero_terminate
+    recoll -t -b "$*" | sed 's%file://%%g' | filter_by_mime_and_zero_terminate
 }
 
 # Used to complement the Spotlight metadata search which doesn't include
