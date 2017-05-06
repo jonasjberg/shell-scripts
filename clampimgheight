@@ -9,7 +9,7 @@
 # into the number of columns needed while keeping the split images height equal.
 #   Thus, the output image height may deviate slightly from the set maximum.
 #
-#                        Copyright(c)2015 Jonas Sjöberg
+#                     Copyright(c)2015-2017 Jonas Sjöberg
 #                        https://github.com/jonasjberg
 #_______________________________________________________________________________
 #
@@ -31,156 +31,114 @@
 IMAGE_HEIGHT_MAX=2000
 
 set -e                                                  # exit on first error
-#set -x                                                 # debug mode
+#set -x                                                # debug mode
 
-DEBUG=true
-PROGNAME=$(basename $0)                                 # name of this script
-TEMPDIR=$(mktemp -d /tmp/${PROGNAME}.XXXXXX)            # temporary directory
+DEBUG_MODE=true
+PROGNAME="$(basename $0)"                               # name of this script
 DEFAULT_ERROR_MSG="Unknown (unspecified) error!"
 DEFAULT_ERROR_CODE=2
 
-#_______________________________________________________________________________
 
-
-function die()
+die()
 {
-    msg=${2:-$DEFAULT_ERROR_MSG}
-    echo "${PROGNAME} execution failed!" 1>&2
-    echo "Error message: ${msg}" 1>&2
-    exit ${1:-$DEFAULT_ERROR_CODE}
+    local msg="${2:-${DEFAULT_ERROR_MSG}}"
+    printf "${PROGNAME} [ERROR] %s\n" "${msg}" 1>&2
+    exit "${1:-${DEFAULT_ERROR_CODE}}"
 }
 
-
-function msg_warn()
+msg_warn()
 {
-    echo "WARNING: $*" >&2
+    printf "${PROGNAME} [WARNING] %s\n" "$*" 1>&2
 }
 
-
-function msg_debug()
+msg_debug()
 {
-    if [[ "$DEBUG_MODE" == true ]]
+    [ "$DEBUG_MODE" == "true" ] && printf "${PROGNAME} [DEBUG] %s\n" "$*"
+}
+
+assert_dependencies_available()
+{
+    if ! command -v "convert" >/dev/null 2>&1
     then
-        echo "DEBUG: $*"
+        die 127 "This script requires \"convert\" to run."
+    elif ! command -v "identify" >/dev/null 2>&1
+    then
+        die 127 "This script requires \"identify\" to run."
     fi
 }
 
 
-function check_convert_installed()
-{
-    if ! command -v "convert" >/dev/null
+if [ "$#" -ne "2" ]
+then
+    die 1 "USAGE: ${PROGNAME} [INPUT_IMAGE] [OUTPUT_IMAGE]"
+else
+    assert_dependencies_available
+
+    TEMPDIR="$(mktemp -d /tmp/${PROGNAME}.XXXXXX)"
+    if [ ! -d "$TEMPDIR" ]
     then
-        die "Can not execute convert! Is it installed? Is it in your \$PATH?"
-    fi
-}
-
-
-function process_image()
-{
-    local input=${1}
-
-    # Get output file name from second argument or default to "DEFAULT_output".
-    # Variable substitutions:  ${input%.*}  strips any extension
-    #                          ${input##*.} strips everything but the extension
-    local ext=${input##*.}
-    local input_no_ext=${input%.*}
-
-    # Second argument is the output filename, use default if not present.
-    local DEFAULT_output="${input_no_ext}_CLAMPED.${ext}"
-    output=${2:-$DEFAULT_output}
-
-    # Get a name for intermediate files.
-    # Variable substitutions:  ${input%.*}  strips any extension
-    #                          ${input##*.} strips everything but the extension
-    local horiz_split="${TEMPDIR}/${input_no_ext}_%02d.${ext}"
-
-    # Chop up image horizontally in 'number_of_splits' pieces.
-    # http://www.imagemagick.org/Usage/crop/#crop_equal
-    convert "${input}" -crop 1x${number_of_splits}@ +repage +adjoin "${horiz_split}"
-
-    # Merge all pieces horizontally.
-    # http://www.imagemagick.org/Usage/layers/
-    # http://www.imagemagick.org/Usage/option_link.cgi?append
-    convert +append "${TEMPDIR}/*.${ext}" "${output}"
-
-}
-
-
-function get_image_height()
-{
-    local image_height=$(identify -format "%h" "${1}")
-    echo "$image_height"
-}
-
-function main()
-{
-    # Set input file name(s)
-    local input=${1}
-    local input_no_ext=${input%.*}
-    local extension="${input##*.}"
-
-    if [[ ! -f ${input} ]]
-    then
-        msg_warn "'${input}' is not a file!"
-        return 1
+        die 1 "Unable to create temporary directory"
     fi
 
+    in_file="$(realpath -e -- "$1")"
+    if [ -z "$in_file" ] || [ ! -f "$in_file" ]
+    then
+        die 1 "Not a file: \"${in_file}\""
+    else
+        case "$(file --mime-type --brief -- "$in_file")" in
+            image/*) ;;
+            *) die 1 "Not an image: \"${in_file}\"" ;;
+        esac
+    fi
+
+    out_file="${2:-}"
+    if [ -e "$out_file" ]
+    then
+        die 1 "Destination exists: \"${out_file}\""
+    fi
 
     # Initialize counter and get initial image height.
     number_of_splits=1
-    initial_image_height=$(get_image_height "${input}")
+    initial_image_height="$(identify -format "%h" "$in_file")"
 
     # Check if initial image height is less than or equal to IMAGE_HEIGHT_MAX.
-    if [[ $initial_image_height -le $IMAGE_HEIGHT_MAX ]]
+    if [ "$initial_image_height" -le "$IMAGE_HEIGHT_MAX" ]
     then
-        die 1 "Image height is already less than or equal to IMAGE_HEIGHT_MAX"
+        echo "Image height is already less than or equal to IMAGE_HEIGHT_MAX"
+        echo "(Height: ${initial_image_height}  <  Max: ${IMAGE_HEIGHT_MAX})"
     fi
 
     # Get the number of vertical splits needed.
-    target_image_height=$initial_image_height
-    while [[ $target_image_height -gt $IMAGE_HEIGHT_MAX ]]
+    target_image_height="$initial_image_height"
+    while [ "$target_image_height" -gt "$IMAGE_HEIGHT_MAX" ]
     do
-        target_image_height=$((${initial_image_height} / ${number_of_splits}))
-        number_of_splits=$[$number_of_splits +1]
+        target_image_height="$((${initial_image_height} / ${number_of_splits}))"
+        number_of_splits="$[$number_of_splits +1]"
     done
 
-
-    if [[ -z $number_of_splits ]]
+    if [ -z "$number_of_splits" ]
     then
         die 1 "Failed to calculate number of splits"
     fi
 
-    msg_debug "           input filename: ${input}"
+    msg_debug "           input filename: ${in_file}"
     msg_debug "             image height: ${initial_image_height}"
     msg_debug "         IMAGE_HEIGHT_MAX: ${IMAGE_HEIGHT_MAX}"
     msg_debug "number of splits required: ${number_of_splits}"
 
-    process_image ${input} ${2}
-}
+    # Get a name for intermediate files.
+    in_file_ext="${in_file##*.}"
+    in_file_basename_no_ext="$(basename -- "$input")"
+    horiz_split="${TEMPDIR}/${in_file_basename_no_ext}_%02d.${in_file_ext}"
 
-#_______________________________________________________________________________
-# ______________________________________________________________________________
-# MAIN ROUTINE EXECUTION STARTS HERE
+    # Chop up image horizontally into 'number_of_splits' pieces.
+    #   http://www.imagemagick.org/Usage/crop/#crop_equal
+    convert "$in_file" -crop 1x${number_of_splits}@ +repage +adjoin $horiz_split
 
-if [[ $# -eq 0 ]]
-then
-    die 1 "Positional arguments missing! At least one is required."
-else
-    check_convert_installed
-
-    if [[ $# -eq 2 ]]
-    then
-        echo "input and output is specified"
-        main "${1}" "${2}"
-        mv -nv "${output}" "${2}"
-    else 
-        for file in "$@"
-        do
-            msg_debug "------------------------------------------------------------"
-            msg_debug "Now processing file '${file}'"
-            main "${file}"
-        done
-    fi
+    # Merge all pieces horizontally.
+    #   http://www.imagemagick.org/Usage/layers/
+    #   http://www.imagemagick.org/Usage/option_link.cgi?append
+    convert +append "${TEMPDIR}/*.${in_file_ext}" "$out_file"
 fi
 
 
