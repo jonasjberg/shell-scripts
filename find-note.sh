@@ -127,20 +127,32 @@ do
     search_path="${note_path} ${search_path}"
 done
 
+# Print out which paths are searched.
 for _sp in ${search_path}
 do
     printf '%-10.10s "%s"\n' "Searching:" "$_sp"
 done
 
+
 # Check for capital letters in query, "smart-case" re-implemented, badly.
 _ignorecase='--ignore-case'
 [[ "$*" =~ [A-Z] ]] && _ignorecase=''
+
 
 # # Concatenate streams, sequential execution.
 # # Only the final grep is potentially parallelized.
 # ( spotlight_search "$*" ; find_markdown_files "$*" ; ) \
 # | xargs -0 -P4 grep --color=always ${_ignorecase} -oHE -- ".{0,40}$*.{0,40}"
 
-find_notes "$*" | xargs -0 -P4 grep --color=always ${_ignorecase} -oHE -- ".{0,40}$*.{0,40}"
+
+
+# 'find_notes' returns a NULL-terminated list of files that are grepped twice;
+# First for surrounding context and then again for coloring the matched parts.
+
+# TODO: Though it it fast enough as-is. Probably should fix the redundancy ..
+
+find_notes "$*" \
+| xargs -0 -P4 grep --color=never ${_ignorecase} -oHE -- ".{0,40}$*.{0,40}" \
+| grep --color=always ${_ignorecase} -E -- "$*"
 
 
