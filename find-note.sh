@@ -53,12 +53,15 @@ print_usage()
 # Filter files by MIME-type and substitutes newlines with NULL-bytes.
 filter_by_mime_and_zero_terminate()
 {
-    while IFS='\n' read f
+    while IFS='\n' read -r f
     do
-       case "$(file --mime-type --brief -- "$f")" in
-           text/plain) echo "$f" ;;
-           *) continue ;;
-       esac
+        [ -n "$f" ] || continue
+        [ -f "$f" ] || continue
+
+        case "$(file --mime-type --brief -- "$f")" in
+            text/plain) echo "$f" ;;
+            *) continue ;;
+        esac
     done | perl -p -e 's/\n/\0/;'
 }
 
