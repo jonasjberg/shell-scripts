@@ -31,6 +31,7 @@
 
 
 # set -x
+set -o pipefail
 
 # Make sure regex comparison works reliably independent of current locale.
 LC_ALL=C
@@ -74,7 +75,13 @@ recoll_search()
 {
     command -v "recoll" >/dev/null 2>&1 || return
 
-    recoll -t -b "$*" | sed 's%file://%%g' | filter_by_mime_and_zero_terminate
+    if results="$(recoll -t -b "$*")"
+    then
+        echo "$results" | sed 's%file://%%g' | filter_by_mime_and_zero_terminate
+    else
+        echo "[ERROR] recoll search failed .."
+        return
+    fi
 }
 
 # Used to complement the Spotlight metadata search which doesn't include
