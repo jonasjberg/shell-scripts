@@ -41,12 +41,13 @@ NOTES_PATH=("${HOME}/Dropbox/txt" "${HOME}/today" "${HOME}/Archive")
 
 print_usage()
 {
-    printf "USAGE:  ${SELF} [PATTERN]\n\n"
-    printf
-    printf "A predetermined set of paths are searched for plain text files\n"
-    printf "Sportlight metadata stores are utilized on Mac OS.\n"
+    printf "\nUSAGE:  ${SELF} [PATTERN]\n\n"
+    printf "A predetermined set of paths are searched for plain text files.\n"
+    printf "Indexed search is required for performance;\n"
+    printf " - Spotlight metadata stores are utilized on Mac OS.\n"
+    printf " - Linux systems use recoll if available.\n\n"
     printf "The PATTERN query is passed as-is to grep. The search is\n"
-    printf "case-sensitive only if PATTERN contains a capital letter.\n"
+    printf "case-sensitive only if PATTERN contains a capital letter.\n\n"
 }
 
 # Filter files by MIME-type and substitutes newlines with NULL-bytes.
@@ -105,13 +106,15 @@ find_notes()
 }
 
 
-
+# Check arguments and display help text.
 if [ "$#" -eq "0" ]
 then
     print_usage
     exit 1
 fi
 
+
+# Filter out invalid paths, store space-separated paths in 'search_path'.
 search_path=""
 for note_path in "${NOTES_PATH[@]}"
 do
