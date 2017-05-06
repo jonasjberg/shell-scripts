@@ -65,7 +65,7 @@ recoll_search()
 # markdown files in MacOS Sierra v10.12.4 ..
 find_markdown_files()
 {
-    find $_search_path -type f -name "*.md" -print0
+    find $search_path -type f -name "*.md" -print0
 }
 
 # Performs OS-specific search, returns a NULL-terminated list of files.
@@ -89,16 +89,19 @@ then
     exit 1
 fi
 
-_search_path=""
+search_path=""
 for note_path in "${NOTES_PATH[@]}"
 do
     [ -d "$note_path" ] || continue
     [ -x "$note_path" ] || continue  # Check that directory can be searched.
 
-    _search_path="${note_path} ${_search_path}"
+    search_path="${note_path} ${search_path}"
 done
 
-echo "Searching: \"${_search_path}\""
+for _sp in ${search_path}
+do
+    printf '%-10.10s "%s"\n' "Searching:" "$_sp"
+done
 
 # Check for capital letters in query, "smart-case" re-implemented, badly.
 _ignorecase='--ignore-case'
