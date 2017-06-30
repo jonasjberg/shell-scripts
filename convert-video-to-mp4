@@ -22,7 +22,7 @@ function handle_arg()
     # http://askubuntu.com/questions/12182/how-can-i-convert-an-ogv-file-to-mp4
     # http://askubuntu.com/a/470475
     ffmpeg -i "$src" -c:v libx264 -preset veryslow -crf 22 -c:a libmp3lame \
-           -qscale:a 2 -ac 2 -ar 44100 -- "$dest"
+           -qscale:a 2 -ac 2 -ar 44100 -map_metadata 0:g -- "$dest"
 }
 
 function msg_error()
