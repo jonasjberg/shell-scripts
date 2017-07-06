@@ -19,6 +19,7 @@ Listing
 
 | **Filename**                  | **Description**                                |
 | ----------------------------- | ---------------------------------------------- |
+| `add-mime-file-extension.sh`  | adds missing file extensions from MIME types   |
 | `check-tex-syntax`            | check syntax of LaTeX source file for errors   |
 | `clampimgheight`              | chop up images taller than a set max height    |
 | `clipboard-to-file`           | puts the clipboard contents in a file          |
@@ -51,6 +52,7 @@ Listing
 | `timestampdashes`             | rename files to `YYYY-MM-DD_hh-mm-ss.ext`      |
 | `timestampdashes-test`        | unit tests for `timestampdashes`               |
 | `today-dir`                   | creates a daily working directory symlink      |
+| `vinetto_rename.py`           | rename files extracted with "vinetto"          |
 | `vrml2png`                    | generate png previews of vrml 3D models        |
 | `www2pdf`                     | save URLs as pdf using `wkhtmltopdf`           |
 | `www2png`                     | convert a webpage to a image using `cutycapt`  |
