@@ -27,6 +27,8 @@
 #      You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+set -o noclobber -o nounset -o pipefail
+
 
 # Example exiftool output this script will process:
 # 
@@ -39,102 +41,85 @@
 #     Date/Time Original              : 2015:01:31 00:25:39
 #     Create Date                     : 2015:01:31 00:25:39
 
-
-set -e                                                   ## exit on first error
-#set -x                                                  ## debug mode
-
 # Search strings ordered by priority, from high to low;
 SEARCHSTRINGS[0]='Create Date'
 SEARCHSTRINGS[1]='Date/Time Created'
 SEARCHSTRINGS[2]='Date/Time Original'
 SEARCHSTRINGS[3]='Date/Time Digitized'
-SEARCHSTRINGS[4]='Metadata Date'
-#SEARCHSTRINGS[5]='Modify Date'
-#SEARCHSTRINGS[6]='Modification Date'
-#SEARCHSTRINGS[7]='Profile Date Time'
-#SEARCHSTRINGS[8]='File Access Date/Time'
+SEARCHSTRINGS[4]='Media Create Date'
+SEARCHSTRINGS[5]='Track Create Date'
+SEARCHSTRINGS[6]='Metadata Date'
+#SEARCHSTRINGS[7]='Modify Date'
+#SEARCHSTRINGS[8]='Modification Date'
+#SEARCHSTRINGS[9]='Profile Date Time'
+#SEARCHSTRINGS[10]='File Access Date/Time'
 
 VERBOSE_MODE=false
 DEBUG_MODE=false
 
 
-PROGNAME=$(basename $0)                                 ## name of this script
+PROGNAME="$(basename $0)"
 
 msg_status()
 {
-    if [[ "$VERBOSE_MODE" == true ]]
+    if [ "$VERBOSE_MODE" == 'true' ]
     then
-        if [[ ! -z ${1} ]]
-        then
-            printf "\n%s: %s\n" "$PROGNAME" "$1" 1>&2
-        fi
+        [ -n "$1" ] && printf "\n%s: %s\n" "$PROGNAME" "$1" 1>&2
     fi
 }
 
 msg_warning()
 {
-    if [[ "$VERBOSE_MODE" == true ]]
+    if [ "$VERBOSE_MODE" == "true" ]
     then
-        if [[ ! -z ${1} ]]
-        then
-            printf "\nWARNING: %s\n" "$1" 1>&2
-        fi
+        [ -n "$1" ] && printf "\nWARNING: %s\n" "$1" 1>&2
     fi
 }
 
 msg_debug()
 {
-    if [[ "$DEBUG_MODE" == true ]]
-    then
-        echo "DEBUG: $*" 1>&2
-    fi
+    [ "$DEBUG_MODE" == "true" ] && echo "DEBUG: $*" 1>&2
 }
 
 die()
 {
-    echo -e "\nERROR: $*"
-    echo "EXITING .."
+    printf "\nERROR: %s\n" "$*"
+    printf "EXITING ..\n"
     exit 1
 }
 
 clean_up_timestamp()
 {
-    local tstp="${1}"
-
-    tstp=${tstp//:/-}                          # replace any : with -
-    tstp=${tstp//+/-}                          # replace any + with -
-    tstp=${tstp//\ /_}                         # replace any spaces with _
-    tstp=$(echo $tstp | sed 's/^[_-]+//g')     # remove any leading _ or -
-
-    echo "${tstp}"                             # function "return"
+    local tstp="$1"
+    tstp="${tstp//:/-}"                         # replace any : with -
+    tstp="${tstp//+/-}"                         # replace any + with -
+    tstp="${tstp//\ /_}"                        # replace any spaces with _
+    tstp="$(echo $tstp | sed 's/^[_-]+//g')"    # remove any leading _ or -
+    echo "$tstp"                                # function "return"
 }
 
 find_timestamp()
 {
-    local image="${1}"
+    local image="$1"
 
     # start grepping exif data, break when match found
     for str in "${SEARCHSTRINGS[@]}"
     do
-        timestamp=$(exiftool "${image}" \
-            | grep -ai --max-count=1 "${str}" \
-            | cut -d ':' -f 2-)
+        timestamp="$(exiftool "$image" | grep -ai --max-count=1 "$str" | cut -d':' -f2-)"
 
         # Optional additional filter
-        #timestamp=$(echo ${timestamp} | grep -v "2015")
-        #timestamp=$(echo ${timestamp} | grep -v "2016")
-        timestamp=$(echo ${timestamp} | grep -iv "binary")
-        timestamp=$(echo ${timestamp} | grep -v "0000:00:00")
+        # timestamp="$(grep -v -- "2015" <<< "$timestamp")"
+        # timestamp="$(grep -v -- "2016" <<< "$timestamp")"
+        timestamp="$(grep -iv -- "binary" <<< "$timestamp")"
+        timestamp="$(grep -v -- "0000:00:00" <<< "$timestamp")"
 
-        if [[ ! -z ${timestamp} ]]
+        if [ -n "$timestamp" ]
         then
-            #msg_debug "timestamp found!"
             break
         fi
     done
 
-    #msg_debug "using timestamp: "$timestamp""
-    echo "${timestamp}"                             # function "return"
+    echo "$timestamp"                           # function "return"
 }
 
 rename_file()
@@ -142,56 +127,41 @@ rename_file()
     #echo ""${1}"  -->  "${2}.${extension}""
     destination="${2}.${extension}"
     
-    if [ -e "${destination}" ]
+    if [ -e "$destination" ]
     then 
         msg_warning "target already exists, skipping .."
         return
     else
-        mv -nv "$1" "$destination"
+        echo "Would have executed: mv -nv -- "$1" "$destination""
     fi
 }
 
 main()
 {
-    if [[ -z ${1} ]]
-    then
-        msg_warning "argument missing!"
-        return
-    fi
-
-    input=${1}
+    input="$1"
     extension="${input##*.}"
-    msg_debug "input image:     $input"
-    msg_debug "input extension: $extension"
+    msg_debug "input image:     ${input}"
+    msg_debug "input extension: ${extension}"
 
-    msg_status "searching for timestamp .."
-    timestamp=$(find_timestamp "${input}")
+    timestamp="$(find_timestamp "$input")"
 
-    if [[ -z ${timestamp} ]]
+    if [ -z "$timestamp" ]
     then
         msg_warning "timestamp not found! search FAILED"
         return
     fi
 
-    msg_debug "timestamp: "$timestamp""
+    timestamp="$(clean_up_timestamp "$timestamp")"
 
-
-    msg_status "cleaning up timestamp .."
-    timestamp=$(clean_up_timestamp "${timestamp}")
-
-    if [[ -z ${timestamp} ]]
+    if [ -z "$timestamp" ]
     then
-        msg_warning "timestamp is NULL -- cleanup FAILED!"
+        # msg_warning "timestamp is NULL -- cleanup FAILED!"
         return
     fi
-
     msg_debug "timestamp: "$timestamp""
 
 
-    msg_status "renaming file .."
-    rename_file "${input}" "${timestamp}"
-
-    msg_status "done .."
+    rename_file "$input" "$timestamp"
     return
 }
 
@@ -204,13 +174,13 @@ then
     die "failed to execute exiftool!"
 fi
 
-if [ $# -eq 0 ]
+if [ "$#" -eq "0" ]
 then
     die "Positional arguments missing! At least one is required."
 else
     for arg in "$@"
     do
-        main "${arg}"
+        main "$arg"
     done
 fi
 
