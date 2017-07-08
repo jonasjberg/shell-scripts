@@ -31,7 +31,7 @@ set -o noclobber -o nounset -o pipefail
 
 
 # Example exiftool output this script will process:
-# 
+#
 # > $ exiftool 2015-01-31\ 00.25.39.jpg | grep -i date
 #
 #     File Modification Date/Time     : 2015:01:31 00:25:39+01:00
@@ -42,147 +42,178 @@ set -o noclobber -o nounset -o pipefail
 #     Create Date                     : 2015:01:31 00:25:39
 
 # Search strings ordered by priority, from high to low;
-SEARCHSTRINGS[0]='Create Date'
-SEARCHSTRINGS[1]='Date/Time Created'
-SEARCHSTRINGS[2]='Date/Time Original'
-SEARCHSTRINGS[3]='Date/Time Digitized'
-SEARCHSTRINGS[4]='Media Create Date'
-SEARCHSTRINGS[5]='Track Create Date'
-SEARCHSTRINGS[6]='Metadata Date'
-#SEARCHSTRINGS[7]='Modify Date'
-#SEARCHSTRINGS[8]='Modification Date'
-#SEARCHSTRINGS[9]='Profile Date Time'
-#SEARCHSTRINGS[10]='File Access Date/Time'
+SEARCHSTRINGS[0]='CreateDate'
+SEARCHSTRINGS[1]='DateTimeCreated'
+SEARCHSTRINGS[2]='DateTimeOriginal'
+SEARCHSTRINGS[3]='DateTimeDigitized'
+SEARCHSTRINGS[4]='MediaCreateDate'
+SEARCHSTRINGS[5]='TrackCreateDate'
+SEARCHSTRINGS[6]='MetadataDate'
+#SEARCHSTRINGS[7]='ModifyDate'
+#SEARCHSTRINGS[8]='ModificationDate'
+#SEARCHSTRINGS[9]='ProfileDateTime'
+#SEARCHSTRINGS[10]='FileAccessDateTime'
 
-VERBOSE_MODE=false
+EXIFTOOL_OPTS=(-short --composite -duplicates "-*date*" "-*year*")
+VERBOSE_MODE=true
 DEBUG_MODE=false
 
 
 PROGNAME="$(basename $0)"
+C_RED="$(tput setaf 1)"
+C_GREEN="$(tput setaf 2)"
+C_YELLOW=$(tput setaf 3)
+C_RESET="$(tput sgr0)"
 
-msg_status()
+count_skipped=0
+count_failed=0
+count_total=0
+count_success=0
+
+
+msg()
 {
-    if [ "$VERBOSE_MODE" == 'true' ]
-    then
-        [ -n "$1" ] && printf "\n%s: %s\n" "$PROGNAME" "$1" 1>&2
-    fi
+    [ "$VERBOSE_MODE" == 'true' ] || return
+    printf "$@"
 }
 
-msg_warning()
+log_warn()
 {
-    if [ "$VERBOSE_MODE" == "true" ]
-    then
-        [ -n "$1" ] && printf "\nWARNING: %s\n" "$1" 1>&2
-    fi
+    msg "${C_YELLOW}[WARNING]${C_RESET} %s\n" "$1"
+    shift
+
+    while test "$#" -gt "0"
+    do
+        msg "          %s\n" "$1"
+        shift
+    done
 }
 
-msg_debug()
+log_fail()
 {
-    [ "$DEBUG_MODE" == "true" ] && echo "DEBUG: $*" 1>&2
+    msg "${C_RED}[FAILURE]${C_RESET} %s\n" "$*"
+    count_failed="$((count_failed + 1))"
 }
 
-die()
+log_skip()
 {
-    printf "\nERROR: %s\n" "$*"
-    printf "EXITING ..\n"
-    exit 1
+    log_warn "$*"
+    count_skipped="$((count_skipped + 1))"
+}
+
+log_ok()
+{
+    msg "${C_GREEN}[SUCCESS]${C_RESET} %s\n" "$*"
+    count_success="$((count_success + 1))"
+}
+
+log_debug()
+{
+    [ "$DEBUG_MODE" == "true" ] || return
+    printf "[DEBUG] %s\n" "$*"
 }
 
 clean_up_timestamp()
 {
     local tstp="$1"
-    tstp="${tstp//:/-}"                         # replace any : with -
-    tstp="${tstp//+/-}"                         # replace any + with -
-    tstp="${tstp//\ /_}"                        # replace any spaces with _
-    tstp="$(echo $tstp | sed 's/^[_-]+//g')"    # remove any leading _ or -
-    echo "$tstp"                                # function "return"
+    tstp="${tstp//:/-}"             # Replace : with -
+    tstp="${tstp//+/-}"             # Replace + with -
+    tstp="${tstp//\ /_}"            # Replace spaces with _
+    sed 's/^[_-]\+//g' <<< "$tstp"  # Remove leading _ or -
 }
 
-find_timestamp()
+handle_arg()
 {
-    local image="$1"
+    local arg_abspath="$1"
+    local arg_extension="${arg_abspath##*.}"
+    local arg_dirname="$(dirname -- "$arg_abspath")"
 
-    # start grepping exif data, break when match found
+    log_debug "Got argument: \"${arg_abspath}\""
+    if exiftool_output="$(exiftool "${EXIFTOOL_OPTS[@]}" "$arg_abspath" 2>&1)" >/dev/null
+    then
+        log_debug "$exiftool_output"
+    else
+        log_debug "${exiftool_output:-"exiftool returned non-zero"}"
+        return 1
+    fi
+
+    # Grep EXIF data, break at first match.
     for str in "${SEARCHSTRINGS[@]}"
     do
-        timestamp="$(exiftool "$image" | grep -ai --max-count=1 "$str" | cut -d':' -f2-)"
+        timestamp="$(grep -ai --max-count=1 -- "$str" <<< "$exiftool_output" | cut -d':' -f2-)"
 
-        # Optional additional filter
-        # timestamp="$(grep -v -- "2015" <<< "$timestamp")"
-        # timestamp="$(grep -v -- "2016" <<< "$timestamp")"
+        # Filter out unwanted cruft.
         timestamp="$(grep -iv -- "binary" <<< "$timestamp")"
         timestamp="$(grep -v -- "0000:00:00" <<< "$timestamp")"
 
-        if [ -n "$timestamp" ]
-        then
-            break
-        fi
+        # Optional additional filtering.
+        # timestamp="$(grep -v -- "2015" <<< "$timestamp")"
+        # timestamp="$(grep -v -- "2016" <<< "$timestamp")"
+
+        [ -n "$timestamp" ] && break
     done
 
-    echo "$timestamp"                           # function "return"
-}
-
-rename_file()
-{
-    #echo ""${1}"  -->  "${2}.${extension}""
-    destination="${2}.${extension}"
-    
-    if [ -e "$destination" ]
-    then 
-        msg_warning "target already exists, skipping .."
-        return
-    else
-        echo "Would have executed: mv -nv -- "$1" "$destination""
-    fi
-}
-
-main()
-{
-    input="$1"
-    extension="${input##*.}"
-    msg_debug "input image:     ${input}"
-    msg_debug "input extension: ${extension}"
-
-    timestamp="$(find_timestamp "$input")"
-
-    if [ -z "$timestamp" ]
-    then
-        msg_warning "timestamp not found! search FAILED"
-        return
-    fi
-
     timestamp="$(clean_up_timestamp "$timestamp")"
-
     if [ -z "$timestamp" ]
     then
-        # msg_warning "timestamp is NULL -- cleanup FAILED!"
-        return
+        log_skip "Unable to retrieve timestamp"
+        return 1
     fi
-    msg_debug "timestamp: "$timestamp""
 
-
-    rename_file "$input" "$timestamp"
-    return
+    local dest_basename="${timestamp}.${arg_extension}"
+    local dest_abspath="${arg_dirname}/${dest_basename}"
+    if [ -e "$dest_abspath" ]
+    then
+        log_skip "Destination exists: \"${dest_abspath}\""
+        return 1
+    else
+        log_ok "Would have executed: mv -nv -- "$arg_abspath" "$dest_abspath""
+        return 0
+    fi
 }
 
-
-# ______________________________________________________________________________
-# CODE EXECUTION STARTS HERE
 
 if ! command -v "exiftool" >/dev/null
 then
-    die "failed to execute exiftool!"
+    log_fail "This program requires \"exiftool\". Make sure it is installed."
+    exit 1
 fi
 
 if [ "$#" -eq "0" ]
 then
-    die "Positional arguments missing! At least one is required."
-else
-    for arg in "$@"
-    do
-        main "$arg"
-    done
+    log_warn "Positional arguments missing! At least one is required."
+    log_warn "USAGE: $PROGNAME [FILE...]"
+    exit 0
 fi
 
-exit $?
+for arg in "$@"
+do
+    arg="$(realpath -e -- "$arg")"
+    [ -f "$arg" ] || { log_skip "Not a file: \"${arg}\"" ; continue ; }
+    [ -r "$arg" ] || { log_skip "Unreadable: \"${arg}\"" ; continue ; }
+
+
+    handle_arg "$arg"
+    if [ "$?" -ne "0" ]
+    then
+        log_skip "Skipped \"${arg}\" .."
+    fi
+    count_total="$((count_total + 1))"
+done
+
+if [ "$VERBOSE_MODE" == "true" ]
+then
+    printf "\n\nSUMMARY STATS\n" "$count_total"
+    printf "Total   : %d\n" "$count_total"
+    printf "Renamed : %d\n" "$count_success"
+    printf "Skipped : %d\n" "$count_skipped"
+    printf "FAILED  : %d\n" "$count_failed"
+fi
+
+if [ "$count_failed" -gt "0" ]
+then
+    exit 1
+else
+    exit 0
+fi
 
