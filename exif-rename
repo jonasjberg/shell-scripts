@@ -57,7 +57,7 @@ SEARCHSTRINGS[6]='MetadataDate'
 EXIFTOOL_OPTS=(-short --composite -duplicates "-*date*" "-*year*")
 VERBOSE_MODE=true
 DEBUG_MODE=false
-
+OPTION_WRITE=false
 
 PROGNAME="$(basename $0)"
 C_RED="$(tput setaf 1)"
@@ -70,6 +70,25 @@ count_failed=0
 count_total=0
 count_success=0
 
+
+print_usage_info()
+{
+    cat <<EOF
+
+"${PROGNAME}"  --  rename files using exiftool
+
+  USAGE:  $PROGNAME [-d] [-h] [-v] [-w] [FILE...]"
+
+  OPTIONS:  -d   Enable printing debug information.
+            -h   Display usage information and exit.
+            -q   Decrease output verbosity.
+            -w   Perform the rename operation.
+
+  All options are optional. Default behaviour is a "dry run" mode,
+  where files are not actually renamed.  Use "-w" to rename files.
+
+EOF
+}
 
 msg()
 {
@@ -122,6 +141,17 @@ clean_up_timestamp()
     sed 's/^[_-]\+//g' <<< "$tstp"  # Remove leading _ or -
 }
 
+check_timestamp()
+{
+    grep -oE '[12][0-9][0-9][0-9]-[01][0-9]-[0-3][0-9]_[0-2][0-9]-[0-5][0-9]-[0-5][0-9]' #<<< "$1"
+}
+
+format_timestamp()
+{
+    # Input matching 'YYYY-MM-DD_HH-MM-SS' is returned as 'YYYY-MM-DDTHHMMSS'.
+    sed 's/\([0-9]\{4\}\)-\([0-9]\{2\}\)-\([0-9]\{2\}\)_\([0-9]\{2\}\)-\([0-9]\{2\}\)-\([0-9]\{2\}\)/\1-\2-\3T\4\5\6/' #<<< "$1"
+}
+
 handle_arg()
 {
     local arg_abspath="$1"
@@ -146,19 +176,21 @@ handle_arg()
         timestamp="$(grep -iv -- "binary" <<< "$timestamp")"
         timestamp="$(grep -v -- "0000:00:00" <<< "$timestamp")"
 
-        # Optional additional filtering.
+        # Additional optional filtering.
         # timestamp="$(grep -v -- "2015" <<< "$timestamp")"
         # timestamp="$(grep -v -- "2016" <<< "$timestamp")"
 
         [ -n "$timestamp" ] && break
     done
 
-    timestamp="$(clean_up_timestamp "$timestamp")"
+    log_debug "\"raw\" timestamp: \"$timestamp\""
+    timestamp="$(clean_up_timestamp "$timestamp" | check_timestamp | format_timestamp)"
     if [ -z "$timestamp" ]
     then
         log_skip "Unable to retrieve timestamp"
         return 1
     fi
+    log_debug "processed timestmap: \"$timestamp\""
 
     local dest_basename="${timestamp}.${arg_extension}"
     local dest_abspath="${arg_dirname}/${dest_basename}"
@@ -166,8 +198,17 @@ handle_arg()
     then
         log_skip "Destination exists: \"${dest_abspath}\""
         return 1
+    fi
+
+    local rename_cmd="mv -nv -- "$arg_abspath" "$dest_abspath""
+    if [ "$OPTION_WRITE" == "true" ]
+    then
+        eval "${rename_cmd}"
+        return $?
     else
-        log_ok "Would have executed: mv -nv -- "$arg_abspath" "$dest_abspath""
+        log_debug "Would have executed: \"${rename_cmd}\""
+        _rename_msg="$(printf '"%s" -> "%s"\n' "$arg_abspath" "$dest_abspath")"
+        log_ok "Would have renamed: ${_rename_msg}"
         return 0
     fi
 }
@@ -182,8 +223,20 @@ fi
 if [ "$#" -eq "0" ]
 then
     log_warn "Positional arguments missing! At least one is required."
-    log_warn "USAGE: $PROGNAME [FILE...]"
+    print_usage_info
     exit 0
+else
+    while getopts dhqw opt
+    do
+        case "$opt" in
+            d) DEBUG_MODE='true' ;;
+            h) print_usage_info ; exit 0 ;;
+            q) VERBOSE_MODE='false' ;;
+            w) OPTION_WRITE='true' ;;
+        esac
+    done
+
+    shift $(( $OPTIND - 1 ))
 fi
 
 for arg in "$@"
@@ -197,6 +250,8 @@ do
     if [ "$?" -ne "0" ]
     then
         log_skip "Skipped \"${arg}\" .."
+    else
+        count_success="$((count_success + 1))"
     fi
     count_total="$((count_total + 1))"
 done
