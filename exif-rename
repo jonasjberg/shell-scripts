@@ -245,7 +245,6 @@ do
     [ -f "$arg" ] || { log_skip "Not a file: \"${arg}\"" ; continue ; }
     [ -r "$arg" ] || { log_skip "Unreadable: \"${arg}\"" ; continue ; }
 
-
     handle_arg "$arg"
     if [ "$?" -ne "0" ]
     then
