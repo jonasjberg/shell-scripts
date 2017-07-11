@@ -175,6 +175,7 @@ handle_arg()
         # Filter out unwanted cruft.
         timestamp="$(grep -iv -- "binary" <<< "$timestamp")"
         timestamp="$(grep -v -- "0000:00:00" <<< "$timestamp")"
+        timestamp="$(grep -v -- "2002:12:08 12:00:00" <<< "$timestamp")"
 
         # Additional optional filtering.
         # timestamp="$(grep -v -- "2015" <<< "$timestamp")"
