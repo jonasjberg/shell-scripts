@@ -80,6 +80,10 @@ add_extension_from_mime()
         application/pdf) ext=pdf;;
         application/xml) ext=xml;;
 
+        # Documents
+        application/vnd.ms-powerpoint) ext=ppt;;
+        application/msword) ext=doc;;
+
         # Fonts
         application/x-font-ttf) ext=ttf;;
         application/vnd.ms-opentype) ext=otf;;
