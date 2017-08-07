@@ -62,10 +62,10 @@ then
     # GitLab SSH
     _dest="${url//git@gitlab.com:}"
     _dest="${_dest/\//_}"
-elif grep -q 'https://.*@gitlab.com/.*' <<< "$url"
+elif grep -q 'https://gitlab.com/.*' <<< "$url"
 then
     # GitLab HTTPS
-    _dest="${url//https:\/\/*@gitlab.com\//}"
+    _dest="${url//https:\/\/gitlab.com\//}"
     _dest="${_dest/\//_}"
 else
     echo "Unsupported source repository URL .. Exiting."
