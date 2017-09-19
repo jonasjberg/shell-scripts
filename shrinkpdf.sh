@@ -7,6 +7,7 @@
 # All rights reserved.
 #
 # Modified february 2016 by Jonas Sjöberg
+# Modified and extended 2017 by Jonas Sjöberg
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -31,10 +32,51 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-IMAGE_RESOLUTION=150
-PERCENT_THRESHOLD=10
+set -o noclobber -o nounset -o pipefail
 
-function shrink()
+
+IMAGE_RESOLUTION=150     # Resample images (dpi)
+PERCENT_THRESHOLD=50     # Skip if size difference is lower (%)
+
+
+C_RED="$(tput setaf 1)"
+C_GRN="$(tput setaf 2)"
+C_RES="$(tput sgr0)"
+
+print_usage()
+{
+    cat <<EOF
+         $SELF  ::  Decrease file size of PDF documents.
+
+  Usage: $SELF [FILES..]
+
+         FILES: The PDF file(s) to process.
+                Filetype is verified by reading the "magic" bytes.
+
+         Any valid PDFs are processed with Ghostscript to rebuild the
+         file and perform lossy recompression of the contents.
+         Any images are downsampled to ${IMAGE_RESOLUTION}dpi.
+
+         If the processing is successful and the size of the processed
+         file is at least ${PERCENT_THRESHOLD}% of the original file
+         size, the original file is replaced with the processed file.
+
+         The file is skipped if the processing is unsuccessful.
+         The file is skipped if the size of the processed file file
+         size changed less than ${PERCENT_THRESHOLD}%.
+
+         For example, given the change;   Input    Output   Ratio
+                                          448201   65161    -85.00%
+
+         If 'PERCENT_THRESHOLD=75', the original would be replaced.
+
+
+Example: $SELF /tmp/gibson-rules.pdf ~/temp/*.pdf
+
+EOF
+}
+
+run_ghostscript()
 {
   gs                                           \
     -q -dNOPAUSE -dBATCH -dSAFER               \
@@ -55,85 +97,91 @@ function shrink()
     "$1"
 }
 
-function check_smaller()
+replace_if_size_delta_over_threshold()
 {
-  # If $1 and $2 are regular files, we can compare file sizes to
-  # see if we succeeded in shrinking. If not, we copy $1 over $2:
-  if [ ! -f "$1" -o ! -f "$2" ]; then
-      return 0;
-  fi
+    # If $1 and $2 are regular files, we can compare file sizes to
+    # see if we succeeded in shrinking. If not, we copy $1 over $2:
+    if [ ! -f "$1" -o ! -f "$2" ]
+    then
+        return 0
+    fi
 
-  ISIZE="$(du -k "$1" | cut -f1)"
-  OSIZE="$(du -k "$2" | cut -f1)"
-  
-  percentage="$(echo "scale=2; ($OSIZE - $ISIZE)/$ISIZE * 100" | bc)"
+    ISIZE="$(du -k "$1" | cut -f1)"
+    OSIZE="$(du -k "$2" | cut -f1)"
 
-  TAB='  '
-  SEP=': '
-  FORMAT="${TAB}%-7.7s%-50.50s${SEP}%-12d\n"
-  printf "%-28.28s %-12.12s %-12.12s %-8.8s\n" 'File size (1K blocks)' 'Input' 'Output' 'Ratio'
-  printf "%-28.28s %-12.12s %-12.12s %-8.8s\n" ' ' "$ISIZE" "$OSIZE" "${percentage}%"
+    percentage="$(echo "scale=2; ($OSIZE - $ISIZE)/$ISIZE * 100" | bc)"
 
-  if [ "$ISIZE" -le "$OSIZE" ]; then
-    printf "%s\n" "[ABORT] Input size <= Output size .." >&2
-    rm -v -- "$2"
-    return
-  fi
+    TAB='  '
+    SEP=': '
+    FORMAT="${TAB}%-7.7s%-50.50s${SEP}%-12d\n"
+    printf "%-28.28s %-12.12s %-12.12s %-8.8s\n" 'File size (1K blocks)' 'Input' 'Output' 'Ratio'
+    printf "%-28.28s %-12.12s %-12.12s %-8.8s\n" ' ' "$ISIZE" "$OSIZE" "${percentage}%"
 
-  percentage="${percentage//-}"
-  percentage="${percentage%%.*}"
-      
-  if [ "$percentage" -gt "$PERCENT_THRESHOLD" ]; then
-    printf "%s\n" "[ OK! ] Above ${PERCENT_THRESHOLD}% threshold."
-    mv -v -- "$2" "$1"
-  else
-    printf "%s\n" "[ABORT] Ratio below threshold .." >&2
-    rm -v -- "$2"
-  fi
+    if [ "$ISIZE" -le "$OSIZE" ]; then
+        printf "%s\n" "[ABORT] Input size <= Output size .." >&2
+        rm -v -- "$2"
+        return
+    fi
+
+    percentage="${percentage//-}"
+    percentage="${percentage%%.*}"
+
+    if [ "$percentage" -gt "$PERCENT_THRESHOLD" ]; then
+        printf "%s\n" "${C_GRN}[WRITING]${C_RES} Size ratio exceeds ${PERCENT_THRESHOLD}% threshold"
+        mv -v -- "$2" "$1"
+    else
+        printf "%s\n" "${C_RED}[SKIPPED]${C_RES} Size ratio below ${PERCENT_THRESHOLD}% threshold"
+        rm -v -- "$2"
+    fi
 }
 
-function main()
+main()
 {
-  origfile="$1"
+    local origfile="$1"
+    local resultfile
 
-  # Need an input file:
-  if [ ! -f "$origfile" ]; then
-    echo "Not a file: \"${origfile}\" .. Aborting." >&2
-    return 1
-  fi
+    if [ ! -f "$origfile" ]
+    then
+        echo "${C_RED}[SKIPPED]${C_RES} Not a file: \"${origfile}\"" >&2
+        return 1
+    fi
 
-  # Check file type by reading magic header bytes.
-  if [ ! "$(file --mime-type --brief -- "$origfile")" == 'application/pdf' ]
-  then
-    echo "Not a PDF document: \"${origfile}\" .. Aborting." >&2
-    return 1
-  fi
+    # Verify file type by reading magic header bytes.
+    if [ ! "$(file --mime-type --brief -- "$origfile")" == 'application/pdf' ]
+    then
+        echo "${C_RED}[SKIPPED]${C_RES}Not a PDF document: \"${origfile}\"" >&2
+        return 1
+    fi
 
 
-  echo "Processing file: \"${origfile}\""
+    echo "Processing file: \"${origfile}\""
 
-  resultfile="${origfile%.*}_tmp.pdf"
+    resultfile="${origfile%.*}_tmp.pdf"
 
-  if [ -e "$resultfile" ]; then
-    echo "$resultfile already exists and would be overwritten. Aborting .." >&2
-    return 1
-  fi
+    if [ -e "$resultfile" ]; then
+        echo "$resultfile already exists and would be overwritten. Aborting .." >&2
+        return 1
+    fi
 
-  shrink "$origfile" "$resultfile" || return
-  check_smaller "$origfile" "$resultfile"
+    if run_ghostscript "$origfile" "$resultfile"
+    then
+        replace_if_size_delta_over_threshold "$origfile" "$resultfile"
+    else
+        echo "${C_RED}[ERROR]${C_RES} Skipping \"${origfile}\" .."
+    fi
 
-  echo ""
+    echo ""
 }
 
-if [ $# -eq 0 ]
+if [ "$#" -eq "0" ]
 then
-  echo "Positional arguments missing! At least one is required." >&2
-  exit 1
+    print_usage
+    exit 1
 else
-  for arg in "$@"
-  do
-    main "${arg}"
-  done
+    for arg in "$@"
+    do
+        main "$arg"
+    done
 fi
 
 exit $?
