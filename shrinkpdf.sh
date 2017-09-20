@@ -106,15 +106,15 @@ replace_if_size_delta_over_threshold()
         return 0
     fi
 
-    ISIZE="$(du -k "$1" | cut -f1)"
-    OSIZE="$(du -k "$2" | cut -f1)"
+    ISIZE="$(du -bk "$1" | cut -f1)"
+    OSIZE="$(du -bk "$2" | cut -f1)"
 
     percentage="$(echo "scale=2; ($OSIZE - $ISIZE)/$ISIZE * 100" | bc)"
 
     TAB='  '
     SEP=': '
     FORMAT="${TAB}%-7.7s%-50.50s${SEP}%-12d\n"
-    printf "%-28.28s %-12.12s %-12.12s %-8.8s\n" 'File size (1K blocks)' 'Input' 'Output' 'Ratio'
+    printf "%-28.28s %-12.12s %-12.12s %-8.8s\n" 'File Size (1K blocks)' 'Before' 'After' 'Ratio'
     printf "%-28.28s %-12.12s %-12.12s %-8.8s\n" ' ' "$ISIZE" "$OSIZE" "${percentage}%"
 
     if [ "$ISIZE" -le "$OSIZE" ]; then
