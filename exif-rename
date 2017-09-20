@@ -201,7 +201,7 @@ handle_arg()
         return 1
     fi
 
-    local rename_cmd="mv -nv -- "$arg_abspath" "$dest_abspath""
+    local rename_cmd="mv -nv -- \"$arg_abspath\" \"$dest_abspath\""
     if [ "$OPTION_WRITE" == "true" ]
     then
         eval "${rename_cmd}"
