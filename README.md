@@ -20,15 +20,15 @@ Listing
 | **Filename**                  | **Description**                                |
 | ----------------------------- | ---------------------------------------------- |
 | `add-mime-file-extension.sh`  | adds missing file extensions from MIME types   |
-| `check-tex-syntax`            | check syntax of LaTeX source file for errors   |
-| `clampimgheight`              | chop up images taller than a set max height    |
-| `clipboard-to-file`           | puts the clipboard contents in a file          |
-| `convert-video-to-mp4`        | converts videos to mp4 with `ffmpeg`           |
+| `check-tex-syntax.sh`         | check syntax of LaTeX source file for errors   |
+| `clampimgheight.sh`           | chop up images taller than a set max height    |
+| `clipboard-to-file.sh`        | puts the clipboard contents in a file          |
+| `convert-video-to-mp4.sh`     | converts videos to mp4 with `ffmpeg`           |
 | `crop-instagram-screenshot`   | crop images to size                            |
 | `datedelta.py`                | calculates years, months, days between dates   |
-| `exif-rename`                 | rename images from exif date/time              |
-| `exiftooldate`                | display date/time-information using `exiftool` |
-| `fix-permissions`             | sets permissions recursively                   |
+| `exif-rename.sh`              | rename images from exif date/time              |
+| `exiftooldate.sh`             | display date/time-information using `exiftool` |
+| `fix-permissions.sh`          | sets permissions recursively                   |
 | `fix-swedish-chars.sh`        | rename files with "åäöÅÄÖ" in the file names   |
 | `folder-manifest`             | generate txt file with folder info             |
 | `git-backup`                  | recursively find and backup git repos          |
