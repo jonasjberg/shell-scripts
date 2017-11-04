@@ -41,7 +41,7 @@ THIS_SCRIPT_PATH="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 EXTERNAL_CONFIG_FILE="${THIS_SCRIPT_PATH}/slugify-filename_config"
 if [ -f "$EXTERNAL_CONFIG_FILE" ]
 then
-    msg_debug "Using external configuration: \"${EXTERNAL_CONFIG_FILE}\" ..\n"
+    # msg_debug "Using external configuration: \"${EXTERNAL_CONFIG_FILE}\" ..\n"
     . "$EXTERNAL_CONFIG_FILE"
 fi
 
