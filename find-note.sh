@@ -92,7 +92,7 @@ recoll_search()
 # markdown files in MacOS Sierra v10.12.4 ..
 find_markdown_files()
 {
-    find $search_path -type f -name "*.md" -print0
+    find "$search_path" -xdev -mindepth 1 -type f -name "*.md" -print0
 }
 
 # Performs OS-specific search, returns a NULL-terminated list of files.
