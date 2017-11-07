@@ -37,7 +37,7 @@ set -o pipefail
 LC_ALL=C
 
 SELF="$(basename "$0")"
-NOTES_PATH=("${HOME}/Dropbox/txt" "${HOME}/today" "${HOME}/Archive")
+NOTES_PATHS=("${HOME}/Dropbox/txt" "${HOME}/today" "${HOME}/Archive")
 
 print_usage()
 {
@@ -119,7 +119,7 @@ fi
 
 # Filter out invalid paths, store space-separated paths in 'search_path'.
 search_path=""
-for note_path in "${NOTES_PATH[@]}"
+for note_path in "${NOTES_PATHS[@]}"
 do
     [ -d "$note_path" ] || continue
     [ -x "$note_path" ] || continue  # Check that directory can be searched.
