@@ -54,6 +54,7 @@ Listing
 | `today-dir`                   | creates a daily working directory symlink      |
 | `vinetto_rename.py`           | rename files extracted with "vinetto"          |
 | `vrml2png`                    | generate png previews of vrml 3D models        |
+| `wait-for-net.sh`             | loop and sleep until ping is successful        |
 | `www2pdf`                     | save URLs as pdf using `wkhtmltopdf`           |
 | `www2png`                     | convert a webpage to a image using `cutycapt`  |
 
