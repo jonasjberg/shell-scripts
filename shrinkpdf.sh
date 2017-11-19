@@ -36,7 +36,7 @@ set -o noclobber -o nounset -o pipefail
 
 
 IMAGE_RESOLUTION=150     # Resample images (dpi)
-PERCENT_THRESHOLD=50     # Skip if size difference is lower (%)
+PERCENT_THRESHOLD=40     # Skip if size difference is lower (%)
 
 
 C_RED="$(tput setaf 1)"
