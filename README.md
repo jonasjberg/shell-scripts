@@ -33,7 +33,7 @@ Listing
 | `folder-manifest`             | generate txt file with folder info             |
 | `git-backup`                  | recursively find and backup git repos          |
 | `git-clone-username-dest.sh`  | clone git repo to custom destination path      |
-| `git-recursive-pull`          | recursively find repos and do `git pull`       |
+| `git-pull-recursively.sh`     | find and update git repos under a preset path  |
 | `macbook-battery-logger.sh`   | generate MacBook laptop battery CSV statistics |
 | `markdowngrep.py`             | find markdown headings in text given a pattern |
 | `markdownify-telegram-log.py` | reformat telegram messenger log file           |

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# git-recursive-pull
-# ------------------
+# git-pull-recursively.sh
+# ~~~~~~~~~~~~~~~~~~~~~~~
 # Written by Jonas Sjöberg in 2015
 # Rewritten by Jonas Sjöberg 2017-05-03
 
