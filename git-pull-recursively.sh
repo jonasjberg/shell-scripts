@@ -19,13 +19,15 @@ C_RESET="$(tput sgr0)"
 
 # Recursively search and perform "git pull" on all found repositories here.
 SEARCH_PATH="${HOME}/dev/sourcecode/"
+IGNORE_LIST_BASENAME='git-pull-recursively.ignores'
+
+SELF_DIRNAME="$(realpath -e "$(dirname "$0")")"
+IGNORE_LIST_PATH="${SELF_DIRNAME}/${IGNORE_LIST_BASENAME}"
 
 count_skipped=0
 count_failed=0
 count_total=0
 count_success=0
-
-START_DIR="$(pwd)"
 
 
 log_warn()
@@ -67,6 +69,8 @@ then
 fi
 
 
+START_DIR="$(pwd)"
+
 while IFS= read -r -d '' repo
 do
     count_total="$((count_total + 1))"
@@ -80,7 +84,14 @@ do
 
 
     _name="$(basename "$(pwd)")"
-    # echo "Found git repo: \"${_name}\""
+    if [ -f "$IGNORE_LIST_PATH" ]
+    then
+        if grep --fixed-strings --file="$IGNORE_LIST_PATH" -- <<< "$_name"
+        then
+            log_skip "Ignored repository: \"${_name}\""
+            continue
+        fi
+    fi
 
     if ! ( git status 2>&1 ) >/dev/null
     then
@@ -115,7 +126,7 @@ do
         log_fail "pull failed for repository: \"${_name}\""
     fi
 
-    # Random pause between requests
+    # Random pause between requests ..
     sleep $(( ( RANDOM % 3 )  + 1 ))
 
 done < <(find "$SEARCH_PATH" -xdev -type d -name ".git" -print0)
