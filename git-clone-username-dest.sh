@@ -30,18 +30,26 @@ if [ "$#" -ne "1" ]
 then
     cat >&2 <<EOF
 
-  Usage:  $SELF [REMOTE_URL]
+                  -{ git-clone-username-dest.sh }-
+                     Written 2017 by jonasjberg
+                       github.com/jonasjberg
+                         www.jonasjberg.com
+
+
+  USAGE:  $SELF [REMOTE_URL]
 
           The remote Git repository at REMOTE_URL is cloned to
           the current directory.  The "username" in the remote
           repository is prepended to the destination directory
           basename.
 
-Example:  $SELF 'git@github.com:foo/bar.git'
-          Clone the remote to a local directory 'foo_bar.git'.
+EXAMPLE:  $SELF 'git@github.com:foo/bar.git'
+          Clones the remote repository to 'foo_bar.git'.
+          Clones any associated wiki to 'foo_bar_wiki.git'.
 
-   NOTE:  Supported URLs are hardcoded into the script.
+  NOTES:  Supported URLs are hardcoded into the script.
           Existing files will not be overwritten.
+          Also clones the wiki.  (TODO: add option for this)
 
 EOF
     exit 1
@@ -49,6 +57,7 @@ fi
 
 
 repo_url="$1"
+wiki_url="${repo_url/.git/.wiki.git}"
 
 if grep -q 'git@github.com:' <<< "$repo_url"
 then
@@ -75,15 +84,26 @@ else
     exit 1
 fi
 
+
+git_clone_no_clobber()
+{
+    local _url="$1"
+    local _dest="$2"
+
+    if [ -e "$_dest" ]
+    then
+        echo "Skipped \"${_url}\" .."
+        echo "Destination exists: \"${_dest}\""
+    else
+        git clone "$_url" "$_dest"
+    fi
+}
+
 repo_dest="${repo_dest/\//_}"
-if [ -e "$repo_dest" ]
-then
-    echo "Destination directory exists: \"${repo_dest}\" .. Exiting."
-    exit 1
-fi
+git_clone_no_clobber "$repo_url" "$repo_dest"
 
-
-git clone "$repo_url" "$repo_dest"
+wiki_dest="${repo_dest/.git/_wiki.git}"
+git_clone_no_clobber "$wiki_url" "$wiki_dest"
 
 exit $?
 
