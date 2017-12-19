@@ -54,32 +54,28 @@ if grep -q 'git@github.com:' <<< "$repo_url"
 then
     # GitHub SSH
     repo_dest="${repo_url//git@github.com:}"
-    repo_dest="${repo_dest/\//_}"
 elif grep -q 'https://github.com' <<< "$repo_url"
 then
     # GitHub HTTPS
     repo_dest="${repo_url//https:\/\/github.com\/}"
-    repo_dest="${repo_dest/\//_}"
 elif grep -q 'https://bitbucket.org' <<< "$repo_url"
 then
     # Bitbucket HTTPS
     repo_dest="${repo_url//https:\/\/bitbucket.org\/}"
-    repo_dest="${repo_dest/\//_}"
 elif grep -q 'git@gitlab.com:' <<< "$repo_url"
 then
     # GitLab SSH
     repo_dest="${repo_url//git@gitlab.com:}"
-    repo_dest="${repo_dest/\//_}"
 elif grep -q 'https://gitlab.com/.*' <<< "$repo_url"
 then
     # GitLab HTTPS
     repo_dest="${repo_url//https:\/\/gitlab.com\//}"
-    repo_dest="${repo_dest/\//_}"
 else
     echo "Unsupported source repository URL .. Exiting."
     exit 1
 fi
 
+repo_dest="${repo_dest/\//_}"
 if [ -e "$repo_dest" ]
 then
     echo "Destination directory exists: \"${repo_dest}\" .. Exiting."
