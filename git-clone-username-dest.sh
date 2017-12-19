@@ -20,6 +20,7 @@
 #     along with this program.  If not, see <http://www.gnu.org/licenses/>
 #     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+set -o noclobber -o nounset -o pipefail
 
 
 SELF="$(basename "$0")"
@@ -29,57 +30,64 @@ if [ "$#" -ne "1" ]
 then
     cat >&2 <<EOF
 
-Usage:  $SELF [REMOTE_URL]
-The remote Git repository at REMOTE_URL will be cloned to the current
-directory.  The username is prepended to the destination directory.
+  Usage:  $SELF [REMOTE_URL]
 
-Supported URLs:  GitHub, Bitbucket and GitLab.
+          The remote Git repository at REMOTE_URL is cloned to
+          the current directory.  The "username" in the remote
+          repository is prepended to the destination directory
+          basename.
+
+Example:  $SELF 'git@github.com:foo/bar.git'
+          Clone the remote to a local directory 'foo_bar.git'.
+
+   NOTE:  Supported URLs are hardcoded into the script.
+          Existing files will not be overwritten.
 
 EOF
     exit 1
 fi
 
 
-url="$1"
+repo_url="$1"
 
-if grep -q 'git@github.com:' <<< "$url"
+if grep -q 'git@github.com:' <<< "$repo_url"
 then
     # GitHub SSH
-    _dest="${url//git@github.com:}"
-    _dest="${_dest/\//_}"
-elif grep -q 'https://github.com' <<< "$url"
+    repo_dest="${repo_url//git@github.com:}"
+    repo_dest="${repo_dest/\//_}"
+elif grep -q 'https://github.com' <<< "$repo_url"
 then
     # GitHub HTTPS
-    _dest="${url//https:\/\/github.com\/}"
-    _dest="${_dest/\//_}"
-elif grep -q 'https://bitbucket.org' <<< "$url"
+    repo_dest="${repo_url//https:\/\/github.com\/}"
+    repo_dest="${repo_dest/\//_}"
+elif grep -q 'https://bitbucket.org' <<< "$repo_url"
 then
     # Bitbucket HTTPS
-    _dest="${url//https:\/\/bitbucket.org\/}"
-    _dest="${_dest/\//_}"
-elif grep -q 'git@gitlab.com:' <<< "$url"
+    repo_dest="${repo_url//https:\/\/bitbucket.org\/}"
+    repo_dest="${repo_dest/\//_}"
+elif grep -q 'git@gitlab.com:' <<< "$repo_url"
 then
     # GitLab SSH
-    _dest="${url//git@gitlab.com:}"
-    _dest="${_dest/\//_}"
-elif grep -q 'https://gitlab.com/.*' <<< "$url"
+    repo_dest="${repo_url//git@gitlab.com:}"
+    repo_dest="${repo_dest/\//_}"
+elif grep -q 'https://gitlab.com/.*' <<< "$repo_url"
 then
     # GitLab HTTPS
-    _dest="${url//https:\/\/gitlab.com\//}"
-    _dest="${_dest/\//_}"
+    repo_dest="${repo_url//https:\/\/gitlab.com\//}"
+    repo_dest="${repo_dest/\//_}"
 else
     echo "Unsupported source repository URL .. Exiting."
     exit 1
 fi
 
-if [ -e "$_dest" ]
+if [ -e "$repo_dest" ]
 then
-    echo "Destination directory exists: \"${_dest}\" .. Exiting."
+    echo "Destination directory exists: \"${repo_dest}\" .. Exiting."
     exit 1
 fi
 
 
-git clone "$url" "$_dest"
+git clone "$repo_url" "$repo_dest"
 
 exit $?
 
