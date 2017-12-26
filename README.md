@@ -62,8 +62,10 @@ Listing
 
 Licensing
 ---------
-Most files use the *GNU General Public License*, Version 2.
-See `LICENSE.txt` or <http://www.gnu.org/licenses/> for the full license.
+Some files are licensed under the *GNU General Public License*, Version 2.
+See `LICENSE_GPL.txt` or <http://www.gnu.org/licenses/> for the full license.
 
-Parts are licensed under the *Do What The Fuck You Want To Public License*,
-Version 2.  See <http://www.wtfpl.net/> for more details.
+Other files are licensed under the *Do What The Fuck You Want To Public
+License*, Version 2.  See `LICENSE_WTFPL.txt` or <http://www.wtfpl.net/>
+for more details.
+
