@@ -28,7 +28,7 @@ Listing
 | `datedelta.py`                  | calculates years, months, days between dates   |
 | `exif-rename.sh`                | rename images from exif date/time              |
 | `exiftooldate.sh`               | display date/time-information using `exiftool` |
-| `find-equal-basename-dirname.sh`| find redundantly named files and directories   |
+| `fix-redundant-paths.sh`        | find redundantly named files and directories   |
 | `fix-permissions.sh`            | sets permissions recursively                   |
 | `fix-swedish-chars.sh`          | rename files with "åäöÅÄÖ" in the file names   |
 | `folder-manifest`               | generate txt file with folder info             |
