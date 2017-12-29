@@ -61,9 +61,8 @@ EOF
 
 find_redundant_basename_dirname()
 {
-    while IFS= read -r -d '' filepath
+    while IFS= read -r -d '' _abspath
     do
-        _abspath="$filepath"
         [ -f "$_abspath" ] || continue
 
         _basename="$(basename -- "$_abspath")"
