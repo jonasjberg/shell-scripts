@@ -63,18 +63,18 @@ find_redundant_basename_dirname()
 {
     while IFS= read -r -d '' _abspath
     do
-        [ -f "$_abspath" ] || continue
+        [ -f "$_abspath" ] || { printf 'Expected a file. Got: "%s"\n' "$_abspath" >&2 ; continue ; }
+
+        _dirname="$(dirname -- "$_abspath")"
+        [ -d "$_dirname" ] || { printf 'Expected a directory. Got: "%s"\n' "$_dirname" >&2 ; continue ; }
 
         _basename="$(basename -- "$_abspath")"
         _basename_no_ext="${_basename%.*}"
-        _dirname="$(dirname -- "$_abspath")"
         _dirbasename="$(basename -- "$_dirname")"
 
         if [ "$_basename_no_ext" == "$_dirbasename" ]
         then
             _dest="$(dirname -- "$(dirname -- "$_abspath")")"
-            [ -d "$_dirname" ] || { printf 'Expected a directory. Got: "%s"\n' "$_dirname" >&2 ; continue ; }
-            [ -f "$_abspath" ] || { printf 'Expected a file. Got: "%s"\n' "$_abspath" >&2 ; continue ; }
 
             if [ "$(find "$_dirname" -mindepth 1 -maxdepth 1 | wc -l)" -ne "1" ]
             then
