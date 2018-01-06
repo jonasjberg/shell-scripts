@@ -3,7 +3,7 @@
 
 #  rename-macos-screenshot.py
 #  ==========================
-#  Copyright (c) 2017 Jonas Sjöberg
+#  Copyright (c) 2017-2018 Jonas Sjöberg
 #  http://www.jonasjberg.com
 #  https://github.com/jonasjberg
 #
@@ -24,34 +24,38 @@ import sys
 import re
 import os
 
-# Example filename to rename:   Screen Shot 2017-03-18 at 04.41.59.jpg
+# Example filename to rename:   Screen Shot 2017-03-18 at 04.41.59.png
 MACOS_SCREENSHOT_REGEX = r'Screen Shot ([12]\d{3}-[01]\d-[0123]\d) at ([012]\d.[012345]\d.[012345]\d)\.png'
-ADD_FILETAGS = 'screenshot macbookpro'
+ADD_FILETAGS = 'macbookpro screenshot'
+
+
+SOMETHING_FAILED = False
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print('Usage: {} [FILE [FILE ...]]'.format(sys.argv[0]))
         sys.exit(1)
-    else:
-        for arg in sys.argv[1:]:
-            if not os.path.isfile(arg):
-                continue
-            else:
-                if not os.access(arg, os.R_OK):
-                    continue
 
-                head, tail = os.path.split(os.path.abspath(arg))
+    for arg in sys.argv[1:]:
+        if not os.path.isfile(arg):
+            continue
+        if not os.access(arg, os.R_OK) or not os.access(arg, os.W_OK):
+            continue
 
-                matches = re.search(MACOS_SCREENSHOT_REGEX, tail)
-                if matches:
-                    new_name = '{date}T{time} -- {tags}.png'.format(date=matches.group(1),
-                                                                    time=matches.group(2).replace('.', ''),
-                                                                    tags=ADD_FILETAGS)
-                    dest_path = os.path.join(head, new_name)
-                    if os.path.isfile(dest_path):
-                        # Abort: Path already exist and would be overwritten.
-                        continue
-                    else:
-                        os.rename(os.path.abspath(arg), dest_path)
+        arg_abspath = os.path.realpath(arg)
+        tree, leaf = os.path.split(arg_abspath)
 
-        sys.exit(0)
+        match = re.search(MACOS_SCREENSHOT_REGEX, leaf)
+        if match:
+            new_name = '{date}T{time} -- {tags}.png'.format(date=match.group(1),
+                                                            time=match.group(2).replace('.', ''),
+                                                            tags=ADD_FILETAGS)
+            dest_abspath = os.path.realpath(os.path.join(tree, new_name))
+            if not os.path.exists(dest_abspath):
+                try:
+                    os.rename(arg_abspath, dest_abspath)
+                except OSError as e:
+                    SOMETHING_FAILED |= True
+
+    sys.exit(SOMETHING_FAILED)
