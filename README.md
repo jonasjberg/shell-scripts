@@ -26,6 +26,7 @@ Listing
 | `convert-video-to-mp4.sh`       | converts videos to mp4 with `ffmpeg`           |
 | `crop-instagram-screenshot`     | crop images to size                            |
 | `datedelta.py`                  | calculates years, months, days between dates   |
+| `delete-macos-cruft.sh`         | find and delete MacOS junk                     |
 | `exif-rename.sh`                | rename images from exif date/time              |
 | `exiftooldate.sh`               | display date/time-information using `exiftool` |
 | `fix-redundant-paths.sh`        | find redundantly named files and directories   |
