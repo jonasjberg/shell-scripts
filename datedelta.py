@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 #
-# DATEDELTA     Jonas Sjoberg
-# ~~~~~~~~~     https://github.com/jonasjberg
-#               jomeganas@gmail.com
+#     DATEDELTA         Jonas Sjoberg
+#     ~~~~~~~~~         https://github.com/jonasjberg
+#                       jomeganas@gmail.com
 #
-# Calculates and displays the difference between two dates as the number of
-# years, months and days.
+#     Calculates and displays the difference between
+#     two dates as the number of years, months and days.
+#
+# This work is free. You can redistribute it and/or modify it under the
+# terms of the Do What The Fuck You Want To Public License, Version 2.
+# See http://www.wtfpl.net/ for more details.
 
 import argparse
 import sys
