@@ -20,8 +20,7 @@ from datetime import datetime
 try:
     from dateutil.relativedelta import relativedelta
 except ImportError:
-    print('Please install "dateutil" first.')
-    sys.exit(1)
+    raise SystemExit('Missing required module "dateutil" --- Aborting ..')
 
 
 parser = argparse.ArgumentParser(prog='datedelta',
