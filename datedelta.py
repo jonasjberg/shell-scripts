@@ -41,9 +41,11 @@ def main():
     )
     parser.add_argument(
         dest='dates',
-        metavar='YYYYMMDD',
+        metavar='ISOLIKE_DATE',
         nargs='+',
-        help='Date written as "YYYY-mm-dd", with separators such as "-" being optional'
+        help='Dates should be written as "YYYYmmdd". '
+             'Everything except digits is removed before parsing. '
+             'This means most formats similar to ISO 8601 are accepted.'
     )
 
     opts = parser.parse_args()
