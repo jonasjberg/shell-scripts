@@ -24,10 +24,7 @@ except ImportError:
 
 
 def str_to_datetime(string):
-    digits = ''
-    for char in string:
-        if char.isdigit():
-            digits += char
+    digits = ''.join([c for c in string if c.isdigit()])
     try:
         dt = datetime.strptime(digits, '%Y%m%d')
     except ValueError:
