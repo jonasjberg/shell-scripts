@@ -2,7 +2,7 @@
 #                                 ~~~~~~~~~~~
 #                                 exif-rename
 #                                 ~~~~~~~~~~~
-#                    Copyright (C) 2015-2017 Jonas Sjöberg
+#                    Copyright (C) 2015-2018 Jonas Sjöberg
 #                        https://github.com/jonasjberg
 #
 #                 Rename images based on exif time/date data.
@@ -58,6 +58,10 @@ EXIFTOOL_OPTS=(-short --composite -duplicates "-*date*" "-*year*")
 VERBOSE_MODE=true
 DEBUG_MODE=false
 OPTION_WRITE=false
+
+# TODO: Add option to enable prepending timestamp to existing basename prefix.
+OPT_PREFIX_TIMESTAMP='true'
+
 
 PROGNAME="$(basename $0)"
 C_RED="$(tput setaf 1)"
@@ -193,8 +197,19 @@ handle_arg()
     fi
     log_debug "processed timestmap: \"$timestamp\""
 
-    local dest_basename="${timestamp}.${arg_extension}"
-    local dest_abspath="${arg_dirname}/${dest_basename}"
+    local arg_basename="$(basename -- "$arg_abspath")"
+    local arg_basename_prefix="${arg_basename%.*}"
+
+    # Define format of destination basename.
+    local _dest_basename
+    if [ "$OPT_PREFIX_TIMESTAMP" = 'true' ]
+    then
+        _dest_basename="${timestamp} ${arg_basename_prefix}.${arg_extension}"
+    else
+        _dest_basename="${timestamp}.${arg_extension}"
+    fi
+
+    local dest_abspath="${arg_dirname}/${_dest_basename}"
     if [ -e "$dest_abspath" ]
     then
         log_skip "Destination exists: \"${dest_abspath}\""
