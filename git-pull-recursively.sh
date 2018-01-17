@@ -75,7 +75,8 @@ log_ok()
 
 if [ ! -d "$SEARCH_PATH" ]
 then
-    echo "Invalid path: \"${SEARCH_PATH}\"" 1>&2
+    log_colorlabel "$COLRED" 'FAILURE' "Invalid path: \"${SEARCH_PATH}\""
+    log_colorlabel "$COLRED" 'FAILURE' 'Variable "SEARCH_PATH" must be set before running this script'
     exit 1
 fi
 
@@ -123,12 +124,6 @@ do
                  "Skipping repository: \"${_name}\""
         continue
     fi
-
-    # if git diff-index --quiet HEAD
-    # then
-    #     echo "The combination of index and tracked files in the working tree are changed with respect to HEAD"
-    # fi
-
 
     if git pull --ff-only --quiet
     then
