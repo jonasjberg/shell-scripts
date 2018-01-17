@@ -4,6 +4,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~
 # Written by Jonas Sjöberg in 2015
 # Rewritten by Jonas Sjöberg 2017-05-03
+# Updated by Jonas Sjöberg 2018-01-16
 
 # Does a recursive search for ".git" directories, enters the parent directory
 # within a subshell and performs a bunch of tests for unstaged/uncommitted
@@ -12,16 +13,18 @@
 
 set -o noclobber -o nounset -o pipefail
 
-C_RED="$(tput setaf 1)"
-C_GREEN="$(tput setaf 2)"
-C_YELLOW=$(tput setaf 3)
-C_RESET="$(tput sgr0)"
 
 # Recursively search and perform "git pull" on all found repositories here.
 SEARCH_PATH="${HOME}/dev/sourcecode/"
 IGNORE_LIST_BASENAME='git-pull-recursively.ignores'
 
-SELF_DIRNAME="$(realpath -e "$(dirname "$0")")"
+
+COLRED="$(tput setaf 1)"
+COLGREEN="$(tput setaf 2)"
+COLYELLOW=$(tput setaf 3)
+COLRESET="$(tput sgr0)"
+
+SELF_DIRNAME="$(realpath -e -- "$(dirname -- "$0")")"
 IGNORE_LIST_PATH="${SELF_DIRNAME}/${IGNORE_LIST_BASENAME}"
 
 count_skipped=0
@@ -30,9 +33,17 @@ count_total=0
 count_success=0
 
 
+log_colorlabel()
+{
+    local -r _color="$1" ; shift
+    local -r _label="$1" ; shift
+
+    printf '%s[%s]%s %s\n' "$_color" "$_label" "$COLRESET" "$*"
+}
+
 log_warn()
 {
-    printf "${C_YELLOW}[WARNING]${C_RESET} %s\n" "$1"
+    log_colorlabel "$COLYELLOW" 'WARNING' "$1"
     shift
 
     while test "$#" -gt "0"
@@ -42,21 +53,21 @@ log_warn()
     done
 }
 
-log_fail()
-{
-    printf "${C_RED}[FAILURE]${C_RESET} %s\n" "$*" 1>&2
-    count_failed="$((count_failed + 1))"
-}
-
 log_skip()
 {
     log_warn "$*"
     count_skipped="$((count_skipped + 1))"
 }
 
+log_fail()
+{
+    log_colorlabel "$COLRED" 'FAILURE' "$*"
+    count_failed="$((count_failed + 1))"
+}
+
 log_ok()
 {
-    printf "${C_GREEN}[SUCCESS]${C_RESET} %s\n" "$*" 1>&2
+    log_colorlabel "$COLGREEN" 'SUCCESS' "$*"
     count_success="$((count_success + 1))"
 }
 
@@ -86,7 +97,7 @@ do
     _name="$(basename "$(pwd)")"
     if [ -f "$IGNORE_LIST_PATH" ]
     then
-        if grep --fixed-strings --file="$IGNORE_LIST_PATH" -- <<< "$_name"
+        if grep --fixed-strings --file="$IGNORE_LIST_PATH" -- <<< "$_name" >/dev/null
         then
             log_skip "Ignored repository: \"${_name}\""
             continue
@@ -136,12 +147,14 @@ cd "$START_DIR"
 
 duration="$(printf '%02d hours %02d minutes %02d seconds' \
             $(($SECONDS/3600)) $(($SECONDS%3600/60)) $(($SECONDS%60)))"
-printf "\n\n${C_GREEN}[FINISHED]${C_RESET} Elapsed time: ${duration}\n"
 
-printf "           Found Total : %d\n" "$count_total"
-printf "           Updated     : %d\n" "$count_success"
-printf "           Skipped     : %d\n" "$count_skipped"
-printf "           FAILED      : %d\n" "$count_failed"
+printf '\n\n'
+log_colorlabel "$COLGREEN" 'FINISHED' "Elapsed time: ${duration}"
+printf '           Found Total : %d\n' "$count_total"
+printf '           Updated     : %d\n' "$count_success"
+printf '           Skipped     : %d\n' "$count_skipped"
+printf '           FAILED      : %d\n' "$count_failed"
+printf '\n'
 
 if [ "$count_failed" -gt "0" ]
 then
