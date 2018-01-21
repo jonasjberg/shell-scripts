@@ -22,7 +22,7 @@ set -o noclobber -o nounset -o pipefail -o errexit
 SELF_BASENAME="$(basename $0)"
 
 
-if ! man xargs | col -b | grep -q -- '--no-run-if-empty' >/dev/null 2>&1
+if ! man xargs | col -b | grep -- '--no-run-if-empty' >/dev/null 2>&1
 then
     cat >&2 <<EOF
 
