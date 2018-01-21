@@ -22,6 +22,18 @@ set -o noclobber -o nounset -o pipefail -o errexit
 SELF_BASENAME="$(basename $0)"
 
 
+if ! man xargs | col -b | grep -q -- '--no-run-if-empty' >/dev/null 2>&1
+then
+    cat >&2 <<EOF
+
+  WARNING:  This script requires a version of xargs that implements
+            the GNU extension option '-r', '--no-run-if-empty'.
+            Aborting ..                      (TODO: Add workaround)
+
+EOF
+    exit 1
+fi
+
 if [ "$#" -ne 1 ] || [ ! -d "$1" ]
 then
     cat >&2 <<EOF
