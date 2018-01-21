@@ -34,8 +34,12 @@ then
   --------     ---------                           --------
   .DS_Store    Apple Desktop Services Store        any
   ._*          AppleDouble encoded Macintosh file  4096 bytes
+  ._*          AppleDouble encoded Macintosh file  any
 
   Files matching any of the above requirements are deleted.
+
+  The last requirement row might cause data loss (?)
+  TODO: Look into cleaning up with 'dot_clean' on MacOS.
 
   NOTE:  There are no confirmation prompts! rm is forever!
 
@@ -79,3 +83,17 @@ do
                                            *) continue ;;
     esac
 done < <(find "$1" -xdev -type f -name '._*' -size 4096c -print0 | get_absolutely_real_path)
+
+
+# TODO: Deduplication worth the hassle that is bash functions and multi-word arguments?
+# TODO: This might cause data loss (?)
+# TODO: Look into using 'dot_clean' on MacOS to join resource fork and data fork (?)
+while IFS= read -r -d '' _abspath
+do
+    [ -f "$_abspath" ] || continue
+
+    case $(file --brief -- "$_abspath") in
+        'AppleDouble encoded Macintosh file') uncruftify "$_abspath" ;;
+                                           *) continue ;;
+    esac
+done < <(find "$1" -xdev -type f -name '._*' -print0 | get_absolutely_real_path)
