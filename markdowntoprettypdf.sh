@@ -36,7 +36,7 @@ markdowntoprettypdf()
 
     # Do character replacements before piping to pandoc.
     cat "$src" | sed 's/➡/-->/g' | sed 's/⇒/-->/g' | sed 's/”/"/g' | \
-    pandoc --smart --normalize --standalone \
+    pandoc --standalone \
            --highlight-style=monochrome \
            --variable mainfont="DejaVu Sans" \
            --variable monofont="DejaVu Sans Mono" \
@@ -44,7 +44,7 @@ markdowntoprettypdf()
            --variable geometry:"top=1.5cm, bottom=2.5cm, left=1.5cm, right=1.5cm" \
            --variable geometry:a4paper \
            $FLAGS_TOC \
-           -f markdown \
+           -f markdown+smart \
            -o "$dest"
 }
 
