@@ -2,7 +2,7 @@
 
 # markdowntoprettypdf.sh
 # ~~~~~~~~~~~~~~~~~~~~~~
-# Copyright 2016-2017 by Jonas Sjöberg
+# Copyright 2016-2018 by Jonas Sjöberg
 # http://www.jonasjberg.com
 # https://github.com/jonasjberg
 # jomeganas[AT]gmail[DOT]com
