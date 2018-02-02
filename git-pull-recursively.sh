@@ -127,7 +127,7 @@ do
 
     if git pull --ff-only --quiet
     then
-        log_ok "Successfully updated repository: \"${_name}\""
+        log_ok "Updated repository: \"${_name}\""
     else
         log_fail "pull failed for repository: \"${_name}\""
     fi
