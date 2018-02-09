@@ -2,7 +2,7 @@
 #
 # slugify-filename
 # ~~~~~~~~~~~~~~~~
-# Copyright(c)2015-2017 Jonas Sjöberg
+# Copyright(c)2015-2018 Jonas Sjöberg
 # https://github.com/jonasjberg
 #
 # Does filename cleanup. I try to use very conservative filenames.
@@ -29,8 +29,7 @@
 #_______________________________________________________________________________
 
 
-TEST_MODE=false
-VERBOSE_MODE=false
+DRY_RUN=false
 SPACE_CHAR='-'
 SEPAR_CHAR='_'
 GLUE_CHARS='-_'
@@ -48,24 +47,9 @@ fi
 #_______________________________________________________________________________
 
 
-msg_prompt()
+msg_error()
 {
-    if [[ "$VERBOSE_MODE" == true ]]; then
-        printf "\n[*] %s ..\n" "$*"
-    fi
-}
-
-msg_progress()
-{
-    if [[ "$VERBOSE_MODE" == true ]]; then
-        printf "    %s\n" "$*"
-    fi
-}
-
-die()
-{
-    printf "[ERROR]: %s\n" "$*"
-    exit 1
+    printf '[ERROR]: %s\n' "$*"
 }
 
 process()
@@ -98,8 +82,8 @@ process()
     name="${name//[^${SAFE_CHARS}]/${SPACE_CHAR}}"
 
     # Replace two or more dashes with a underline, collapse underlines
-    name="$(echo "$name" | sed -E 's/[-]{2,}/_/g')"
-    name="$(echo "$name" | sed -E 's/[_]{2,}/_/g')"
+    name="$(sed -E 's/[-]{2,}/_/g' <<< "$name")"
+    name="$(sed -E 's/[_]{2,}/_/g' <<< "$name")"
 
     # Replace '-_-', '-_' and '_-' with SEPAR_CHAR
     name="${name//-_-/${SEPAR_CHAR}}"
@@ -107,104 +91,69 @@ process()
     name="${name//_-/${SEPAR_CHAR}}"
 
     # Remove any leading and trailing dashes/underlines
-    name="$(echo "$name" | sed -E 's/^[_-]+//g')"
-    name="$(echo "$name" | sed -E 's/[_-]+$//g')"
+    name="$(sed -E 's/^[_-]+//g' <<< "$name")"
+    name="$(sed -E 's/[_-]+$//g' <<< "$name")"
 
     # Replace two or more dashes with a underline, collapse underlines
-    name="$(echo "$name" | sed -E 's/[-]{2,}/_/g')"
-    name="$(echo "$name" | sed -E 's/[_]{2,}/_/g')"
+    name="$(sed -E 's/[-]{2,}/_/g' <<< "$name")"
+    name="$(sed -E 's/[_]{2,}/_/g' <<< "$name")"
 
-    echo "${name}" # Function "return" value
-}
-
-process_hard()
-{
-    local name="$@"
-
-    # Remove everything other than a-z, A-Z and 0-9
-    name="$(echo "$name" | sed 's/[^a-zA-Z0-9]//g')"
-
-    echo "${name}" # Function "return" value
+    # Return value ..
+    echo "${name}"
 }
 
 main()
 {
+    # TODO: IMPORTANT! Handle basename separately from the rest of the path.
     name_full="${1}"
-    name_no_path="${name_full##*/}"
     extension="${name_full##*.}"
     name_no_ext="${name_full%.*}"
 
-    msg_progress "name_full:      ${name_full}"
-    msg_progress "name_no_path:   ${name_no_path}"
-    msg_progress "extension:      ${extension}"
-    msg_progress "name_no_ext:    ${name_no_ext}"
-
-    if [[ ! -z ${extension} ]]
+    if [ -n "$extension" ]
     then
-        msg_prompt "slugifying extension"
         extension="$(process "${extension}")"
-        msg_progress "extension:      ${extension}"
     fi
 
-    if [[ ! -z ${name_no_ext} ]]
+    if [ -n "$name_no_ext" ]
     then
-        msg_prompt "slugifying name_no_ext"
         name_no_ext="$(process "${name_no_ext}")"
-        msg_progress "name_no_ext:    ${name_no_ext}"
     fi
 
-    if [[ -z ${name_no_ext} ]]
+    if [ -z "$name_no_ext" ]
     then
-        msg_prompt "name without extension is EMPTY! setting to .extension"
+        # Name without extension is EMPTY --- assume dotfile
         name_no_ext=".${extension}"
         extension=''
-        msg_progress "extension:      ${extension}"
-        msg_progress "name_no_ext:    ${name_no_ext}"
     fi
 
-
-    if [[ ! -z ${extension} ]]
+    if [ -n "$extension" ]
     then
-        msg_prompt "extension is *not* NULL"
+        # Extension is *not* NULL ..
+        # TODO: Check that it isn't all whitespace?
 
-        if [[ "${extension}" == "${name_no_ext}" ]]
+        if [ "$extension" == "$name_no_ext" ]
         then
-            msg_prompt "extension is equal to full name. Setting to NULL"
+            # Extension and full name is the same, remove the extension.
             extension=''
-            #name_no_ext=".${name_no_ext}"
         else
             extension=".${extension}"
-            msg_progress "extension:      ${extension}"
         fi
     fi
 
-
-    name_new="${name_no_ext}"
-    msg_progress "name_new:       ${name_new}"
-
-    if [[ -z ${name_new} ]]
+    if [ -z "$name_no_ext" ]
     then
+        # Bail out
         return
     fi
 
+    name_new_full="${name_no_ext}${extension}"
 
-    name_new_full="${name_new}${extension}"
-    msg_progress "name_new_full:  $name_new_full"
-
-    if [[ "${name_full}" != "${name_new_full}" ]]
+    if [ "$DRY_RUN" == 'true' ]
     then
-        msg_prompt "DONE! Result is not equal to input"
-    else
-        msg_prompt "DONE! nothing changed"
-    fi
-
-
-    if [[ "$TEST_MODE" == true ]]
-    then
-        echo "${name_new_full}"
+        printf '%s\n' "$name_new_full"
         return
     else
-        mv -n "${1}" "${name_new_full}"
+        mv -n -- "${1}" "${name_new_full}"
     fi
 }
 
@@ -213,15 +162,17 @@ main()
 # ______________________________________________________________________________
 # MAIN ROUTINE EXECUTION STARTS HERE
 
-if [ $# -eq 0 ]
+if [ "$#" -eq "0" ]
 then
-    die "Positional arguments missing! At least one is required."
+    msg_error 'Positional arguments missing! At least one is required.'
+    exit 1
 else
     for arg in "$@"
     do
-        main "${arg}"
+        main "$arg"
     done
 fi
 
+# TODO: Pass back sensible exit status
 exit $?
 
