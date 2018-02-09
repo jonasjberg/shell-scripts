@@ -29,7 +29,6 @@
 #_______________________________________________________________________________
 
 
-DEBUG_MODE=false
 TEST_MODE=false
 VERBOSE_MODE=false
 SPACE_CHAR='-'
@@ -41,20 +40,13 @@ THIS_SCRIPT_PATH="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 EXTERNAL_CONFIG_FILE="${THIS_SCRIPT_PATH}/slugify-filename_config"
 if [ -f "$EXTERNAL_CONFIG_FILE" ]
 then
-    # msg_debug "Using external configuration: \"${EXTERNAL_CONFIG_FILE}\" ..\n"
+    # Using external configuration
     . "$EXTERNAL_CONFIG_FILE"
 fi
 
 
 #_______________________________________________________________________________
 
-
-msg_debug()
-{
-    if [[ "$DEBUG_MODE" == true ]]; then
-        printf "%s\n" "${name_full}"
-    fi
-}
 
 msg_prompt()
 {
@@ -82,7 +74,6 @@ process()
 
     name="${name//&/-and-}"             # Replace '&' with '-and-'
     name="${name//\ -and-\ /-and-}"     # Replace ' -and- ' with '-and-'
-    msg_debug
 
     name="${name//,\ /\ }"              # Replace comma-space with space
     name="${name//,/${SPACE_CHAR}}"     # Replace comma with 'SPACE_CHAR'
@@ -97,33 +88,27 @@ process()
         for string in "${REMOVE_STRING[@]}"
         do
             name="${name//${string}/}"
-            msg_debug
         done
     fi
 
     name="${name//@/-AT-}"              # Replace '@' with '-AT-'
     name="${name//\ -AT-\ /-AT-}"       # Replace ' -AT- ' with '-AT-'
-    msg_debug
 
     # Replace everything that is not in 'SAFE_CHARS' with 'SPACE_CHAR'
     name="${name//[^${SAFE_CHARS}]/${SPACE_CHAR}}"
-    msg_debug
 
     # Replace two or more dashes with a underline, collapse underlines
     name="$(echo "$name" | sed -r 's/[-]{2,}/_/g')"
     name="$(echo "$name" | sed -r 's/[_]{2,}/_/g')"
-    msg_debug
 
     # Replace '-_-', '-_' and '_-' with SEPAR_CHAR
     name="${name//-_-/${SEPAR_CHAR}}"
     name="${name//-_/${SEPAR_CHAR}}"
     name="${name//_-/${SEPAR_CHAR}}"
-    msg_debug
 
     # Remove any leading and trailing dashes/underlines
     name="$(echo "$name" | sed -r 's/^[_-]+//g')"
     name="$(echo "$name" | sed -r 's/[_-]+$//g')"
-    msg_debug
 
     # Replace two or more dashes with a underline, collapse underlines
     name="$(echo "$name" | sed -r 's/[-]{2,}/_/g')"
@@ -199,7 +184,6 @@ main()
 
     if [[ -z ${name_new} ]]
     then
-        msg_debug "process result is NULL!"
         return
     fi
 
@@ -215,7 +199,7 @@ main()
     fi
 
 
-    if [[ "$DEBUG_MODE" == true ]] || [[ "$TEST_MODE" == true ]]
+    if [[ "$TEST_MODE" == true ]]
     then
         echo "${name_new_full}"
         return
