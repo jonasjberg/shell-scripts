@@ -98,8 +98,8 @@ process()
     name="${name//[^${SAFE_CHARS}]/${SPACE_CHAR}}"
 
     # Replace two or more dashes with a underline, collapse underlines
-    name="$(echo "$name" | sed -r 's/[-]{2,}/_/g')"
-    name="$(echo "$name" | sed -r 's/[_]{2,}/_/g')"
+    name="$(echo "$name" | sed -E 's/[-]{2,}/_/g')"
+    name="$(echo "$name" | sed -E 's/[_]{2,}/_/g')"
 
     # Replace '-_-', '-_' and '_-' with SEPAR_CHAR
     name="${name//-_-/${SEPAR_CHAR}}"
@@ -107,12 +107,12 @@ process()
     name="${name//_-/${SEPAR_CHAR}}"
 
     # Remove any leading and trailing dashes/underlines
-    name="$(echo "$name" | sed -r 's/^[_-]+//g')"
-    name="$(echo "$name" | sed -r 's/[_-]+$//g')"
+    name="$(echo "$name" | sed -E 's/^[_-]+//g')"
+    name="$(echo "$name" | sed -E 's/[_-]+$//g')"
 
     # Replace two or more dashes with a underline, collapse underlines
-    name="$(echo "$name" | sed -r 's/[-]{2,}/_/g')"
-    name="$(echo "$name" | sed -r 's/[_]{2,}/_/g')"
+    name="$(echo "$name" | sed -E 's/[-]{2,}/_/g')"
+    name="$(echo "$name" | sed -E 's/[_]{2,}/_/g')"
 
     echo "${name}" # Function "return" value
 }
