@@ -49,7 +49,6 @@ Listing
 | `rotate-opx-video-90cw`         | rotates "OnePlus X" videos with `ffmpeg`       |
 | `shrink-pdf.sh`                 | optimize pdf documents to use less disk space  |
 | `slugify-filename`              | clean up file names                            |
-| `slugify-filename-test`         | unit tests for `slugify-filename`              |
 | `src2tex`                       | convert source code to LaTeX                   |
 | `tex2pdf`                       | convert LaTeX to pdf                           |
 | `timestampdashes`               | rename files to `YYYY-MM-DD_hh-mm-ss.ext`      |
