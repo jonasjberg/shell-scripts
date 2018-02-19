@@ -46,21 +46,18 @@ read_flags_from_config_in_cwd()
     readarray -t -n 1 grepflags < "$CONFIG_BASENAME"
 }
 
-has_local_config_in_cwd()
-{
-    [ -f "$CONFIG_BASENAME" ]
-}
+has_local_config_in_cwd() { [ -f "$CONFIG_BASENAME" ] ; }
+cwd_is_within_git_repository() { git status >/dev/null 2>&1 ; }
+cd_to_git_repository_root() { cd "$(git rev-parse --show-toplevel)" ; }
 
 
 if has_local_config_in_cwd
 then
     read_flags_from_config_in_cwd
-elif git status >/dev/null 2>&1
+elif cwd_is_within_git_repository
 then
-    # In a git repository. Look for config in repository root directory.
     (
-        cd "$(git rev-parse --show-toplevel)" \
-            && has_local_config_in_cwd \
+        cd_to_git_repository_root && has_local_config_in_cwd \
             && read_flags_from_config_in_cwd
     )
 fi
