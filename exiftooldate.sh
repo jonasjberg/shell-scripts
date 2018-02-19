@@ -41,7 +41,7 @@ do
     [ -d "$arg" ] && continue
 
     printf '\nExtracted date/time-information for: "%s"\n' "$arg"
-    exiftool -short -e -a -s -G1 "-*date*" "-*year*" "$arg" \
+    exiftool -short -e -a -G1 "-*date*" "-*year*" "$arg" \
     | awk '{printf "%-15.15s %20.20s %-s %-s %s\n", $1, $2, $3, $4, $5}'
 done
 
