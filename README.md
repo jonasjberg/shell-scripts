@@ -23,6 +23,7 @@ Listing
 | `check-tex-syntax.sh`           | check syntax of LaTeX source file for errors   |
 | `clampimgheight.sh`             | chop up images taller than a set max height    |
 | `clipboard-to-file.sh`          | puts the clipboard contents in a file          |
+| `congrep.sh`                    | "context-sensitive" grep options               |
 | `convert-video-to-mp4.sh`       | converts videos to mp4 with `ffmpeg`           |
 | `crop-instagram-screenshot`     | crop images to size                            |
 | `datedelta.py`                  | calculates years, months, days between dates   |
