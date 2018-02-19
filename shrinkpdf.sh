@@ -163,7 +163,7 @@ main()
         return 1
     fi
 
-    if run_ghostscript "$origfile" "$resultfile"
+    if run_ghostscript "$origfile" "$resultfile" 2>&1 >/dev/null
     then
         replace_if_size_delta_over_threshold "$origfile" "$resultfile"
     else
