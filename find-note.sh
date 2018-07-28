@@ -112,6 +112,18 @@ find_notes()
 }
 
 
+if ! man xargs | col -b | grep -- '--no-run-if-empty' >/dev/null 2>&1
+then
+    cat >&2 <<EOF
+
+  WARNING:  This script requires a version of xargs that implements
+            the GNU extension option '-r', '--no-run-if-empty'.
+            Aborting ..                      (TODO: Add workaround)
+
+EOF
+    exit 1
+fi
+
 # Check arguments and display help text.
 if [ "$#" -eq "0" ]
 then
@@ -149,7 +161,7 @@ _ignorecase='--ignore-case'
 # TODO: Though it it fast enough as-is. Probably should fix the redundancy ..
 
 find_notes "$*" \
-| xargs -0 -P4 grep --color=never ${_ignorecase} -oHE -- ".{0,40}$*.{0,40}" \
+| xargs --no-run-if-empty -0 -P4 grep --color=never ${_ignorecase} -oHE -- ".{0,40}$*.{0,40}" \
 | grep --color=always ${_ignorecase} -E -- "$*"
 
 
