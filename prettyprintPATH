@@ -3,4 +3,4 @@
 # prettyprintPATH
 # Print out entries in '$PATH' separated by newlines for easier reading.
 
-echo $PATH | tr -s ':' '\n'
+printf '%s\n' "${PATH//:/$'\n'}"
