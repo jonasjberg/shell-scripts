@@ -6,8 +6,8 @@
 #                        https://github.com/jonasjberg
 #
 #                 Rename images based on exif time/date data.
-#      Searches the output of "exiftool" for contents of "SEARCHSTRINGS"
-#     Contents of SEARCHSTRINGS are ordered by priority, from high to low.
+#      Searches the output of "exiftool" for contents of "EXIF_FIELD_NAMES"
+#     Contents of EXIF_FIELD_NAMES are ordered by priority, from high to low.
 #      The first match is used, so put whatever exif-fields that are more
 #      likely to contain the correct date/time higher in the list below.
 #    Compared to similar programs/scripts out there, this is a particularly
@@ -42,17 +42,17 @@ set -o noclobber -o nounset -o pipefail
 #     Create Date                     : 2015:01:31 00:25:39
 
 # Search strings ordered by priority, from high to low;
-SEARCHSTRINGS[0]='CreateDate'
-SEARCHSTRINGS[1]='DateTimeCreated'
-SEARCHSTRINGS[2]='DateTimeOriginal'
-SEARCHSTRINGS[3]='DateTimeDigitized'
-SEARCHSTRINGS[4]='MediaCreateDate'
-SEARCHSTRINGS[5]='TrackCreateDate'
-SEARCHSTRINGS[6]='MetadataDate'
-#SEARCHSTRINGS[7]='ModifyDate'
-#SEARCHSTRINGS[8]='ModificationDate'
-#SEARCHSTRINGS[9]='ProfileDateTime'
-#SEARCHSTRINGS[10]='FileAccessDateTime'
+EXIF_FIELD_NAMES[0]='CreateDate'
+EXIF_FIELD_NAMES[1]='DateTimeCreated'
+EXIF_FIELD_NAMES[2]='DateTimeOriginal'
+EXIF_FIELD_NAMES[3]='DateTimeDigitized'
+EXIF_FIELD_NAMES[4]='MediaCreateDate'
+EXIF_FIELD_NAMES[5]='TrackCreateDate'
+EXIF_FIELD_NAMES[6]='MetadataDate'
+#EXIF_FIELD_NAMES[7]='ModifyDate'
+#EXIF_FIELD_NAMES[8]='ModificationDate'
+#EXIF_FIELD_NAMES[9]='ProfileDateTime'
+#EXIF_FIELD_NAMES[10]='FileAccessDateTime'
 
 EXIFTOOL_OPTS=(-short --composite -duplicates "-*date*" "-*year*")
 VERBOSE_MODE=true
@@ -60,7 +60,7 @@ DEBUG_MODE=false
 OPTION_WRITE=false
 
 # TODO: Add option to enable prepending timestamp to existing basename prefix.
-OPT_PREFIX_TIMESTAMP='true'
+OPT_PREFIX_TIMESTAMP=true
 
 
 PROGNAME="$(basename $0)"
@@ -96,8 +96,7 @@ EOF
 
 msg()
 {
-    [ "$VERBOSE_MODE" == 'true' ] || return
-    printf "$@"
+    $VERBOSE_MODE && printf "$@"
 }
 
 log_warn()
@@ -132,8 +131,7 @@ log_ok()
 
 log_debug()
 {
-    [ "$DEBUG_MODE" == "true" ] || return
-    printf "[DEBUG] %s\n" "$*"
+    $DEBUG_MODE && printf '[DEBUG] %s\n' "$*"
 }
 
 clean_up_timestamp()
@@ -172,9 +170,10 @@ handle_arg()
     fi
 
     # Grep EXIF data, break at first match.
-    for str in "${SEARCHSTRINGS[@]}"
+    matched_field='None'
+    for field in "${EXIF_FIELD_NAMES[@]}"
     do
-        timestamp="$(grep -ai --max-count=1 -- "$str" <<< "$exiftool_output" | cut -d':' -f2-)"
+        timestamp="$(grep -ai --max-count=1 -- "$field" <<< "$exiftool_output" | cut -d':' -f2-)"
 
         # Filter out unwanted cruft.
         timestamp="$(grep -iv -- "binary" <<< "$timestamp")"
@@ -185,7 +184,7 @@ handle_arg()
         # timestamp="$(grep -v -- "2015" <<< "$timestamp")"
         # timestamp="$(grep -v -- "2016" <<< "$timestamp")"
 
-        [ -n "$timestamp" ] && break
+        [ -n "$timestamp" ] && { matched_field="$field" ; break ; }
     done
 
     log_debug "\"raw\" timestamp: \"$timestamp\""
@@ -202,7 +201,7 @@ handle_arg()
 
     # Define format of destination basename.
     local _dest_basename
-    if [ "$OPT_PREFIX_TIMESTAMP" = 'true' ]
+    if $OPT_PREFIX_TIMESTAMP
     then
         _dest_basename="${timestamp} ${arg_basename_prefix}.${arg_extension}"
     else
@@ -217,20 +216,20 @@ handle_arg()
     fi
 
     local rename_cmd="mv -nv -- \"$arg_abspath\" \"$dest_abspath\""
-    if [ "$OPTION_WRITE" == "true" ]
+    if $OPTION_WRITE
     then
         eval "${rename_cmd}"
         return $?
     else
         log_debug "Would have executed: \"${rename_cmd}\""
         _rename_msg="$(printf '"%s" -> "%s"\n' "$arg_abspath" "$dest_abspath")"
-        log_ok "Would have renamed: ${_rename_msg}"
+        log_ok "Would have renamed ${_rename_msg} (${matched_field})"
         return 0
     fi
 }
 
 
-if ! command -v "exiftool" >/dev/null
+if ! command -v "exiftool" &>/dev/null
 then
     log_fail "This program requires \"exiftool\". Make sure it is installed."
     exit 1
@@ -245,10 +244,10 @@ else
     while getopts dhqw opt
     do
         case "$opt" in
-            d) DEBUG_MODE='true' ;;
+            d) DEBUG_MODE=true ;;
             h) print_usage_info ; exit 0 ;;
-            q) VERBOSE_MODE='false' ;;
-            w) OPTION_WRITE='true' ;;
+            q) VERBOSE_MODE=false ;;
+            w) OPTION_WRITE=true ;;
         esac
     done
 
@@ -268,16 +267,17 @@ do
     else
         count_success="$((count_success + 1))"
     fi
+
     count_total="$((count_total + 1))"
 done
 
-if [ "$VERBOSE_MODE" == "true" ]
+if $VERBOSE_MODE
 then
-    printf "\n\nSUMMARY STATS\n" "$count_total"
-    printf "Total   : %d\n" "$count_total"
-    printf "Renamed : %d\n" "$count_success"
-    printf "Skipped : %d\n" "$count_skipped"
-    printf "FAILED  : %d\n" "$count_failed"
+    printf '\n\nSUMMARY STATS\n' "$count_total"
+    printf 'Total   : %d\n' "$count_total"
+    printf 'Renamed : %d\n' "$count_success"
+    printf 'Skipped : %d\n' "$count_skipped"
+    printf 'FAILED  : %d\n' "$count_failed"
 fi
 
 if [ "$count_failed" -gt "0" ]
