@@ -44,7 +44,7 @@ markdowntoprettypdf()
            --variable geometry:"top=1.5cm, bottom=2.5cm, left=1.5cm, right=1.5cm" \
            --variable geometry:a4paper \
            $FLAGS_TOC \
-           -f markdown+smart \
+           -f markdown \
            -o "$dest"
 }
 
