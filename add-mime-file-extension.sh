@@ -39,6 +39,7 @@ Adds extensions to file names matching the files detected MIME type.
   All options are optional. Default behaviour is to perform the renaming
   operations and only print error messages.
   Any number of paths to be renamed should be given after the options.
+
 EOF
 }
 
