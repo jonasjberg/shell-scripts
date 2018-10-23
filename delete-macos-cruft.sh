@@ -19,7 +19,8 @@
 
 set -o noclobber -o nounset -o pipefail -o errexit
 
-SELF_BASENAME="$(basename $0)"
+readonly SELF_BASENAME="$(basename -- $0)"
+readonly MODE_DRY_RUN=true
 
 
 if ! man xargs | col -b | grep -- '--no-run-if-empty' >/dev/null 2>&1
@@ -60,16 +61,34 @@ EOF
     exit 0
 fi
 
+readonly searchpath="$1"
+
 
 get_absolutely_real_path()
 {
     sort -z | xargs --no-run-if-empty -0 realpath -e -z
 }
 
-uncruftify()
+uncruftify_file()
 {
-    # printf 'Found cruft:  "%s"\n' "$1"
-    rm -v -- "$1"
+    local _file_to_delete="$1"
+    if $MODE_DRY_RUN
+    then
+        printf 'Found MacOS cruft:  "%s"\n' "$_file_to_delete"
+    else
+        rm -v -- "$_file_to_delete"
+    fi
+}
+
+uncruftify_directory()
+{
+    local _directory_to_delete="$1"
+    if $MODE_DRY_RUN
+    then
+        printf 'Found MacOS cruft:  "%s"\n' "$_directory_to_delete"
+    else
+        rmdir -v --ignore-fail-on-non-empty -- "$_directory_to_delete"
+    fi
 }
 
 
@@ -79,10 +98,10 @@ do
     [ -f "$_abspath" ] || continue
 
     case $(file --brief -- "$_abspath") in
-        'Apple Desktop Services Store') uncruftify "$_abspath" ;;
+        'Apple Desktop Services Store') uncruftify_file "$_abspath" ;;
                                      *) continue ;;
     esac
-done < <(find "$1" -xdev -type f -name '.DS_Store' -print0 | get_absolutely_real_path)
+done < <(find "$searchpath" -xdev -type f -name '.DS_Store' -print0 | get_absolutely_real_path)
 
 
 # TODO: Deduplication worth the hassle that is bash functions and multi-word arguments?
@@ -91,10 +110,10 @@ do
     [ -f "$_abspath" ] || continue
 
     case $(file --brief -- "$_abspath") in
-        'AppleDouble encoded Macintosh file') uncruftify "$_abspath" ;;
+        'AppleDouble encoded Macintosh file') uncruftify_file "$_abspath" ;;
                                            *) continue ;;
     esac
-done < <(find "$1" -xdev -type f -name '._*' -size 4096c -print0 | get_absolutely_real_path)
+done < <(find "$searchpath" -xdev -type f -name '._*' -size 4096c -print0 | get_absolutely_real_path)
 
 
 # TODO: Deduplication worth the hassle that is bash functions and multi-word arguments?
@@ -105,7 +124,16 @@ do
     [ -f "$_abspath" ] || continue
 
     case $(file --brief -- "$_abspath") in
-        'AppleDouble encoded Macintosh file') uncruftify "$_abspath" ;;
+        'AppleDouble encoded Macintosh file') uncruftify_file "$_abspath" ;;
                                            *) continue ;;
     esac
-done < <(find "$1" -xdev -type f -name '._*' -print0 | get_absolutely_real_path)
+done < <(find "$searchpath" -xdev -type f -name '._*' -print0 | get_absolutely_real_path)
+
+
+# Remove empty directories that often contained only the just now deleted files.
+while IFS= read -r -d '' _abspath
+do
+    [ -d "$_abspath" ] || continue
+    uncruftify_directory "$_abspath"
+
+done < <(find "$searchpath" -xdev -type d -empty -name '__MACOSX' -print0 | get_absolutely_real_path)
