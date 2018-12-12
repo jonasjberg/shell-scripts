@@ -15,22 +15,27 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+set -o errexit -o nounset -o pipefail -o noclobber
 
-set -e                         # Exit immediately if a command returns non-zero.
+readonly SELF_BASENAME="$(basename -- "$0")"
 
-SPACE_CHAR='-'
-SEPAR_CHAR='_'
-GLUE_CHARS='-_'
-SAFE_CHARS="${GLUE_CHARS}a-zA-Z0-9"
-TIMESTAMP="$(date +%F)"
+readonly SPACE_CHAR='-'
+readonly SEPAR_CHAR='_'
+readonly GLUE_CHARS='-_'
+readonly SAFE_CHARS="${GLUE_CHARS}a-zA-Z0-9"
 
 
 src="$1"
+if [ $# -ne 1 ]
+then
+    printf 'USAGE:  %s [DIRECTORY_PATH]\n' "$SELF_BASENAME" >&2
+    exit 1
+fi
 
 if [ ! -d "$src" ]
 then
-    echo "WARNING: Pathname (source) argument is not a directory." >&2
-    echo "         exiting .." >&2
+    printf '%s: [ERROR] Argument "%s" is not a directory\n' \
+           "$SELF_BASENAME" "${src}" >&2
     exit 1
 fi
 
@@ -42,8 +47,7 @@ name="$src"
 name="${name//[^${SAFE_CHARS}]/${SPACE_CHAR}}"
 
 # Replace two or more dashes with a underline, collapse underlines
-name="$(echo "$name" | sed -r 's/[-]{2,}/_/g')"
-name="$(echo "$name" | sed -r 's/[_]{2,}/_/g')"
+name="$(sed -r 's/[-]{2,}/_/g' | sed -r 's/[_]{2,}/_/g' <<< "$name")"
 
 # Replace what probable was some kind of separator with $SEPAR_CHAR
 name="${name//-_-/${SEPAR_CHAR}}"
@@ -51,19 +55,11 @@ name="${name//-_/${SEPAR_CHAR}}"
 name="${name//_-/${SEPAR_CHAR}}"
 
 # Remove any dashes and underlines if first or last in name
-name="$(echo "$name" | sed -r 's/^[_-]+//g')"
-name="$(echo "$name" | sed -r 's/[_-]+$//g')"
+name="$(sed -r 's/^[_-]+//g' | sed -r 's/[_-]+$//g' <<< "$name")"
 
 
 # Create archive ..
-tar -zcvf "${name}_${TIMESTAMP}.tar.gz" "$src"
+timestamp="$(date +%F)"
+tar -zcvf "${name}_${timestamp}.tar.gz" "$src"
 
 exit $?
-
-
-
-
-
-
-
-
