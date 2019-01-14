@@ -7,28 +7,27 @@
 
 set -o noclobber -o nounset -o pipefail
 
+readonly SELF_BASENAME="$(basename -- "$0")"
 
-SELF="$(basename "$0")"
 
-# Check arguments, print usage if need be.
 if [ "$#" -ne "1" ]
 then
     cat >&2 <<EOF
 
-                  -{ git-clone-username-dest.sh }-
-                     Written 2017 by jonasjberg
-                       github.com/jonasjberg
+                 .-{ git-clone-username-dest.sh }-.
+                         written 2017--2019
+                        github.com/jonasjberg
                          www.jonasjberg.com
 
 
-  USAGE:  $SELF [REMOTE_URL]
+  USAGE:  $SELF_BASENAME [REMOTE_URL]
 
           The remote Git repository at REMOTE_URL is cloned to
           the current directory.  The "username" in the remote
           repository is prepended to the destination directory
           basename.
 
-EXAMPLE:  $SELF 'git@github.com:foo/bar.git'
+EXAMPLE:  $SELF_BASENAME 'git@github.com:foo/bar.git'
           Clones the remote repository to 'foo_bar.git'.
           Clones any associated wiki to 'foo_bar_wiki.git'.
 
@@ -41,7 +40,7 @@ EOF
 fi
 
 
-repo_url="$1"
+readonly repo_url="$1"
 wiki_url="${repo_url/.git/.wiki.git}"
 
 if grep -q 'git@github.com:' <<< "$repo_url"
@@ -65,7 +64,7 @@ then
     # GitLab HTTPS
     repo_dest="${repo_url//https:\/\/gitlab.com\//}"
 else
-    echo "Unsupported source repository URL .. Exiting."
+    printf 'Unsupported source repository URL .. Exiting.\n'
     exit 1
 fi
 
@@ -77,18 +76,19 @@ git_clone_no_clobber()
 
     if [ -e "$_dest" ]
     then
-        echo "Skipped \"${_url}\" .."
-        echo "Destination exists: \"${_dest}\""
+        printf 'Skipped "%s" ..\n' "$_url"
+        printf 'Destination exists: "%s"\n' "$_dest"
     else
         git clone "$_url" "$_dest"
     fi
 }
 
 repo_dest="${repo_dest/\//_}"
+repo_dest="$(basename -- "$repo_dest")"
 git_clone_no_clobber "$repo_url" "$repo_dest"
 
 wiki_dest="${repo_dest/.git/_wiki.git}"
+wiki_dest="$(basename -- "$wiki_dest")"
 git_clone_no_clobber "$wiki_url" "$wiki_dest"
 
 exit $?
-
