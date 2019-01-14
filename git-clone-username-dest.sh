@@ -43,30 +43,32 @@ fi
 readonly repo_url="$1"
 wiki_url="${repo_url/.git/.wiki.git}"
 
-if grep -q 'git@github.com:' <<< "$repo_url"
-then
-    # GitHub SSH
-    repo_dest="${repo_url//git@github.com:}"
-elif grep -q 'https://github.com' <<< "$repo_url"
-then
-    # GitHub HTTPS
-    repo_dest="${repo_url//https:\/\/github.com\/}"
-elif grep -q 'https://bitbucket.org' <<< "$repo_url"
-then
-    # Bitbucket HTTPS
-    repo_dest="${repo_url//https:\/\/bitbucket.org\/}"
-elif grep -q 'git@gitlab.com:' <<< "$repo_url"
-then
-    # GitLab SSH
-    repo_dest="${repo_url//git@gitlab.com:}"
-elif grep -q 'https://gitlab.com/.*' <<< "$repo_url"
-then
-    # GitLab HTTPS
-    repo_dest="${repo_url//https:\/\/gitlab.com\//}"
-else
-    printf 'Unsupported source repository URL .. Exiting.\n'
-    exit 1
-fi
+case "$repo_url" in
+    git@github.com:*)
+        # GitHub SSH
+        repo_dest="${repo_url//git@github.com:}"
+        ;;
+    https://github.com*)
+        # GitHub HTTPS
+        repo_dest="${repo_url//https:\/\/github.com\/}"
+        ;;
+    https://bitbucket.org*)
+        # Bitbucket HTTPS
+        repo_dest="${repo_url//https:\/\/bitbucket.org\/}"
+        ;;
+    git@gitlab.com:*)
+        # GitLab SSH
+        repo_dest="${repo_url//git@gitlab.com:}"
+        ;;
+    https://gitlab.com/*)
+        # GitLab HTTPS
+        repo_dest="${repo_url//https:\/\/gitlab.com\//}"
+        ;;
+    *)
+        printf 'Unsupported source repository URL .. Exiting.\n'
+        exit 1
+        ;;
+esac
 
 
 git_clone_no_clobber()
