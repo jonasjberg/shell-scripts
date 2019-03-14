@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#   Copyright(c) 2016-2017 Jonas Sjöberg
+#   Copyright(c) 2016-2019 Jonas Sjöberg
 #   http://www.jonasjberg.com
 #   https://github.com/jonasjberg
 #   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -20,17 +20,17 @@
 
 set -o noclobber -o nounset -o pipefail
 
-SELF="$(basename "$0")"
+readonly SELF_BASENAME="$(basename -- "$0")"
 
 
 print_usage_info()
 {
     cat <<EOF
 
-"${SELF}"
+"${SELF_BASENAME}"
 Adds extensions to file names matching the files detected MIME type.
 
-  USAGE:  ${SELF} ([OPTIONS]) [PATH...]
+  USAGE:  ${SELF_BASENAME} ([OPTIONS]) [PATH...]
 
   OPTIONS:  -h   Display usage information and exit.
             -d   "Dry run" or simulation mode. Test what would happen.
@@ -45,94 +45,124 @@ EOF
 
 add_extension_from_mime()
 {
-    local arg="$1"
-    [ -f "$arg" ] || return
+    local _filepath="$1"
+    local _ext
+    local _filepath_mimetype
 
-    # printf 'Got path: "%s"\n' "$arg"
+    if ! _filepath_mimetype="$(file --mime-type --brief -- "$_filepath")"
+    then
+        return 1
+    fi
 
-    case $(file --mime-type --brief -- "$arg") in
+    case "$_filepath_mimetype" in
+        application/CDFV2) _ext='db' ;;
+        audio/x-flac) _ext='flac' ;;
+        audio/mpeg) _ext='mp3' ;;
+        application/ogg) _ext='ogg' ;;
 
-        # Audio
-        audio/x-flac) ext=flac;;
-        audio/mpeg) ext=mp3;;
-        application/ogg) ext=ogg;;
+        video/mp4) _ext='mp4' ;;
+        video/x-flv) _ext='flv' ;;
 
-        # Video
-        video/mp4) ext=mp4;;
-        video/x-flv) ext=flv;;
-        #application/octet-stream) ext=webm;;
-        application/x-shockwave-flash) ext=swf;;
+        application/octet-stream)
+            # Use any existing extension in some special cases where file
+            # (file-5.25) seems to not properly detect the file type.
+            case "$_filepath" in
+                *.3gp) _ext='3gp' ;;
+                *.webm) _ext='webm' ;;
+            esac ;;
 
-        # Images
-        image/png) ext=png;;
-        image/jpeg) ext=jpg;;
-        image/gif) ext=gif;;
-        image/tiff) ext=tif;;
-        image/x-ico) ext=ico;;
+        application/x-shockwave-flash) _ext='swf' ;;
 
-        # Text
-        text/plain) ext=txt;;
-        text/html) ext=html;;
-        text/rtf) ext=rtf;;
-        text/x-python) ext=py;;
-        #text/x-c++) ext=cpp;;
-        #text/x-c) ext=scss;;
-        #text/x-shellscript) ext=sh;;
-        application/pdf) ext=pdf;;
-        application/xml) ext=xml;;
+        image/png) _ext='png' ;;
+        image/jpeg) _ext='jpg' ;;
+        image/gif) _ext='gif' ;;
+        image/tiff) _ext='tif' ;;
+        image/x-ico) _ext='ico' ;;
+        image/x-ms-bmp) _ext='bmp' ;;
 
-        # Documents
-        application/vnd.ms-powerpoint) ext=ppt;;
-        application/msword) ext=doc;;
+        text/plain)
+            case "$_filepath" in
+                *.md) _ext='md' ;;
+                *.txt) _ext='txt' ;;
+                *) _ext='txt' ;;
+            esac ;;
 
-        # Fonts
-        application/x-font-ttf) ext=ttf;;
-        application/vnd.ms-opentype) ext=otf;;
+        text/html) _ext='html' ;;
+        text/rtf) _ext='rtf' ;;
+        text/x-python) _ext='py' ;;
+        #text/x-c++) _ext='cpp' ;;
+        #text/x-c) _ext='scss' ;;
+        text/x-shellscript) _ext='sh' ;;
+        application/pdf) _ext='pdf' ;;
+        application/xml) _ext='xml' ;;
 
-        # Archive
-        application/x-gzip) ext=tar.gz;;
-        application/x-bzip2) ext=tar.bz;;
+        application/vnd.ms-powerpoint) _ext='ppt' ;;
+        application/msword) _ext='doc' ;;
 
-        *) continue;;
-        # *) { echo "Unhandled case: \"${arg}\"" ; continue ; } ;;
+        application/x-font-ttf) _ext='ttf' ;;
+        application/vnd.ms-opentype) _ext='otf' ;;
+
+        application/x-gzip) _ext='tar.gz' ;;
+        application/x-bzip2) _ext='tar.bz' ;;
+
+        *) printf 'Unhandled MIME-type "%s" from file "%s"\n' "$_filepath_mimetype" "$_filepath"
+           return 1 ;;
     esac
 
-    # File name extension is already correct.
-    [[ ${arg} = *.${ext} ]] && continue
+    # File name extension is absent or unknown.
+    [[ -z ${_ext:-} ]] && return 0
 
-    _mv_verbose_flag=''
-    [ "$option_verbose" = 'true' ] && _mv_verbose_flag='v'
+    # File name extension is already correct.
+    [[ ${_filepath} = *.${_ext} ]] && return 0
+
+    local _dest_filepath="${_filepath}.${_ext}"
 
     if [ "$option_dry_run" = 'true' ]
     then
-        printf 'Would have executed: %s\n' "mv -n${_mv_verbose_flag} -- "$arg" "${arg}.${ext}""
+        printf 'Would have renamed "%s" to "%s"\n' "$_filepath" "$_dest_filepath"
+        return 0
+    fi
+
+    if [ "$option_verbose" = 'true' ]
+    then
+        mv -nv -- "$_filepath" "$_dest_filepath"
     else
-        mv -n${_mv_verbose_flag} -- "$arg" "${arg}.${ext}"
+        mv -n -- "$_filepath" "$_dest_filepath"
     fi
 }
 
 
-option_dry_run='false'
-option_verbose='false'
+command -v realpath &>/dev/null || exit 1
+
 
 if [ "$#" -eq "0" ]
 then
     print_usage_info
     exit 0
-else
-    while getopts dhv opt
-    do
-        case "$opt" in
-            d) option_dry_run='true' ;;
-            h) print_usage_info ; exit 0 ;;
-            v) option_verbose='true' ;;
-        esac
-    done
-
-    shift $(( $OPTIND - 1 ))
 fi
 
-for path_argument in "$@"
+
+option_dry_run='false'
+option_verbose='false'
+
+while getopts dvh opt
 do
-    add_extension_from_mime "$(realpath -e -- "$path_argument")"
+    case "$opt" in
+        d) option_dry_run='true' ;;
+        v) option_verbose='true' ;;
+        h) print_usage_info ; exit 0 ;;
+    esac
+done
+
+shift $(( OPTIND - 1 ))
+
+
+for arg in "$@"
+do
+    [ -e "$arg" ] || continue
+
+    if file_abspath="$(realpath --canonicalize-existing -- "$arg")"
+    then
+        add_extension_from_mime "$file_abspath"
+    fi
 done
