@@ -30,6 +30,7 @@ Listing
 | `delete-macos-cruft.sh`         | find and delete MacOS junk                     |
 | `exif-rename.sh`                | rename images from exif date/time              |
 | `exiftooldate.sh`               | display date/time-information using `exiftool` |
+| `expand_wordlist_encodings.sh`  | generates wordlists with different encodings   |
 | `find_most_recently_modified_videos.sh` | find videos and sort by modify date            |
 | `fix-redundant-paths.sh`        | find redundantly named files and directories   |
 | `fix-permissions.sh`            | sets permissions recursively                   |
