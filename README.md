@@ -46,7 +46,6 @@ Listing
 | `markdowntoprettypdf.sh`        | `pandoc` wrapper with my favorite settings     |
 | `notify`                        | `notify-send` functions                        |
 | `prettyprintPATH`               | print entries in `$PATH` separated by `\n`     |
-| `pull-from`                     | `rsync` wrapper for synchronizing directories  |
 | `reencode-opx-video`            | reencodes videos with `ffmpeg` to save space   |
 | `rename-macos-screenshot.py`    | used by MacOS Automator to rename screenshots  |
 | `rotate-opx-video-90cw`         | rotates "OnePlus X" videos with `ffmpeg`       |
