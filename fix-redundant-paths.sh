@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2017 jonasjberg
+# Copyright (c) 2017-2019 jonasjberg
 # This work is free. You can redistribute it and/or modify it under the
 # terms of the Do What The Fuck You Want To Public License, Version 2.
 # See http://www.wtfpl.net/ for more details.
@@ -8,14 +8,11 @@
 set -o noclobber -o nounset -o pipefail -o errexit
 
 
-SELF_BASENAME="$(basename "$0")"
-
 print_usage()
 {
     cat >&2 <<EOF
 
-
-Usage:  ${SELF_BASENAME} [PATH_TO_SEARCH]
+Usage:  "$(basename -- "$0")" [PATH_TO_SEARCH]
 
 Where PATH_TO_SEARCH is the path to an existing file
 or a directory to recursively search for files.
@@ -29,17 +26,17 @@ For instance, given the following paths:
 
     /tmp/redundancy/
     ├── bar
-    │   ├── bar.txt
-    │   ├── baz.txt
-    │   └── foo.txt
+    │   ├── bar.jpg
+    │   ├── baz.tar
+    │   └── foo.csv
     └── foo
         └── foo.txt
 
 Only the last file satisfies the condition; the basename
-of the dirname ("bar") equals the basename of the file
-("bar.txt") _without_ the extension ("bar").
-And the directory "/foo/bar" would be empty after moving
-"/foo/bar/bar.txt" to "/foo/bar.txt".
+of the dirname "foo" equals the file basename "foo.txt"
+_after stripping the extension_, leaving "foo".
+And the directory "/tmp/redundancy/foo" would be empty after
+moving "/redundancy/foo/foo.txt" to "/redundancy/foo/bar.txt".
 
 This would result in the following output:
 
