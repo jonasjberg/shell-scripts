@@ -40,7 +40,7 @@ moving "/redundancy/foo/foo.txt" to "/redundancy/foo/bar.txt".
 
 This would result in the following output:
 
-    # mv -nvi -- "/tmp/redundancy/foo/foo.txt" "/tmp/redundancy" && rmdir -v -- "/tmp/redundancy/foo"
+    # mv -ni -- "/tmp/redundancy/foo/foo.txt" "/tmp/redundancy" && rmdir -- "/tmp/redundancy/foo"
 
 Which, if executed, would result in the following:
 
@@ -79,7 +79,7 @@ find_redundant_basename_dirname()
                 continue
             fi
 
-            printf '# mv -nvi -- "%s" "%s" && rmdir -v -- "%s"\n' "$_abspath" "$_dest" "$_dirname"
+            printf '# mv -ni -- "%s" "%s" && rmdir -- "%s"\n' "$_abspath" "$_dest" "$_dirname"
         fi
     done
 }
