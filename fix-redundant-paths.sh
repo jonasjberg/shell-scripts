@@ -60,10 +60,16 @@ find_redundant_basename_dirname()
 {
     while IFS= read -r -d '' _abspath
     do
-        [ -f "$_abspath" ] || { printf 'Expected a file. Got: "%s"\n' "$_abspath" >&2 ; continue ; }
+        [ -f "$_abspath" ] || {
+            printf 'Expected a file. Got: "%s"\n' "$_abspath" >&2
+            continue
+        }
 
         _dirname="$(dirname -- "$_abspath")"
-        [ -d "$_dirname" ] || { printf 'Expected a directory. Got: "%s"\n' "$_dirname" >&2 ; continue ; }
+        [ -d "$_dirname" ] || {
+            printf 'Expected a directory. Got: "%s"\n' "$_dirname" >&2
+            continue
+        }
 
         _basename="$(basename -- "$_abspath")"
         _basename_no_ext="${_basename%.*}"
@@ -107,10 +113,16 @@ for arg in "$@"
 do
     if [ -d "$arg" ]
     then
-        find_redundant_basename_dirname < <(find "$arg" -xdev -type f -print0 | sort -z | xargs --no-run-if-empty -0 realpath -e -z)
+        find_redundant_basename_dirname < <(
+            find "$arg" -xdev -type f -print0 |
+            sort --zero-terminated |
+            xargs --no-run-if-empty -0 realpath --zero --canonicalize-existing
+        )
     elif [ -f "$arg" ]
     then
-        find_redundant_basename_dirname < <(realpath -e -z -- "$arg")
+        find_redundant_basename_dirname < <(
+            realpath --zero --canonicalize-existing -- "$arg"
+        )
     else
         printf 'Not a file or directory: "%s"\n' "$arg"
     fi
