@@ -103,7 +103,7 @@ EOF
     exit 1
 fi
 
-if [ "$#" -eq "0" ]
+if [ $# -eq 0 ]
 then
     print_usage
     exit 0
@@ -111,6 +111,12 @@ fi
 
 for arg in "$@"
 do
+    if [ ! -e "$arg" ]
+    then
+        printf 'Not a file or directory: "%s"\n' "$arg"
+        continue
+    fi
+
     if [ -d "$arg" ]
     then
         find_redundant_basename_dirname < <(
@@ -123,8 +129,5 @@ do
         find_redundant_basename_dirname < <(
             realpath --zero --canonicalize-existing -- "$arg"
         )
-    else
-        printf 'Not a file or directory: "%s"\n' "$arg"
     fi
 done
-
