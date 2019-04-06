@@ -77,15 +77,14 @@ find_redundant_basename_dirname()
 
         if [ "$_basename_no_ext" == "$_dirbasename" ]
         then
-            _dest="$(dirname -- "$(dirname -- "$_abspath")")"
-
             if [ "$(find "$_dirname" -mindepth 1 -maxdepth 1 | wc -l)" -ne "1" ]
             then
                 # Skip directories containing more than the matched file.
                 continue
             fi
 
-            printf '# mv -ni -- "%s" "%s" && rmdir -- "%s"\n' "$_abspath" "$_dest" "$_dirname"
+            _destpath="$(dirname -- "$(dirname -- "$_abspath")")"
+            printf '# mv -ni -- "%s" "%s" && rmdir -- "%s"\n' "$_abspath" "$_destpath" "$_dirname"
         fi
     done
 }
