@@ -58,33 +58,33 @@ EOF
 
 find_redundant_basename_dirname()
 {
-    while IFS= read -r -d '' _abspath
+    while IFS= read -r -d '' _file_abspath
     do
-        [ -f "$_abspath" ] || {
-            printf 'Expected a file. Got: "%s"\n' "$_abspath" >&2
+        [ -f "$_file_abspath" ] || {
+            printf 'Expected a file. Got: "%s"\n' "$_file_abspath" >&2
             continue
         }
 
-        _dirname="$(dirname -- "$_abspath")"
-        [ -d "$_dirname" ] || {
-            printf 'Expected a directory. Got: "%s"\n' "$_dirname" >&2
+        _file_pardir_abspath="$(dirname -- "$_file_abspath")"
+        [ -d "$_file_pardir_abspath" ] || {
+            printf 'Expected a directory. Got: "%s"\n' "$_file_pardir_abspath" >&2
             continue
         }
 
-        _basename="$(basename -- "$_abspath")"
-        _basename_no_ext="${_basename%.*}"
-        _dirbasename="$(basename -- "$_dirname")"
+        _file_basename="$(basename -- "$_file_abspath")"
+        _file_basename_no_ext="${_file_basename%.*}"
+        _file_pardir_basename="$(basename -- "$_file_pardir_abspath")"
 
-        if [ "$_basename_no_ext" == "$_dirbasename" ]
+        if [ "$_file_basename_no_ext" == "$_file_pardir_basename" ]
         then
-            if [ "$(find "$_dirname" -mindepth 1 -maxdepth 1 | wc -l)" -ne "1" ]
+            if [ "$(find "$_file_pardir_abspath" -mindepth 1 -maxdepth 1 | wc -l)" -ne "1" ]
             then
                 # Skip directories containing more than the matched file.
                 continue
             fi
 
-            _destpath="$(dirname -- "$(dirname -- "$_abspath")")"
-            printf '# mv -ni -- "%s" "%s" && rmdir -- "%s"\n' "$_abspath" "$_destpath" "$_dirname"
+            _destpath="$(dirname -- "$(dirname -- "$_file_abspath")")"
+            printf '# mv -ni -- "%s" "%s" && rmdir -- "%s"\n' "$_file_abspath" "$_destpath" "$_file_pardir_abspath"
         fi
     done
 }
@@ -116,17 +116,19 @@ do
         continue
     fi
 
-    if [ -d "$arg" ]
+    path_arg="$(readlink --canonicalize-existing -- "$arg")"
+
+    if [ -d "$path_arg" ]
     then
         find_redundant_basename_dirname < <(
-            find "$arg" -xdev -type f -print0 |
+            find "$path_arg" -xdev -type f -print0 |
             sort --zero-terminated |
             xargs --no-run-if-empty -0 realpath --zero --canonicalize-existing
         )
-    elif [ -f "$arg" ]
+    elif [ -f "$path_arg" ]
     then
         find_redundant_basename_dirname < <(
-            realpath --zero --canonicalize-existing -- "$arg"
+            realpath --zero --canonicalize-existing -- "$path_arg"
         )
     fi
 done
