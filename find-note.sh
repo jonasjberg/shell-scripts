@@ -28,26 +28,31 @@
 #     The PATTERN query is passed as-is to grep. The search is
 #     case-sensitive only if PATTERN contains a capital letter.
 
+set -o pipefail -o errexit -o nounset -o noclobber
 
-
-# set -x
-set -o pipefail
-
-# Make sure regex comparison works reliably independent of current locale.
 LC_ALL=C
-
-SELF="$(basename "$0")"
-NOTES_PATHS=("${HOME}/Dropbox/txt" "${HOME}/today" "${HOME}/Archive")
+NOTES_PATHS=(
+    ~/Archive
+    ~/Dropbox/txt
+    ~/today
+)
 
 print_usage()
 {
-    printf "\nUSAGE:  ${SELF} [PATTERN]\n\n"
-    printf "A predetermined set of paths are searched for plain text files.\n"
-    printf "Indexed search is required for performance;\n"
-    printf " - Spotlight metadata stores are utilized on Mac OS.\n"
-    printf " - Linux systems use recoll if available.\n\n"
-    printf "The PATTERN query is passed as-is to grep. The search is\n"
-    printf "case-sensitive only if PATTERN contains a capital letter.\n\n"
+    cat << EOF
+
+USAGE:  $(basename -- "$0") [PATTERN]
+
+A predetermined set of paths are searched for plain text files.
+Indexed search is required for performance;
+
+  - Spotlight metadata stores are utilized on Mac OS.
+  - Linux systems use recoll if available.
+
+The PATTERN query is passed as-is to grep. The search is
+case-sensitive only if PATTERN contains a capital letter.
+
+EOF
 }
 
 # Filter files by MIME-type and substitutes newlines with NULL-bytes.
@@ -69,7 +74,7 @@ filter_by_mime_and_zero_terminate()
 # Also does not include markdown files in MacOS Sierra v10.12.4 ..
 spotlight_search()
 {
-    command -v "mdfind" >/dev/null 2>&1 || return
+    command -v mdfind &>/dev/null || return
 
     mdfind -literal "kMDItemTextContent == \"*$**\"cd" | filter_by_mime_and_zero_terminate
 }
@@ -77,14 +82,11 @@ spotlight_search()
 # Use "recoll" for indexed searches under Linux, if available.
 recoll_search()
 {
-    command -v "recoll" >/dev/null 2>&1 || return
+    command -v recoll >/dev/null 2>&1 || return
 
     if results="$(recoll -t -b "$*")"
     then
-        echo "$results" | sed 's%file://%%g' | filter_by_mime_and_zero_terminate
-    else
-        echo "[ERROR] recoll search failed .."
-        return
+        filter_by_mime_and_zero_terminate <<< "${results//file:\/\/}"
     fi
 }
 
@@ -92,9 +94,10 @@ recoll_search()
 # markdown files in MacOS Sierra v10.12.4 ..
 find_markdown_files()
 {
-    for search_path in "${NOTES_PATHS[@]}"
+    for dirpath in "${NOTES_PATHS[@]}"
     do
-        find "$search_path" -xdev -mindepth 1 -type f -name "*.md" -print0
+        [ -d "$dirpath" ] || continue
+        find "$dirpath" -xdev -mindepth 1 -type f -name "*.md" -print0
     done
 }
 
@@ -106,13 +109,18 @@ find_notes()
         darwin*)
             # Concatenate streams, executed sequentially.
             ( spotlight_search "$*" ; find_markdown_files "$*" ; ) ;;
-        linux*)  recoll_search "$*" ;;
-        *) { echo "Unsupported OS; \"${OSTYPE}\" -- Exiting .." ; exit 1 ; } ;;
+
+        linux*)
+            recoll_search "$*" ;;
+
+        *)
+            printf 'Unsupported OS-type "%s" --- Exiting ..\n' "$OSTYPE"
+            exit 1 ;;
     esac
 }
 
 
-if ! man xargs | col -b | grep -- '--no-run-if-empty' >/dev/null 2>&1
+if ! man xargs | col -b | grep -- '--no-run-if-empty' &>/dev/null
 then
     cat >&2 <<EOF
 
@@ -125,23 +133,11 @@ EOF
 fi
 
 # Check arguments and display help text.
-if [ "$#" -eq "0" ]
+if [ $# -eq 0 ]
 then
     print_usage
     exit 1
 fi
-
-# Validate notes paths.
-for note_path in "${NOTES_PATHS[@]}"
-do
-    if [ -d "$note_path" ] && [ -x "$note_path" ]
-    then
-        printf 'Included path: "%s"\n' "$note_path"
-    else
-        printf '[ERROR] Invalid path: "%s"\n' "$note_path"
-        exit 1
-    fi
-done
 
 # Check for capital letters in query, "smart-case" re-implemented, badly.
 _ignorecase='--ignore-case'
@@ -160,8 +156,8 @@ _ignorecase='--ignore-case'
 
 # TODO: Though it it fast enough as-is. Probably should fix the redundancy ..
 
-find_notes "$*" \
-| xargs --no-run-if-empty -0 -P4 grep --color=never ${_ignorecase} -oHE -- ".{0,40}$*.{0,40}" \
-| grep --color=always ${_ignorecase} -E -- "$*"
+find_notes "$*" |
+xargs --no-run-if-empty -0 -P4 grep --color=never ${_ignorecase} -oHE -- ".{0,40}$*.{0,40}" |
+grep --color=always ${_ignorecase} -E -- "$*"
 
 
