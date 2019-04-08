@@ -10,7 +10,7 @@ collection of `*nix` shell-scripts and simple programs.
 Disclaimer
 ----------
 **WARNING:**
-I take no responsability whatsoever for whatever might happen if you decide to
+I take no responsibility whatsoever for whatever might happen if you decide to
 use these scripts, either as is or as modified versions.  You are on your own.
 
 
@@ -45,7 +45,7 @@ Listing
 | `notify`                                | `notify-send` functions                                 |
 | `print_env_path.sh`                     | print entries in `$PATH` separated by `\n`              |
 | `record-desktop.sh`                     | crude desktop video capture                             |
-| `reencode-opx-video`                    | reencodes videos with `ffmpeg` to save space            |
+| `reencode-opx-video`                    | re-encodes videos with `ffmpeg` to save space           |
 | `rename-macos-screenshot.py`            | used by MacOS Automator to rename screenshots           |
 | `rotate-opx-video-90cw`                 | rotates "OnePlus X" videos with `ffmpeg`                |
 | `shrinkpdf.sh`                          | optimize pdf documents to use less disk space           |
@@ -65,4 +65,3 @@ See `LICENSE_GPL.txt` or <http://www.gnu.org/licenses/> for the full license.
 Other files are licensed under the *Do What The Fuck You Want To Public
 License*, Version 2.  See `LICENSE_WTFPL.txt` or <http://www.wtfpl.net/>
 for more details.
-
