@@ -25,7 +25,6 @@ Listing
 | `clipboard-to-file.sh`          | puts the clipboard contents in a file          |
 | `congrep.sh`                    | "context-sensitive" grep options               |
 | `convert-video-to-mp4.sh`       | converts videos to mp4 with `ffmpeg`           |
-| `crop-instagram-screenshot`     | crop images to size                            |
 | `datedelta.py`                  | calculates years, months, days between dates   |
 | `delete-macos-cruft.sh`         | find and delete MacOS junk                     |
 | `exif-rename.sh`                | rename images from exif date/time              |
@@ -35,8 +34,6 @@ Listing
 | `fix-redundant-paths.sh`        | find redundantly named files and directories   |
 | `fix-permissions.sh`            | sets permissions recursively                   |
 | `fix-swedish-chars.sh`          | rename files with "åäöÅÄÖ" in the file names   |
-| `folder-manifest`               | generate txt file with folder info             |
-| `git-backup`                    | recursively find and backup git repos          |
 | `git-clone-username-dest.sh`    | clone git repo to custom destination path      |
 | `git-last-modified.sh`          | list git repository files by modification date |
 | `git-pull-recursively.sh`       | find and update git repos under a preset path  |
@@ -51,13 +48,8 @@ Listing
 | `rotate-opx-video-90cw`         | rotates "OnePlus X" videos with `ffmpeg`       |
 | `shrink-pdf.sh`                 | optimize pdf documents to use less disk space  |
 | `slugify-filename`              | clean up file names                            |
-| `src2tex`                       | convert source code to LaTeX                   |
-| `tex2pdf`                       | convert LaTeX to pdf                           |
-| `timestampdashes`               | rename files to `YYYY-MM-DD_hh-mm-ss.ext`      |
-| `timestampdashes-test`          | unit tests for `timestampdashes`               |
 | `today-dir`                     | creates a daily working directory symlink      |
 | `vinetto_rename.py`             | rename files extracted with "vinetto"          |
-| `vrml2png`                      | generate png previews of vrml 3D models        |
 | `wait-for-net.sh`               | loop and sleep until ping is successful        |
 | `www2png`                       | convert a webpage to a image using `cutycapt`  |
 
