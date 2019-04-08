@@ -2,7 +2,7 @@
 
 #                -~==================================~-
 #                 CONGREP --- "Context-sensitive" grep
-#                    Written by @jonasjberg in 2018
+#                   Written by @jonasjberg 2018-2019
 #                 --~~============================~~--
 #
 #        This work is free.  You can redistribute and/or modify
@@ -10,28 +10,36 @@
 #        Public License. See http://www.wtfpl.net/ for details.
 # ______________________________________________________________________
 #
-# This script looks for a file named $CONFIG_BASENAME (defined below) in
-# the current working directory and uses its contents as grep options.
+# This script looks for a file named $congrep_config_basename in the
+# current working directory and uses its contents as grep options.
+#
+# WARNING:  SECURITY RISK! FILE CONTENTS ARE EVAL'd -- USE WITH CAUTION!
+#
 # If the file is not in the current working directory but this directory
 # is within a git repository, the root directory of the repository is
-# also checked for a $CONFIG_BASENAME file.
+# also checked for a $congrep_config_basename file.
 # Any positional arguments passed to this script are added after any
 # options read from the file.
 # If no file is found, this script effectively acts as a alias for grep.
 #
-# Example usage:
+#
+# Example configuration file contents:
 #
 #   $ cat .local_grep_flags
-#   -ir --color=always --exclude-dir={.git,.idea}
+#   -ir --exclude-dir={.git,.idea}
+#
+# Example invocation:
+#
 #   $ congrep -E 'fo[oO]+'
 #
-# Which runs: 'grep -ir --color=always --exclude-dir={.git,.idea} -E 'fo[oO]+'
-
+# Which would effectively execute:
+#
+#   $ grep -ir --exclude-dir={.git,.idea} -E 'fo[oO]+'
+# ______________________________________________________________________
 
 set -o noclobber -o pipefail -o errexit
 
-SELF_BASENAME="$(basename "$0")"
-CONFIG_BASENAME='.local_grep_flags'
+readonly congrep_config_basename='.congrep_config'
 
 
 declare -a grepflags
@@ -43,10 +51,10 @@ read_flags_from_config_in_cwd()
     #   -t  Remove a trailing newline from each line read.
     #   -n  Copy at most count lines.  If count is 0, all lines are copied.
     #
-    readarray -t -n 1 grepflags < "$CONFIG_BASENAME"
+    readarray -t -n 1 grepflags < "$congrep_config_basename"
 }
 
-has_local_config_in_cwd() { [ -f "$CONFIG_BASENAME" ] ; }
+has_local_config_in_cwd() { [ -f "$congrep_config_basename" ] ; }
 cwd_is_within_git_repository() { git status >/dev/null 2>&1 ; }
 cd_to_git_repository_root() { cd "$(git rev-parse --show-toplevel)" ; }
 
