@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#   exiftooldate          Copyright (C) 2016-2017 Jonas Sjöberg
+#   exiftooldate          Copyright (C) 2016-2018 Jonas Sjöberg
 #   ~~~~~~~~~~~~          https://github.com/jonasjberg
 #                         http://www.jonasjberg.com
 #
@@ -21,29 +21,38 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+readonly self_basename="$(basename -- "$0")"
 
-if ! command -v "exiftool" >/dev/null 2>&1
+
+if ! command -v exiftool &>/dev/null
 then
-    printf "This script requires \"exiftool\" to run.\n"
+    printf '%s Missing required executable "exiftool" ..\n' "$self_basename"
     exit 127
 fi
 
-if [ "$#" -eq "0" ]
+if [ $# -eq 0 ]
 then
-    printf "Usage: $(basename "$0") [FILE]..\n"
+    printf 'Usage: %s [FILE]...\n' "$self_basename"
     exit 1
 fi
 
+
+declare -i exitcode
+
 for arg in "$@"
 do
-    [ -e "$arg" ] || continue
     [ -r "$arg" ] || continue
     [ -d "$arg" ] && continue
 
-    printf '\nExtracted date/time-information for: "%s"\n' "$arg"
-    exiftool -short -e -a -G1 "-*date*" "-*year*" "$arg" \
-    | awk '{printf "%-15.15s %20.20s %-s %-s %s\n", $1, $2, $3, $4, $5}'
+    printf '\nExtracted date/time-information for "%s":\n' "$arg"
+
+    if exiftool_stdout="$(exiftool -short -duplicates -groupNames1 "-*date*" "-*year*" "$arg")"
+    then
+        awk '{printf "%-15.15s %20.20s %-s %-s %s\n", $1, $2, $3, $4, $5}' <<< "$exiftool_stdout"
+    else
+        exitcode=1
+    fi
 done
 
-exit $?
 
+exit $exitcode
