@@ -30,9 +30,10 @@ Listing
 | `exif-rename.sh`                | rename images from exif date/time              |
 | `exiftooldate.sh`               | display date/time-information using `exiftool` |
 | `expand_wordlist_encodings.sh`  | generates wordlists with different encodings   |
+| `find-note.sh`                  | combined grep with indexed search              |
 | `find_most_recently_modified_videos.sh` | find videos and sort by modify date            |
-| `fix-redundant-paths.sh`        | find redundantly named files and directories   |
 | `fix-permissions.sh`            | sets permissions recursively                   |
+| `fix-redundant-paths.sh`        | find redundantly named files and directories   |
 | `fix-swedish-chars.sh`          | rename files with "åäöÅÄÖ" in the file names   |
 | `git-clone-username-dest.sh`    | clone git repo to custom destination path      |
 | `git-last-modified.sh`          | list git repository files by modification date |
@@ -43,11 +44,13 @@ Listing
 | `markdowntoprettypdf.sh`        | `pandoc` wrapper with my favorite settings     |
 | `notify`                        | `notify-send` functions                        |
 | `prettyprintPATH`               | print entries in `$PATH` separated by `\n`     |
+| `record-desktop.sh`             | crude desktop video capture                    |
 | `reencode-opx-video`            | reencodes videos with `ffmpeg` to save space   |
 | `rename-macos-screenshot.py`    | used by MacOS Automator to rename screenshots  |
 | `rotate-opx-video-90cw`         | rotates "OnePlus X" videos with `ffmpeg`       |
-| `shrink-pdf.sh`                 | optimize pdf documents to use less disk space  |
+| `shrinkpdf.sh`                  | optimize pdf documents to use less disk space  |
 | `slugify-filename`              | clean up file names                            |
+| `timestamped-tarball.sh`        | creates `tar.lzma` archives with timestamped file names |
 | `today-dir`                     | creates a daily working directory symlink      |
 | `vinetto_rename.py`             | rename files extracted with "vinetto"          |
 | `wait-for-net.sh`               | loop and sleep until ping is successful        |
