@@ -43,7 +43,7 @@ Listing
 | `markdownify-telegram-log.py`           | reformat telegram messenger log file                    |
 | `markdowntoprettypdf.sh`                | `pandoc` wrapper with my favorite settings              |
 | `notify`                                | `notify-send` functions                                 |
-| `prettyprintPATH`                       | print entries in `$PATH` separated by `\n`              |
+| `print_env_path.sh`                     | print entries in `$PATH` separated by `\n`              |
 | `record-desktop.sh`                     | crude desktop video capture                             |
 | `reencode-opx-video`                    | reencodes videos with `ffmpeg` to save space            |
 | `rename-macos-screenshot.py`            | used by MacOS Automator to rename screenshots           |
