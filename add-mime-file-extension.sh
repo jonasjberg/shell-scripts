@@ -117,6 +117,10 @@ add_extension_from_mime()
 
     local _dest_filepath="${_filepath}.${_ext}"
 
+    # Ugly undoing of not removing alreadya present, incorrect extension
+    # before adding on a new extension ..
+    _dest_filepath="${_dest_filepath/.jpg.png/.png}"
+
     if [ "$option_dry_run" = 'true' ]
     then
         printf 'Would have renamed "%s" to "%s"\n' "$_filepath" "$_dest_filepath"
