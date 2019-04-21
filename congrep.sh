@@ -74,8 +74,8 @@ fi
 if [ -n "$grepflags" ]
 then
     # Prevent expansion of metacharacters like '{' by running with eval.
-    eval grep "${grepflags[@]}" "$@"
+    eval command grep "${grepflags[@]}" "$@"
 else
     # Direct pass-through.
-    grep "$@"
+    command grep "$@"
 fi
