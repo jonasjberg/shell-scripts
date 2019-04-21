@@ -55,7 +55,7 @@ read_flags_from_config_in_cwd()
 }
 
 has_local_config_in_cwd() { [ -f "$congrep_config_basename" ] ; }
-cwd_is_within_git_repository() { git status >/dev/null 2>&1 ; }
+cwd_is_within_git_repository() { git status &>/dev/null ; }
 cd_to_git_repository_root() { cd "$(git rev-parse --show-toplevel)" ; }
 
 
