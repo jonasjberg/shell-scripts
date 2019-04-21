@@ -64,8 +64,11 @@ then
     read_flags_from_config_in_cwd
 elif cwd_is_within_git_repository
 then
-    cd_to_git_repository_root && has_local_config_in_cwd \
-        && read_flags_from_config_in_cwd && cd - >/dev/null
+    if cd_to_git_repository_root
+    then
+        has_local_config_in_cwd && read_flags_from_config_in_cwd
+        cd - >/dev/null
+    fi
 fi
 
 if [ -n "$grepflags" ]
