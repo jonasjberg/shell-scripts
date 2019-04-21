@@ -54,6 +54,7 @@ read_flags_from_config_in_cwd()
     readarray -t -n 1 grepflags < "$congrep_config_basename"
 }
 
+has_git_executable="$(command -v git &>/dev/null)"
 has_local_config_in_cwd() { [ -f "$congrep_config_basename" ] ; }
 cwd_is_within_git_repository() { git status &>/dev/null ; }
 cd_to_git_repository_root() { cd "$(git rev-parse --show-toplevel)" ; }
@@ -62,7 +63,7 @@ cd_to_git_repository_root() { cd "$(git rev-parse --show-toplevel)" ; }
 if has_local_config_in_cwd
 then
     read_flags_from_config_in_cwd
-elif cwd_is_within_git_repository
+elif has_git_executable && cwd_is_within_git_repository
 then
     if cd_to_git_repository_root
     then
