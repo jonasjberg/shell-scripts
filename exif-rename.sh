@@ -81,7 +81,7 @@ print_usage_info()
 
 "${PROGNAME}"  --  rename files using exiftool
 
-  USAGE:  $PROGNAME [-d] [-h] [-v] [-w] [FILE...]"
+  USAGE:  $PROGNAME [-d] [-h] [-v] [-w] [FILE...]
 
   OPTIONS:  -d   Enable printing debug information.
             -h   Display usage information and exit.
