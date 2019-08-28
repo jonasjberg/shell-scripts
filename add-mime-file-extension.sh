@@ -117,9 +117,10 @@ add_extension_from_mime()
 
     local _dest_filepath="${_filepath}.${_ext}"
 
-    # Ugly undoing of not removing alreadya present, incorrect extension
-    # before adding on a new extension ..
+    # TODO: Remove current incorrect extension before adding the new extension.
+    _dest_filepath="${_dest_filepath/.jpeg.png/.png}"
     _dest_filepath="${_dest_filepath/.jpg.png/.png}"
+    _dest_filepath="${_dest_filepath/.png.jpg/.jpg}"
 
     if [ "$option_dry_run" = 'true' ]
     then
