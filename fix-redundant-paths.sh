@@ -27,8 +27,7 @@ For instance, given the following paths:
     /tmp/redundancy/
     ├── bar
     │   ├── bar.jpg
-    │   ├── baz.tar
-    │   └── foo.csv
+    │   └── foo.tar
     └── foo
         └── foo.txt
 
@@ -36,7 +35,7 @@ Only the last file satisfies the condition; the basename
 of the dirname "foo" equals the file basename "foo.txt"
 _after stripping the extension_, leaving "foo".
 And the directory "/tmp/redundancy/foo" would be empty after
-moving "/redundancy/foo/foo.txt" to "/redundancy/foo/bar.txt".
+moving "/redundancy/foo/foo.txt" to "/redundancy/foo.txt".
 
 This would result in the following output:
 
@@ -46,9 +45,8 @@ Which, if executed, would result in the following:
 
     /tmp/redundancy/
     ├── bar
-    │   ├── bar.txt
-    │   ├── baz.txt
-    │   └── foo.txt
+    │   ├── bar.jpg
+    │   └── foo.tar
     └── foo.txt
 
 NOTE:  Nothing is written to disk! Commands are printed to stdout.
