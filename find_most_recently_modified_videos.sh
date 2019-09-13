@@ -9,9 +9,9 @@ set -o nounset -o errexit -o pipefail -o noclobber
 
 if [ $# -eq 0 ]
 then
-    cat <<EOF 2>&2
+    cat <<EOF >&2
 
-    Usage:  $(basename -- "${BASH_SOURCE[1]}") [DIRPATH]...
+    Usage:  $(basename -- "${BASH_SOURCE[0]}") [DIRPATH]...
 
     Searches one or more directory paths recursively for video
     files as determined by the MIME-type AND the extension for
