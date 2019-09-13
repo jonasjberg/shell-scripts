@@ -120,6 +120,7 @@ add_extension_from_mime()
     local _dest_filepath="${_filepath}.${_ext}"
 
     # TODO: Remove current incorrect extension before adding the new extension.
+    _dest_filepath="${_dest_filepath/.jpeg.jpg/.jpg}"
     _dest_filepath="${_dest_filepath/.jpeg.png/.png}"
     _dest_filepath="${_dest_filepath/.jpg.png/.png}"
     _dest_filepath="${_dest_filepath/.png.jpg/.jpg}"
