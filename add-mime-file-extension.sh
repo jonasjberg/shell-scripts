@@ -55,6 +55,8 @@ add_extension_from_mime()
     fi
 
     case "$_filepath_mimetype" in
+        inode/directory) return 0 ;;
+
         application/CDFV2) _ext='db' ;;
         audio/x-flac) _ext='flac' ;;
         audio/mpeg) _ext='mp3' ;;
