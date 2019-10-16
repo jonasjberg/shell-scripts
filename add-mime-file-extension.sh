@@ -79,6 +79,7 @@ add_extension_from_mime()
         image/jpeg) _ext='jpg' ;;
         image/gif) _ext='gif' ;;
         image/tiff) _ext='tif' ;;
+        image/webp) _ext='webp' ;;
         image/x-ico) _ext='ico' ;;
         image/x-ms-bmp) _ext='bmp' ;;
 
