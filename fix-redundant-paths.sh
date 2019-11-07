@@ -69,20 +69,24 @@ sanitycheck_fail()
 
 find_redundant_basename_dirname()
 {
+    local _filepath
 
     while IFS= read -r -d '' _filepath
     do
         [ -f "$_filepath" ] || sanitycheck_fail
 
+        local _parent_dirpath
         _parent_dirpath="$(dirname -- "$_filepath")"
         [ -d "$_parent_dirpath" ] || sanitycheck_fail
 
         # Normalize the file basename by stripping the file extension and making it lower-case.
         _file_basename="$(basename -- "$_filepath")"
+        local _normalized_filename
         _normalized_filename="$(tr '[:upper:]' '[:lower:]' <<< ${_file_basename%.*})"
         unset _file_basename
 
         # Normalize the parent directory basename by making it lower-case.
+        local _normalized_parent_directory_basename
         _normalized_parent_directory_basename="$(
             basename -- "$_parent_dirpath" | tr '[:upper:]' '[:lower:]'
         )"
@@ -95,6 +99,7 @@ find_redundant_basename_dirname()
                 continue
             fi
 
+            local _destpath
             _destpath="$(dirname -- "$_parent_dirpath")"
             printf '# mv -ni -- "%s" "%s" && rmdir -- "%s"\n' "$_filepath" "$_destpath" "$_parent_dirpath"
         fi
