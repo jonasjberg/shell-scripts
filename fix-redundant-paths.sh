@@ -109,25 +109,23 @@ fi
 
 for arg in "$@"
 do
-    if [ ! -e "$arg" ]
+    if ! existing_abspath="$(readlink --canonicalize-existing -- "$arg")"
     then
         printf 'Not a file or directory: "%s"\n' "$arg"
         continue
     fi
 
-    path_arg="$(readlink --canonicalize-existing -- "$arg")"
-
-    if [ -d "$path_arg" ]
+    if [ -d "$existing_abspath" ]
     then
         find_redundant_basename_dirname < <(
-            find "$path_arg" -xdev -type f -print0 |
+            find "$existing_abspath" -xdev -type f -print0 |
             sort --zero-terminated |
             xargs --no-run-if-empty -0 realpath --zero --canonicalize-existing
         )
-    elif [ -f "$path_arg" ]
+    elif [ -f "$existing_abspath" ]
     then
         find_redundant_basename_dirname < <(
-            realpath --zero --canonicalize-existing -- "$path_arg"
+            realpath --zero --canonicalize-existing -- "$existing_abspath"
         )
     fi
 done
