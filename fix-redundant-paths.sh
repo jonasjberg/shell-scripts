@@ -16,8 +16,9 @@ Usage:  "$(basename -- "$0")" [PATH_TO_SEARCH]
 
 Where PATH_TO_SEARCH is the path to an existing file
 or a directory to recursively search for files.
-Files whose basename (without any extension) equals the
-basename of the parent directory are considered "matches".
+Files whose basename (without any extension, lower-cased)
+equals the basename of the parent directory (lower-cased)
+are considered "matches" to be fixed.
 
 Commented shell commands that would rectify the situation is
 printed for every "matched" file _if_ the matched directory
@@ -70,11 +71,17 @@ find_redundant_basename_dirname()
             continue
         }
 
+        # Normalize the file basename by stripping the file extension and making it lower-case.
         _file_basename="$(basename -- "$_file_abspath")"
-        _file_basename_no_ext="${_file_basename%.*}"
-        _file_pardir_basename="$(basename -- "$_file_pardir_abspath")"
+        _normalized_file_basename="$(tr '[:upper:]' '[:lower:]' <<< ${_file_basename%.*})"
+        unset _file_basename
 
-        if [ "$_file_basename_no_ext" == "$_file_pardir_basename" ]
+        # Normalize the parent directory basename by making it lower-case.
+        _file_pardir_basename="$(basename -- "$_file_pardir_abspath")"
+        _normalized_file_pardir_basename="$(tr '[:upper:]' '[:lower:]' <<< $_file_pardir_basename)"
+        unset _file_pardir_basename
+
+        if [ "$_normalized_file_basename" == "$_normalized_file_pardir_basename" ]
         then
             if [ "$(find "$_file_pardir_abspath" -mindepth 1 -maxdepth 1 | wc -l)" -ne "1" ]
             then
