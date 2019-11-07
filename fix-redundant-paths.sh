@@ -69,33 +69,34 @@ sanitycheck_fail()
 
 find_redundant_basename_dirname()
 {
-    while IFS= read -r -d '' _file_abspath
-    do
-        [ -f "$_file_abspath" ] || sanitycheck_fail
 
-        _file_pardir_abspath="$(dirname -- "$_file_abspath")"
-        [ -d "$_file_pardir_abspath" ] || sanitycheck_fail
+    while IFS= read -r -d '' _filepath
+    do
+        [ -f "$_filepath" ] || sanitycheck_fail
+
+        _parent_dirpath="$(dirname -- "$_filepath")"
+        [ -d "$_parent_dirpath" ] || sanitycheck_fail
 
         # Normalize the file basename by stripping the file extension and making it lower-case.
-        _file_basename="$(basename -- "$_file_abspath")"
-        _normalized_file_basename="$(tr '[:upper:]' '[:lower:]' <<< ${_file_basename%.*})"
+        _file_basename="$(basename -- "$_filepath")"
+        _normalized_filename="$(tr '[:upper:]' '[:lower:]' <<< ${_file_basename%.*})"
         unset _file_basename
 
         # Normalize the parent directory basename by making it lower-case.
-        _file_pardir_basename="$(basename -- "$_file_pardir_abspath")"
-        _normalized_file_pardir_basename="$(tr '[:upper:]' '[:lower:]' <<< $_file_pardir_basename)"
-        unset _file_pardir_basename
+        _normalized_parent_directory_basename="$(
+            basename -- "$_parent_dirpath" | tr '[:upper:]' '[:lower:]'
+        )"
 
-        if [ "$_normalized_file_basename" == "$_normalized_file_pardir_basename" ]
+        if [ "$_normalized_filename" == "$_normalized_parent_directory_basename" ]
         then
-            if [ "$(find "$_file_pardir_abspath" -mindepth 1 -maxdepth 1 | wc -l)" -ne "1" ]
+            if [ "$(find "$_parent_dirpath" -mindepth 1 -maxdepth 1 | wc -l)" -ne "1" ]
             then
                 # Skip directories containing more than the matched file.
                 continue
             fi
 
-            _destpath="$(dirname -- "$_file_pardir_abspath")"
-            printf '# mv -ni -- "%s" "%s" && rmdir -- "%s"\n' "$_file_abspath" "$_destpath" "$_file_pardir_abspath"
+            _destpath="$(dirname -- "$_parent_dirpath")"
+            printf '# mv -ni -- "%s" "%s" && rmdir -- "%s"\n' "$_filepath" "$_destpath" "$_parent_dirpath"
         fi
     done
 }
