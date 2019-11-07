@@ -39,7 +39,8 @@ moving "/redundancy/foo/foo.txt" to "/redundancy/foo.txt".
 
 This would result in the following output:
 
-    # mv -ni -- "/tmp/redundancy/foo/foo.txt" "/tmp/redundancy" && rmdir -- "/tmp/redundancy/foo"
+    # mv -ni -- "/tmp/redundancy/foo/foo.txt" "/tmp/redundancy" &&
+        rmdir -- "/tmp/redundancy/foo"
 
 Which, if executed, would result in the following:
 
