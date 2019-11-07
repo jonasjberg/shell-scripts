@@ -89,7 +89,7 @@ find_redundant_basename_dirname()
                 continue
             fi
 
-            _destpath="$(dirname -- "$(dirname -- "$_file_abspath")")"
+            _destpath="$(dirname -- "$_file_pardir_abspath")"
             printf '# mv -ni -- "%s" "%s" && rmdir -- "%s"\n' "$_file_abspath" "$_destpath" "$_file_pardir_abspath"
         fi
     done
