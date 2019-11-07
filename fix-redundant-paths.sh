@@ -89,18 +89,6 @@ find_redundant_basename_dirname()
 }
 
 
-if ! man xargs | col -b | grep -- '--no-run-if-empty' >/dev/null 2>&1
-then
-    cat >&2 <<EOF
-
-  WARNING:  This script requires a version of xargs that implements
-            the GNU extension option '-r', '--no-run-if-empty'.
-            Aborting ..                      (TODO: Add workaround)
-
-EOF
-    exit 1
-fi
-
 if [ $# -eq 0 ]
 then
     print_usage
@@ -119,13 +107,10 @@ do
     then
         find_redundant_basename_dirname < <(
             find "$existing_abspath" -xdev -type f -print0 |
-            sort --zero-terminated |
-            xargs --no-run-if-empty -0 realpath --zero --canonicalize-existing
+            sort --zero-terminated
         )
     elif [ -f "$existing_abspath" ]
     then
-        find_redundant_basename_dirname < <(
-            realpath --zero --canonicalize-existing -- "$existing_abspath"
-        )
+        printf '%s\0' "$existing_abspath" | find_redundant_basename_dirname
     fi
 done
