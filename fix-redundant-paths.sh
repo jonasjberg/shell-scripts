@@ -7,6 +7,8 @@
 
 set -o noclobber -o nounset -o pipefail -o errexit
 
+readonly EXITSTATUS_INTERNAL_ERROR=70
+
 
 print_usage()
 {
@@ -59,20 +61,20 @@ EOF
 # TODO: Write to disk!
 }
 
+sanitycheck_fail()
+{
+    printf 'FAILED SANITY-CHECK --- This is a bug! Aborting..\n' >&2
+    exit $EXITSTATUS_INTERNAL_ERROR
+}
+
 find_redundant_basename_dirname()
 {
     while IFS= read -r -d '' _file_abspath
     do
-        [ -f "$_file_abspath" ] || {
-            printf 'Expected a file. Got: "%s"\n' "$_file_abspath" >&2
-            continue
-        }
+        [ -f "$_file_abspath" ] || sanitycheck_fail
 
         _file_pardir_abspath="$(dirname -- "$_file_abspath")"
-        [ -d "$_file_pardir_abspath" ] || {
-            printf 'Expected a directory. Got: "%s"\n' "$_file_pardir_abspath" >&2
-            continue
-        }
+        [ -d "$_file_pardir_abspath" ] || sanitycheck_fail
 
         # Normalize the file basename by stripping the file extension and making it lower-case.
         _file_basename="$(basename -- "$_file_abspath")"
