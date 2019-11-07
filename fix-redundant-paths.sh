@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2017-2019 jonasjberg
+# Copyright(c)2017-2019 <jonas@jonasjberg.com>
 # This work is free. You can redistribute it and/or modify it under the
 # terms of the Do What The Fuck You Want To Public License, Version 2.
 # See http://www.wtfpl.net/ for more details.
@@ -10,50 +10,53 @@ set -o noclobber -o nounset -o pipefail -o errexit
 
 print_usage()
 {
-    cat >&2 <<EOF
+    command cat <<EOF
 
-Usage:  "$(basename -- "$0")" [PATH_TO_SEARCH]
+Usage:  "$(basename -- "$0")" [PATH]...
 
-Where PATH_TO_SEARCH is the path to an existing file
-or a directory to recursively search for files.
-Files whose basename (without any extension, lower-cased)
-equals the basename of the parent directory (lower-cased)
-are considered "matches" to be fixed.
+Where PATH is one or more paths to files or directories.
+Directories are recursively searched for files to process.
 
-Commented shell commands that would rectify the situation is
-printed for every "matched" file _if_ the matched directory
-only contains a single file.
-For instance, given the following paths:
+Processing starts with finding "matches" to be "fixed" by testing
+if the file basename (lower-cased, without extension) is the same
+as the basename of the parent directory (lower-cased).
+If there are additional files stored in the same directory as the
+file, the file is skipped and no longer considered a match.
 
-    /tmp/redundancy/
+For instance, if the following paths was processed;
+
+    /tmp/
     ├── bar
     │   ├── bar.jpg
     │   └── foo.tar
     └── foo
         └── foo.txt
 
-Only the last file satisfies the condition; the basename
-of the dirname "foo" equals the file basename "foo.txt"
+Only the last file "foo.txt" is considered a match. The basename
+of the parent directory "foo" equals the file basename "foo.txt"
 _after stripping the extension_, leaving "foo".
-And the directory "/tmp/redundancy/foo" would be empty after
-moving "/redundancy/foo/foo.txt" to "/redundancy/foo.txt".
+Also, the parent directory "/tmp/foo" contains only a single file
+and would be left empty after having moved "/tmp/foo/foo.txt" to
+"/tmp/foo.txt".
 
-This would result in the following output:
+Finally, commented shell commands to rectify the situation are
+written to stdout:
 
-    # mv -ni -- "/tmp/redundancy/foo/foo.txt" "/tmp/redundancy" &&
-        rmdir -- "/tmp/redundancy/foo"
+    # mv -ni -- "/tmp/foo/foo.txt" "/tmp/" && rmdir -- "/tmp/foo"
 
 Which, if executed, would result in the following:
 
-    /tmp/redundancy/
+    /tmp/
     ├── bar
     │   ├── bar.jpg
     │   └── foo.tar
     └── foo.txt
 
-NOTE:  Nothing is written to disk! Commands are printed to stdout.
+
+NOTE: Nothing is written to disk!
 
 EOF
+# TODO: Write to disk!
 }
 
 find_redundant_basename_dirname()
