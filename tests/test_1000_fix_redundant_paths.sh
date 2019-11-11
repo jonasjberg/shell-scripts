@@ -28,13 +28,13 @@ tlib.testcase_end
 
 
 tlib.testcase_begin 'Smoke-tests'
-    tlib.assert_success 'Exists successfully when not passed any arguments' '
+    tlib.assert_success 'Exits successfully when not passed any arguments' '
         "$dut_filepath"
     '
-    tlib.assert_success 'Exists successfully when passed non-existant arguments' '
+    tlib.assert_success 'Exits successfully when passed non-existant arguments' '
         "$dut_filepath" -h
     '
-    tlib.assert_success 'Exists successfully when passed non-existant arguments' '
+    tlib.assert_success 'Exits successfully when passed non-existant arguments' '
         "$dut_filepath" --help
     '
 tlib.testcase_end
