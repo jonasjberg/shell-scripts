@@ -45,13 +45,13 @@ _on_assertion_failure()
 _msg_failed()
 {
     [ "$1" = 'SUPPRESS' ] && return
-    printf "${COLOR_RED}FAIL:${COLOR_RESET} %s\n" "$*"
+    printf '%sFAIL:%s %s\n' "$COLOR_RED" "$COLOR_RESET" "$*"
 }
 
 _msg_passed()
 {
     [ "$1" = 'SUPPRESS' ] && return
-    printf "${COLOR_GREEN}PASS:${COLOR_RESET} %s\n" "$*"
+    printf '%sPASS:%s %s\n' "$COLOR_GREEN" "$COLOR_RESET" "$*"
 }
 
 _print_traceback()
