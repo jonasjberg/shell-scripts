@@ -42,35 +42,35 @@ UseColor='--color=auto'
 #UseColor='--color=never'
 
 if [ -f "$ConGrep" ] && [ -r "$ConGrep" ]; then
-	GetFlags(){
-		awk -SP '
-			{
-				if(NR!~/^#+/){
-					sub(/#+.*$/, "")
-					for(FC=1; FC<=NF; FC++){
-						if($FC~/^-.*$/){
-							printf("%s ", $FC)
-						}
-					}
-				}
-			}
-		' "$1"
-	}
+    GetFlags(){
+        awk -SP '
+            {
+                if(NR!~/^#+/){
+                    sub(/#+.*$/, "")
+                    for(FC=1; FC<=NF; FC++){
+                        if($FC~/^-.*$/){
+                            printf("%s ", $FC)
+                        }
+                    }
+                }
+            }
+        ' "$1"
+    }
 
-	if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-		TopLVL=`git rev-parse --show-toplevel 2>&-`
+    if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+        TopLVL=`git rev-parse --show-toplevel 2>&-`
 
-		if [ -n "$TopLVL" ]; then
-			eval grep $UseColor `GetFlags "$TopLVL/$ConGrep"` "$@"
-			exit $?
-		else
-			exit 7
-		fi
-	else
-		eval grep $UseColor `GetFlags "$ConGrep"` "$@"
-		exit $?
-	fi
+        if [ -n "$TopLVL" ]; then
+            eval grep $UseColor `GetFlags "$TopLVL/$ConGrep"` "$@"
+            exit $?
+        else
+            exit 7
+        fi
+    else
+        eval grep $UseColor `GetFlags "$ConGrep"` "$@"
+        exit $?
+    fi
 else
-	grep $UseColor "$@"
-	exit $?
+    grep $UseColor "$@"
+    exit $?
 fi
