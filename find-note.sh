@@ -63,7 +63,7 @@ filter_by_mime_and_zero_terminate()
         [ -n "$f" ] || continue
         [ -f "$f" ] || continue
 
-        case "$(file --mime-type --brief -- "$f")" in
+        case $(file --mime-type --brief -- "$f") in
             text/plain) echo "$f" ;;
             *) continue ;;
         esac
@@ -105,7 +105,7 @@ find_markdown_files()
 # Takes any number of arguments as the search query.
 find_notes()
 {
-    case "$OSTYPE" in
+    case $OSTYPE in
         darwin*)
             # Concatenate streams, executed sequentially.
             ( spotlight_search "$*" ; find_markdown_files "$*" ; ) ;;
@@ -114,13 +114,13 @@ find_notes()
             recoll_search "$*" ;;
 
         *)
-            printf 'Unsupported OS-type "%s" --- Exiting ..\n' "$OSTYPE"
+            printf 'Unsupported OS-type "%s" --- Exiting ..\n' "$OSTYPE" >&2
             exit 1 ;;
     esac
 }
 
 
-if ! man xargs | col -b | grep -- '--no-run-if-empty' &>/dev/null
+if ! xargs --help | grep -q -- '--no-run-if-empty'
 then
     cat >&2 <<EOF
 
