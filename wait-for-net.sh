@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ POLL_WAIT_SECS=3
 
 while true
 do
-    ping -q -c 1 "$ARBITRARY_SERVER" &>/dev/null \
-    && break || sleep "$POLL_WAIT_SECS"
+    ping -q -c 1 "$ARBITRARY_SERVER" >/dev/null 2>&1 && break
+    sleep "$POLL_WAIT_SECS"
 done
 
