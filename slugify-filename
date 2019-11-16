@@ -11,7 +11,7 @@
 # I use dashes instead of spaces and underlines for "field" separation.
 # For instance: "an-artist_01_a-track.mp3"
 # This script also does some substitutions, like replacing
-# '@' with 'AT', '&' with 'and', 'C++' with 'Cplusplus', etc.
+# '@' with 'AT', '&' with 'and', 'C++' with 'CPP', etc.
 #_______________________________________________________________________________
 #
 # This program is free software: you can redistribute it and/or modify
