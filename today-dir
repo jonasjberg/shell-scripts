@@ -26,7 +26,7 @@ msg()
 
 # Base directory where everything is stored.
 archive_dir="${HOME}/Archive"
-[ ! -d "$archive_dir" ] && mkdir -vp "$archive_dir"
+[ -d "$archive_dir" ] || mkdir -vp "$archive_dir"
 
 # Create todays directory if it does not exist already.
 todays_date="$(date +%F)"
@@ -55,7 +55,7 @@ then
 fi
 
 # Create a new symlink if path does not already exist or is a (dead) symlink.
-if [ ! -e "$link_path" -a ! -h "$link_path" ]
+if [ ! -e "$link_path" ] && [ ! -h "$link_path" ]
 then
     ln -vs -- "$today_dir" "$link_path"
 else
