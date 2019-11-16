@@ -93,4 +93,3 @@ wiki_dest="${repo_dest/.git/_wiki.git}"
 wiki_dest="$(basename -- "$wiki_dest")"
 git_clone_no_clobber "$wiki_url" "$wiki_dest"
 
-exit $?
