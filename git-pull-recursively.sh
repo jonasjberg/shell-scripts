@@ -27,10 +27,10 @@ COLRESET="$(tput sgr0)"
 SELF_DIRNAME="$(realpath -e -- "$(dirname -- "$0")")"
 IGNORE_LIST_PATH="${SELF_DIRNAME}/${IGNORE_LIST_BASENAME}"
 
-count_skipped=0
-count_failed=0
-count_total=0
-count_success=0
+declare -i count_skipped=0
+declare -i count_failed=0
+declare -i count_total=0
+declare -i count_success=0
 
 
 log_colorlabel()
@@ -56,19 +56,19 @@ log_warn()
 log_skip()
 {
     log_warn "$*"
-    count_skipped="$((count_skipped + 1))"
+    count_skipped+=1
 }
 
 log_fail()
 {
     log_colorlabel "$COLRED" 'FAILURE' "$*"
-    count_failed="$((count_failed + 1))"
+    count_failed+=1
 }
 
 log_ok()
 {
     log_colorlabel "$COLGREEN" 'SUCCESS' "$*"
-    count_success="$((count_success + 1))"
+    count_success+=1
 }
 
 
@@ -85,7 +85,7 @@ START_DIR="$(pwd)"
 
 while IFS= read -r -d '' repo
 do
-    count_total="$((count_total + 1))"
+    count_total+=1
 
     _repo_dir="$(realpath -- "${repo}/..")"
     if ! cd "${_repo_dir}"
