@@ -1,18 +1,16 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 
 if ! command -v ffmpeg >/dev/null 2>&1; then
-    echo "Required program ffmpeg is not available. Exiting." 2>&1
+    echo "Dependency 'ffmpeg' not met." >&2
+    exit 1
+elif ! command -v xdpyinfo >/dev/null 2>&1; then
+    echo "Dependency 'xdpyinfo' not met." >&2
     exit 1
 fi
 
-if ! command -v xdpyinfo >/dev/null 2>&1; then
-    echo "Required program xdpyinfo is not available. Exiting." 2>&1
-    exit 1
-fi
-
-
-ffmpeg -video_size "$(xdpyinfo | grep 'dimensions:'|awk '{print $2}')" \
-       -framerate 25 -f x11grab -i :0.0 -f pulse -ac 2 -i default      \
-       "screencapture_$(date "+%FT%H%M%S").mkv"
+printf -v FileName "screencapture_%(%FT%X)T.mkv" -1
+ScrRes(){ awk '{if(/dimensions:/){printf("%s ", $2)}}' <<< "$(xdpyinfo)"; }
+ffmpeg -loglevel 16 -video_size "$ScrRes" -framerate 25 -f x11grab\
+	-i "${DISPLAY:-:0.0}" -f pulse -ac 2 -i default "$FileName"
 
