@@ -21,8 +21,7 @@ VERBOSE=1
 msg()
 {
     [ "$VERBOSE" -lt "1" ] && return
-    local timestamp="$(date +%FT%M:%M:%S)"
-    printf '%s [%s] %s\n' "$timestamp" "$(basename $0)" "$*"
+    printf '%(%FT%X)T [%s] %s\n' -1 "${0##*/}" "$*"
 }
 
 # Base directory where everything is stored.
