@@ -55,7 +55,7 @@ case-sensitive only if PATTERN contains a capital letter.
 EOF
 }
 
-# Filter files by MIME-type and substitutes newlines with NULL-bytes.
+# Filter files by MIME-type and translate newlines to NULL-bytes.
 filter_by_mime_and_zero_terminate()
 {
     while IFS='\n' read -r f
@@ -67,7 +67,7 @@ filter_by_mime_and_zero_terminate()
             text/plain) echo "$f" ;;
             *) continue ;;
         esac
-    done | perl -p -e 's/\n/\0/;'
+    done | tr '\n' '\0'
 }
 
 # Indexed search is required for real performance. But, Mac OS only.
