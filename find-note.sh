@@ -41,7 +41,7 @@ print_usage()
 {
     cat << EOF
 
-USAGE:  $(basename -- "$0") [PATTERN]
+USAGE:  ${0##*/} [PATTERN]
 
 A predetermined set of paths are searched for plain text files.
 Indexed search is required for performance;
