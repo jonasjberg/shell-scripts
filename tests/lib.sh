@@ -37,7 +37,7 @@ _on_assertion_failure()
 {
     local _fail_filename="${BASH_SOURCE[2]}"
     local _fail_linenumber="${BASH_LINENO[1]}"
-    printf '\n\n%sASSERTION FAILED%s in file:line %s:%s\n' \
+    printf '\n\n%sASSERTION FAILED%s at file:line %s:%s\n' \
         "$COLOR_RED" "$COLOR_RESET" "$_fail_filename" "$_fail_linenumber"
     exit $EXITSTATUS_TESTRESULT_FAIL
 }
