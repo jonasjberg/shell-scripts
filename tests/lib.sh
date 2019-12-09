@@ -39,6 +39,7 @@ _on_assertion_failure()
     local _fail_linenumber="${BASH_LINENO[1]}"
     printf '\n\n%sASSERTION FAILED%s at file:line %s:%s\n' \
         "$COLOR_RED" "$COLOR_RESET" "$_fail_filename" "$_fail_linenumber"
+    _print_traceback
     exit $EXITSTATUS_TESTRESULT_FAIL
 }
 
@@ -70,7 +71,7 @@ _print_traceback()
         [ -z "${source_file:-}" ] && source_file='[non-file]'
 
         source_linenum="${BASH_LINENO[$(( i - 1 ))]}"
-        collected_stacktrace+=("SOURCEFILE $source_file:$source_linenum WITHIN $funcname")
+        collected_stacktrace+=("Sourcefile $source_file:$source_linenum Function $funcname")
     done
 
     # NOTE: Since the tests are evaluated (eval foo) with their output
