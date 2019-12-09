@@ -10,12 +10,14 @@ _tstlib_setup_environment()
     local _self_absolute_filepath
     _self_relative_filepath="${BASH_SOURCE[${#BASH_SOURCE[@]} - 1]}"
     _self_absolute_dirpath="$(
-        command dirname -- "$(command readlink -e -- "$_self_relative_filepath")"
+        command dirname -- "$(
+            command realpath --canonicalize-existing -- "$_self_relative_filepath"
+        )"
     )"
 
     # Absolute path to the project root directory.
     TSTLIB_PROJECT_ROOT_DIRPATH="$(
-        command readlink -e -- "${_self_absolute_dirpath}/.."
+        command realpath --canonicalize-existing -- "${_self_absolute_dirpath}/.."
     )"
 
     unset _self_relative_filepath
