@@ -64,6 +64,10 @@ case "$repo_url" in
         # GitLab HTTPS
         repo_dest="${repo_url//https:\/\/gitlab.com\//}"
         ;;
+    https://opendev.org/*)
+        # OpenDev HTTPS
+        repo_dest="${repo_url//https:\/\/opendev.org\//}"
+        ;;
     *)
         printf 'Unsupported source repository URL .. Exiting.\n'
         exit 1
