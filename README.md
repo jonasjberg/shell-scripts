@@ -49,7 +49,7 @@ Listing
 | `shrinkpdf.sh`                          | optimize pdf documents to use less disk space           |
 | `slugify-filename`                      | clean up file names                                     |
 | `timestamped-tarball.sh`                | creates `tar.lzma` archives with timestamped file names |
-| `today-dir`                             | creates a daily working directory symlink               |
+| `today-dir.sh`                          | creates a daily working directory symlink               |
 | `vinetto_rename.py`                     | rename files extracted with "vinetto"                   |
 | `wait-for-net.sh`                       | loop and sleep until ping is successful                 |
 | `www2png`                               | convert a webpage to a image using `cutycapt`           |

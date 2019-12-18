@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# today-dir
-# =========
+# today-dir.sh
+# ============
 # Written by Jonas Sjöberg in 2016
 #
 # Create a daily working directory called "today", which is a symlink to a
