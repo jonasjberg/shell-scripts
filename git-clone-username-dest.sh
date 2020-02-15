@@ -12,7 +12,7 @@ readonly SELF_BASENAME="$(basename -- "$0")"
 
 if [ "$#" -ne "1" ]
 then
-    cat >&2 <<EOF
+    cat <<EOF
 
                  .-{ git-clone-username-dest.sh }-.
                          written 2017--2019

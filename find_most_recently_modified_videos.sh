@@ -9,7 +9,7 @@ set -o nounset -o errexit -o pipefail -o noclobber
 
 if [ $# -eq 0 ]
 then
-    cat <<EOF >&2
+    cat <<EOF
 
     Usage:  $(basename -- "${BASH_SOURCE[0]}") [DIRPATH]...
 

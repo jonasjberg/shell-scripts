@@ -28,7 +28,7 @@ readonly SAFE_CHARS="${GLUE_CHARS}a-zA-Z0-9"
 src="$1"
 if [ $# -ne 1 ]
 then
-    printf 'USAGE:  %s [DIRECTORY_PATH]\n' "$SELF_BASENAME" >&2
+    printf 'USAGE:  %s [DIRECTORY_PATH]\n' "$SELF_BASENAME"
     exit 1
 fi
 

@@ -37,7 +37,7 @@ fi
 
 if [ "$#" -ne 1 ] || [ ! -d "$1" ]
 then
-    cat >&2 <<EOF
+    cat <<EOF
 
   USAGE:  ${SELF_BASENAME} [PATH]
 

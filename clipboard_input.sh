@@ -29,7 +29,7 @@ fi
 
 display_usage()
 {
-    command cat <<EOF >&2
+    command cat <<EOF
 
   $_SELF_BASENAME
   Copies text content to the Xorg server clipboard.
