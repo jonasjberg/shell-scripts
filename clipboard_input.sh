@@ -16,13 +16,13 @@ readonly _SELF_BASENAME
 
 if ! command -v xclip &>/dev/null
 then
-    printf '%s: CRITICAL: This script requires the "xclip" command. Exiting..\n' "$_SELF_BASENAME"
+    printf '%s: CRITICAL: This script requires the "xclip" command. Exiting..\n' "$_SELF_BASENAME" >&2
     exit 1
 fi
 
 if [ -z "${DISPLAY:-}" ]
 then
-    printf '%s: ERROR: The $DISPLAY environment variable is not set. Exiting..\n' "$_SELF_BASENAME"
+    printf '%s: ERROR: The $DISPLAY environment variable is not set. Exiting..\n' "$_SELF_BASENAME" >&2
     exit 1
 fi
 
@@ -65,13 +65,13 @@ fi
 
 if ! [ -e "$1" ]
 then
-    printf '%s: WARNING: File does not exist: %s\n' "$_SELF_BASENAME" "$1"
+    printf '%s: WARNING: File does not exist: %s\n' "$_SELF_BASENAME" "$1" >&2
     exit 1
 fi
 
 if ! argabspath="$(command realpath --canonicalize-existing -- "$1")"
 then
-    printf '%s: WARNING: File does not exist: %s\n' "$_SELF_BASENAME" "$1"
+    printf '%s: WARNING: File does not exist: %s\n' "$_SELF_BASENAME" "$1" >&2
     exit 1
 fi
 
@@ -80,7 +80,7 @@ case $(command file --mime-type --brief -- "$argabspath") in
         # OK! Do nothing, keep going.
         ;;
     *)
-        printf '%s: WARNING: File does not appear to be a text file: %s\n' "$_SELF_BASENAME" "$argabspath"
+        printf '%s: WARNING: File does not appear to be a text file: %s\n' "$_SELF_BASENAME" "$argabspath" >&2
         exit 1
         ;;
 esac
