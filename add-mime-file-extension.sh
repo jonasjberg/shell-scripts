@@ -56,9 +56,11 @@ add_extension_from_mime()
 
     case "$_filepath_mimetype" in
         inode/directory) return 0 ;;
+        inode/x-empty) return 0 ;;
 
         application/CDFV2) _ext='db' ;;
         audio/x-flac) _ext='flac' ;;
+        audio/x-wav) _ext='wav' ;;
         audio/mpeg) _ext='mp3' ;;
         application/ogg) _ext='ogg' ;;
 
@@ -107,6 +109,7 @@ add_extension_from_mime()
 
         application/x-gzip) _ext='tar.gz' ;;
         application/x-bzip2) _ext='tar.bz' ;;
+        application/x-rar) _ext='rar' ;;
 
         *) printf 'Unhandled MIME-type "%s" from file "%s"\n' "$_filepath_mimetype" "$_filepath"
            return 1 ;;
