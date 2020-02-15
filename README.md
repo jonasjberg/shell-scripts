@@ -22,6 +22,7 @@ Listing
 | `add-mime-file-extension.sh`            | adds missing file extensions from MIME types            |
 | `clamp-image-height.sh`                 | chop up images taller than a set max height             |
 | `clipboard_input.sh`                    | copies content to the Xorg server clipboard             |
+| `clipboard_output.sh`                   | fetches content from the Xorg server clipboard          |
 | `congrep.sh`                            | "context-sensitive" grep options                        |
 | `convert-video-to-mp4.sh`               | converts videos to mp4 with `ffmpeg`                    |
 | `datedelta.py`                          | calculates years, months, days between dates            |
