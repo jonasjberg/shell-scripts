@@ -36,7 +36,6 @@ def examine_application_octet_stream(filepath, mimetype):
 
 
 def examine_text_plain(filepath, mimetype):
-    # print('fjhsdfg', filepath)
     USE_AS_IS_IF_BASENAME_EQUALS_ANY_OF = {
         '.tmux.conf',
     }
