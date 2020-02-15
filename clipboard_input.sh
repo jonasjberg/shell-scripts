@@ -13,21 +13,12 @@ set -o errexit -o noclobber -o nounset -o pipefail
 _SELF_BASENAME="$(command basename -- "${BASH_SOURCE[0]}")"
 readonly _SELF_BASENAME
 
+print_error()
+{
+    printf '%s: ERROR: %s\n' "$_SELF_BASENAME" "$*" >&2
+}
 
-if ! command -v xclip &>/dev/null
-then
-    printf '%s: CRITICAL: This script requires the "xclip" command. Exiting..\n' "$_SELF_BASENAME" >&2
-    exit 1
-fi
-
-if [ -z "${DISPLAY:-}" ]
-then
-    printf '%s: ERROR: The $DISPLAY environment variable is not set. Exiting..\n' "$_SELF_BASENAME" >&2
-    exit 1
-fi
-
-
-display_usage()
+print_usage()
 {
     command cat <<EOF
 
@@ -48,6 +39,20 @@ EOF
 }
 
 
+if ! command -v xclip &>/dev/null
+then
+    print_error 'This script requires the "xclip" command. Exiting..'
+    exit 127
+fi
+
+if [ -z "${DISPLAY:-}" ]
+then
+    # shellcheck disable=SC2016
+    print_error 'The $DISPLAY environment variable is not set. Exiting..'
+    exit 1
+fi
+
+
 if ! [ -t 0 ]
 then
     # File descriptor 0 is NOT opened on a terminal. Read from stdin.
@@ -56,34 +61,34 @@ then
 fi
 
 
-# File descriptor 0 is opened on a terminal. Read from a file.
+# File descriptor 0 is opened on a terminal. Try to read from a file.
 if [ $# -ne 1 ]
 then
-    display_usage
+    print_usage
     exit 0
 fi
 
-if ! [ -e "$1" ]
+maybe_filepath="$1"
+if ! {
+    [ -e "$maybe_filepath" ] &&
+    filepath="$(
+        command realpath --canonicalize-existing -- "$maybe_filepath"
+    )"
+}
 then
-    printf '%s: WARNING: File does not exist: %s\n' "$_SELF_BASENAME" "$1" >&2
+    print_error 'File does not exist:' "$maybe_filepath"
     exit 1
 fi
 
-if ! argabspath="$(command realpath --canonicalize-existing -- "$1")"
-then
-    printf '%s: WARNING: File does not exist: %s\n' "$_SELF_BASENAME" "$1" >&2
-    exit 1
-fi
-
-case $(command file --mime-type --brief -- "$argabspath") in
+case $(command file --mime-type --brief -- "$filepath") in
     text/*)
         # OK! Do nothing, keep going.
         ;;
     *)
-        printf '%s: WARNING: File does not appear to be a text file: %s\n' "$_SELF_BASENAME" "$argabspath" >&2
+        print_error 'File does not appear to be a text file:' "$filepath"
         exit 1
         ;;
 esac
 
-command xclip -in -selection clipboard "$argabspath"
-exit $?
+command xclip -in -selection clipboard "$filepath"
+exit 0
