@@ -118,8 +118,8 @@ add_extension_from_mime()
     # File name extension is absent or unknown.
     [[ -z ${_ext:-} ]] && return 0
 
-    # File name extension is already correct.
-    [[ ${_filepath} = *.${_ext} ]] && return 0
+    # Check if (lowercased) file name extension is already correct.
+    [[ ${_filepath,,} = *.${_ext} ]] && return 0
 
     local _dest_filepath="${_filepath}.${_ext}"
 
