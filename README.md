@@ -38,6 +38,7 @@ Listing
 | `git-clone-username-dest.sh`            | clone git repo to custom destination path               |
 | `git-last-modified.sh`                  | list git repository files by modification date          |
 | `git-pull-recursively.sh`               | find and update git repos under a preset path           |
+| `git_pullff_all_remotes_push_all_remotes.sh` | does "safe" synchronization with multiple Git remotes   |
 | `macbook-battery-logger.sh`             | generate MacBook laptop battery CSV statistics          |
 | `markdowngrep.py`                       | find markdown headings in text given a pattern          |
 | `markdownify-telegram-log.py`           | reformat telegram messenger log file                    |
