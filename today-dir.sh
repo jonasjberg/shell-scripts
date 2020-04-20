@@ -14,8 +14,6 @@
 # Similar and more sophisticated project:
 # https://github.com/mdsummers/today_cmd
 
-#set -e
-
 VERBOSE=1
 
 msg()
@@ -30,7 +28,7 @@ archive_dir="${HOME}/Archive"
 [ ! -d "$archive_dir" ] && mkdir -vp "$archive_dir"
 
 # Create todays directory if it does not exist already.
-todays_date="$(date +%F)"
+todays_date="$(command date '+%F')"
 today_dir="${archive_dir}/${todays_date}"
 if [ ! -d "$today_dir" ]
 then
