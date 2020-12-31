@@ -43,7 +43,6 @@ Listing
 | `markdowngrep.py`                       | find markdown headings in text given a pattern          |
 | `markdownify-telegram-log.py`           | reformat telegram messenger log file                    |
 | `markdowntoprettypdf.sh`                | `pandoc` wrapper with my favorite settings              |
-| `notify`                                | `notify-send` functions                                 |
 | `print_env_path.sh`                     | print entries in `$PATH` separated by `\n`              |
 | `record-desktop.sh`                     | crude desktop video capture                             |
 | `reencode-opx-video`                    | re-encodes videos with `ffmpeg` to save space           |
