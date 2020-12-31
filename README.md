@@ -45,16 +45,16 @@ Listing
 | `markdowntoprettypdf.sh`                | `pandoc` wrapper with my favorite settings              |
 | `print_env_path.sh`                     | print entries in `$PATH` separated by `\n`              |
 | `record-desktop.sh`                     | crude desktop video capture                             |
-| `reencode-opx-video`                    | re-encodes videos with `ffmpeg` to save space           |
+| `reencode-opx-video.sh`                 | re-encodes videos with `ffmpeg` to save space           |
 | `rename-macos-screenshot.py`            | used by MacOS Automator to rename screenshots           |
-| `rotate-opx-video-90cw`                 | rotates "OnePlus X" videos with `ffmpeg`                |
+| `rotate-opx-video-90cw.sh`              | rotates "OnePlus X" videos with `ffmpeg`                |
 | `shrinkpdf.sh`                          | optimize pdf documents to use less disk space           |
-| `slugify-filename`                      | clean up file names                                     |
+| `slugify-filename.sh`                   | clean up file names                                     |
 | `timestamped-tarball.sh`                | creates `tar.lzma` archives with timestamped file names |
 | `today-dir.sh`                          | creates a daily working directory symlink               |
 | `vinetto_rename.py`                     | rename files extracted with "vinetto"                   |
 | `wait-for-net.sh`                       | loop and sleep until ping is successful                 |
-| `www2png`                               | convert a webpage to a image using `cutycapt`           |
+| `www2png.sh`                            | convert a webpage to a image using `cutycapt`           |
 
 
 Licensing
