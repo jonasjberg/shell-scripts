@@ -122,7 +122,7 @@ do
         continue
     fi
 
-    if echo git --work-tree "$_repo_worktree" --git-dir "$_repo_gitdir" pull --ff-only --quiet
+    if git --work-tree "$_repo_worktree" --git-dir "$_repo_gitdir" pull --ff-only --quiet
     then
         log_ok "Updated repository: \"${_repo_basename}\""
     else
