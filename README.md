@@ -56,6 +56,7 @@ Listing
 | `vinetto_rename.py`                     | rename files extracted with "vinetto"                   |
 | `wait-for-net.sh`                       | loop and sleep until ping is successful                 |
 | `www2png.sh`                            | convert a webpage to a image using `cutycapt`           |
+| `yamldiff.py`                           | displays unified diffs of normalized YAML data          |
 
 
 Licensing
