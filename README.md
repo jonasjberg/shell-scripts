@@ -49,6 +49,7 @@ Listing
 | `reencode-opx-video.sh`                 | re-encodes videos with `ffmpeg` to save space           |
 | `rename-macos-screenshot.py`            | used by MacOS Automator to rename screenshots           |
 | `rotate-opx-video-90cw.sh`              | rotates "OnePlus X" videos with `ffmpeg`                |
+| `run_command_on_git_revs.sh`            | execute arbitrary shell commands over a range of git revisions. |
 | `shrinkpdf.sh`                          | optimize pdf documents to use less disk space           |
 | `slugify-filename.sh`                   | clean up file names                                     |
 | `timestamped-tarball.sh`                | creates `tar.lzma` archives with timestamped file names |
