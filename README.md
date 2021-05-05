@@ -52,6 +52,7 @@ Listing
 | `run_command_on_git_revs.sh`            | execute arbitrary shell commands over a range of git revisions. |
 | `shrinkpdf.sh`                          | optimize pdf documents to use less disk space           |
 | `slugify-filename.sh`                   | clean up file names                                     |
+| `ssh_config_identity_files.sh`          | Checks if ~/.ssh/config SSH private key files exist     |
 | `timestamped-tarball.sh`                | creates `tar.lzma` archives with timestamped file names |
 | `today-dir.sh`                          | creates a daily working directory symlink               |
 | `vinetto_rename.py`                     | rename files extracted with "vinetto"                   |
