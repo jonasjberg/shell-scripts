@@ -57,6 +57,30 @@ def serialize_yaml(data):
     return bytestring.decode('utf8')
 
 
+# TODO(jonas): This actually deletes either dict keys but also list values.
+def recursively_delete_dict_key(data, keys_to_delete=('do', 'not_want')):
+    if isinstance(data, dict):
+        # Make 'dict_keys' a list since it can not change size during iteration.
+        for key in list(data.keys()):
+            if key in keys_to_delete:
+                LOG.debug('Deleting key "%s" value "%s"', key, data[key])
+                del data[key]
+            else:
+                recursively_delete_dict_key(data[key], keys_to_delete)
+
+    elif isinstance(data, list):
+        for idx in reversed(range(len(data))):
+            for key_to_delete in keys_to_delete:
+                if data[idx] == key_to_delete:
+                    LOG.debug('Deleting index "%s" value "%s"', key_to_delete, data[idx])
+                    del data[idx]
+                else:
+                    recursively_delete_dict_key(data[idx], key_to_delete)
+    else:
+        # Neither dict nor list, do nothing.
+        pass
+
+
 def cli_main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -81,6 +105,17 @@ File(s) to read. Use "-" to read from stdin.
         dest='coerce_numbers',
         help='''
 Treat string numbers and integers with the same value as equal.
+Default: %(default)s
+''',
+    )
+
+    parser.add_argument(
+        '--ignore-keys',
+        action='append',
+        default=[],
+        dest='ignore_keys',
+        help='''
+List of keys to filter out from all input data prior to comparison.
 Default: %(default)s
 ''',
     )
@@ -155,19 +190,28 @@ Default: %(default)s
         CustomYamlDumper.add_representer(tuple, _represent_sorted_sequence)
 
     try:
-        data_a = serialize_yaml(load_yaml_file(filepath_a))
-        data_b = serialize_yaml(load_yaml_file(filepath_b))
+        data_a = load_yaml_file(filepath_a)
+        data_b = load_yaml_file(filepath_b)
     except Exception as exc:  # pylint: disable=broad-except
         LOG.critical('Caught top-level exception!')
         LOG.exception(exc)
         return 70
 
-    LOG.debug('Normalized data from file "%s":\n%s', filepath_a.name, data_a)
-    LOG.debug('Normalized data from file "%s":\n%s', filepath_b.name, data_b)
+    if parsed_args.ignore_keys:
+        LOG.debug('Elements to compare; A: %d, B: %d', len(data_a), len(data_b))
+        LOG.debug('Filtering out dict key(s): %s', ', '.join(parsed_args.ignore_keys))
+        recursively_delete_dict_key(data_a, parsed_args.ignore_keys)
+        recursively_delete_dict_key(data_b, parsed_args.ignore_keys)
+        LOG.debug('Elements to compare; A: %d, B: %d', len(data_a), len(data_b))
+
+    data_a_text = serialize_yaml(data_a)
+    data_b_text = serialize_yaml(data_b)
+    LOG.debug('Serialized data from file "%s":\n%s', filepath_a.name, data_a_text)
+    LOG.debug('Serialized data from file "%s":\n%s', filepath_b.name, data_b_text)
 
     diff_generator = difflib.unified_diff(
-        data_a.splitlines(),
-        data_b.splitlines(),
+        data_a_text.splitlines(),
+        data_b_text.splitlines(),
         fromfile=filepath_a.name,
         tofile=filepath_b.name,
     )
