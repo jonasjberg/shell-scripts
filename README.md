@@ -43,6 +43,7 @@ Listing
 | `markdowngrep.py`                       | Find markdown headings in text given a pattern          |
 | `markdownify-telegram-log.py`           | Reformat telegram messenger log file                    |
 | `markdowntoprettypdf.sh`                | `pandoc` wrapper with my favorite settings              |
+| `netcat_without_netcat.py`              | Trivial `netcat` work-alike for checking connectivity   |
 | `prepend_relative_timestamp.py`         | Prepends relative timestamps to stdin.                  |
 | `print_env_path.sh`                     | Print entries in `$PATH` separated by `\n`              |
 | `record-desktop.sh`                     | Crude desktop video capture                             |
